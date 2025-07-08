@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affitto Smart - L'Inquilino Giusto, Senza Pensieri a Bologna</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome (per le icone) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <style>
+        /* --- IMPOSTAZIONI GENERALI E COLORI --- */
+        /* Puoi cambiare questi colori per personalizzare il sito */
+        :root {
+            --colore-primario: #005A9C; /* Blu scuro, professionale */
+            --colore-secondario: #1E88E5; /* Blu più chiaro per i bottoni */
+            --colore-accento: #FFC107; /* Giallo/oro per l'offerta speciale */
+            --colore-testo: #333333;
+            --colore-sfondo-chiaro: #f4f7f9;
+            --colore-bianco: #ffffff;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            color: var(--colore-testo);
+            line-height: 1.6;
+            background-color: var(--colore-bianco);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 60px 0;
+        }
+
+        h1, h2, h3 {
+            font-weight: 700;
+            color: var(--colore-primario);
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 40px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--colore-secondario);
+            color: var(--colore-bianco);
+            padding: 15px 30px;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button:hover {
+            background-color: var(--colore-primario);
+            transform: translateY(-3px);
+        }
+
+        /* --- HEADER --- */
+        .main-header {
+            background-color: var(--colore-bianco);
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--colore-primario);
+        }
+        .logo span {
+            font-weight: 400;
+        }
+
+        .slogan {
+            font-style: italic;
+            color: #666;
+            display: none; /* Visibile su schermi più grandi */
+        }
+
+        .contatti-rapidi {
+            text-align: right;
+        }
+        .contatti-rapidi a {
+            color: var(--colore-testo);
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            background-image: linear-gradient(to right, rgba(0, 90, 156, 0.8), rgba(30, 136, 229, 0.7)), url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200');
+            background-size: cover;
+            background-position: center;
+            color: var(--colore-bianco);
+            text-align: center;
+            padding: 100px 0;
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            color: var(--colore-bianco);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+        }
+
+        /* --- SEZIONE PROBLEMA/SOLUZIONE --- */
+        #problema .dolori-list {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+        }
+
+        #problema .dolori-list li {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        
+        #problema .dolori-list .fa-times-circle {
+            color: #D32F2F;
+            margin-right: 10px;
+        }
+
+        .transizione {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--colore-primario);
+        }
+
+        /* --- SEZIONE COME FUNZIONA --- */
+        #processo {
+            background-color: var(--colore-sfondo-chiaro);
+        }
+        
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .process-step .icon {
+            font-size: 3.5em;
+            color: var(--colore-secondario);
+            margin-bottom: 15px;
+        }
+
+        .process-step h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        /* --- SEZIONE VANTAGGI --- */
+        .vantaggi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .vantaggio-card {
+            background-color: var(--colore-sfondo-chiaro);
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 5px solid var(--colore-secondario);
+        }
+
+        .vantaggio-card .fa {
+            margin-right: 10px;
+            color: var(--colore-secondario);
+        }
+
+        .vantaggio-card h3 {
+            display: flex;
+            align-items: center;
+            font-size: 1.2em;
+            margin-top: 0;
+        }
+
+        /* --- SEZIONE TESTIMONIANZE --- */
+        #testimonianze {
+            background-color: var(--colore-sfondo-chiaro);
+        }
+        .testimonial-placeholder {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+        }
+
+        /* --- SEZIONE OFFERTA SPECIALE --- */
+        #offerta {
+            background-color: var(--colore-accento);
+            text-align: center;
+        }
+        
+        #offerta h2 {
+            color: var(--colore-testo);
+        }
+
+        #offerta .offerta-testo {
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            font-size: 1.1em;
+        }
+        
+        #offerta .promozione {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto 30px auto;
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--colore-primario);
+            border: 2px solid var(--colore-primario);
+            max-width: 700px;
+        }
+        
+        #offerta .cta-button {
+            background-color: var(--colore-primario);
+        }
+        
+        #offerta .cta-button:hover {
+            background-color: var(--colore-secondario);
+        }
+        
+        /* --- FOOTER --- */
+        .main-footer {
+            background-color: var(--colore-testo);
+            color: var(--colore-bianco);
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        .main-footer .contatti-completi {
+            margin-bottom: 15px;
+        }
+        
+        .main-footer a {
+            color: var(--colore-bianco);
+            margin: 0 10px;
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (min-width: 768px) {
+            .slogan {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .contatti-rapidi {
+                text-align: center;
+                width: 100%;
+            }
+
+            .hero h1 {
+                font-size: 2.5em;
+            }
+            h2 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ======================= -->
+    <!--          HEADER         -->
+    <!-- ======================= -->
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">Affitto <span>Smart</span></div>
+            <div class="slogan">L'Inquilino Giusto, Senza Pensieri.</div>
+            <div class="contatti-rapidi">
+                <!-- SOSTITUISCI CON I TUOI CONTATTI -->
+                <a href="tel:+390000000000"><i class="fa fa-phone"></i> Chiama Ora</a>
+                <a href="mailto:info@affittosmart.it"><i class="fa fa-envelope"></i> Email</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ======================= -->
+        <!--       HERO SECTION      -->
+        <!-- ======================= -->
+        <section class="hero" id="home">
+            <div class="container">
+                <h1>Affitta la Tua Casa a Bologna con Intelligenza: Niente più Perdite di Tempo, Solo Candidati Qualificati.</h1>
+                <p>Affitto Smart ti connette con l'inquilino perfetto, gestendo la selezione e l'open day con efficienza e professionalità.</p>
+                <!-- SOSTITUISCI #form-link CON IL LINK AL TUO GOOGLE FORM -->
+                <a href="#form-link" class="cta-button">Trova il Tuo Inquilino Ideale - Inizia Ora!</a>
+            </div>
+        </section>
+
+        <!-- ======================= -->
+        <!--   SEZIONE PROBLEMA      -->
+        <!-- ======================= -->
+        <section id="problema">
+            <div class="container">
+                <h2>Basta Perdite di Tempo e Incertezze nell'Affitto.</h2>
+                <ul class="dolori-list">
+                    <li><i class="fas fa-times-circle"></i> Decine di telefonate e messaggi da curiosi.</li>
+                    <li><i class="fas fa-times-circle"></i> Visite di persone non qualificate.</li>
+                    <li><i class="fas fa-times-circle"></i> Il rischio di scegliere l'inquilino sbagliato.</li>
+                    <li><i class="fas fa-times-circle"></i> Le commissioni alte e poco trasparenti delle agenzie.</li>
+                    <li><i class="fas fa-times-circle"></i> Lo stress di gestire tutto da soli.</li>
+                </ul>
+                <p class="transizione">Con Affitto Smart, tutto questo è un ricordo.</p>
+            </div>
+        </section>
+
+        <!-- ======================= -->
+        <!--    SEZIONE PROCESSO     -->
+        <!-- ======================= -->
+        <section id="processo">
+            <div class="container">
+                <h2>Il Metodo Affitto Smart: Semplice, Efficace, Rivoluzionario.</h2>
+                <div class="process-grid">
+                    <div class="process-step">
+                        <div class="icon"><i class="fas fa-user-check"></i></div>
+                        <h3>1. Definisci l'Inquilino Ideale</h3>
+                        <p>Insieme, stabiliamo il profilo perfetto per il tuo immobile.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fas fa-file-signature"></i></div>
+                        <h3>2. Pre-selezione Avanzata</h3>
+                        <p>I candidati compilano un questionario. Solo chi rispetta i tuoi requisiti riceve un codice per l'Open Day.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fas fa-house-user"></i></div>
+                        <h3>3. Open Day Gestito da Me</h3>
+                        <p>Mi occupo personalmente dell'open day nel tuo immobile, accogliendo solo i profili qualificati.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fas fa-handshake"></i></div>
+                        <h3>4. La Tua Scelta Facile</h3>
+                        <p>Ti presento i migliori profili. A te resta solo il piacere di scegliere il tuo inquilino, senza stress.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= -->
+        <!--    SEZIONE VANTAGGI     -->
+        <!-- ======================= -->
+        <section id="vantaggi">
+            <div class="container">
+                <h2>Oltre l'Agenzia Tradizionale: I Tuoi Vantaggi Esclusivi</h2>
+                <div class="vantaggi-grid">
+                    <div class="vantaggio-card">
+                        <h3><i class="fa fa-bullseye"></i> Selezione Ultra-Mirata</h3>
+                        <p>Le agenzie mostrano a tutti. Noi solo a chi è davvero in linea con le tue richieste.</p>
+                    </div>
+                    <div class="vantaggio-card">
+                        <h3><i class="fa fa-clock"></i> Massima Efficienza</h3>
+                        <p>Niente visite a vuoto, zero perdite di tempo. Un processo snello e veloce.</p>
+                    </div>
+                    <div class="vantaggio-card">
+                        <h3><i class="fa fa-shield-alt"></i> Sicurezza Garantita</h3>
+                        <p>Filtro iniziale rigoroso per la tua tranquillità, riducendo i rischi al minimo.</p>
+                    </div>
+                    <div class="vantaggio-card">
+                        <h3><i class="fa fa-lightbulb"></i> Costi Trasparenti</h3>
+                        <p>Nessuna commissione sorpresa, paghi un costo fisso e chiaro.</p>
+                    </div>
+                    <div class="vantaggio-card">
+                        <h3><i class="fa fa-user-tie"></i> Servizio Personalizzato</h3>
+                        <p>Non sei un numero. Mi dedico personalmente alla ricerca del tuo inquilino ideale.</p>
+                    </div>
+                    <div class="vantaggio-card">
+                        <h3><i class="fa fa-star"></i> Open Day Professionale</h3>
+                        <p>Gestito in prima persona per un'esperienza organizzata e di qualità superiore.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ======================= -->
+        <!--   SEZIONE TESTIMONIANZE -->
+        <!-- ======================= -->
+        <section id="testimonianze">
+            <div class="container">
+                <h2>Cosa Dicono i Nostri Primi Clienti Soddisfatti</h2>
+                <div class="testimonial-placeholder">
+                    <p>In fase di raccolta, presto le prime testimonianze!<br>Diventa uno dei nostri primi successi e approfitta dell'offerta di lancio.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= -->
+        <!--   SEZIONE OFFERTA       -->
+        <!-- ======================= -->
+        <section id="offerta">
+            <div class="container">
+                <h2>Offerta Esclusiva per i Primi Proprietari a Bologna!</h2>
+                <p class="offerta-testo">Per celebrare il lancio di Affitto Smart, stiamo cercando un numero limitato di proprietari 'ambassador' a Bologna. A loro, offriamo il nostro servizio completo con una condizione senza rischi:</p>
+                <div class="promozione">
+                    Paga solo dopo aver firmato il contratto con l'inquilino che hai scelto tu!<br>Nessun costo iniziale, massima garanzia di risultato.
+                </div>
+                <!-- SOSTITUISCI #form-link CON IL LINK AL TUO GOOGLE FORM -->
+                <a href="#form-link" class="cta-button">Cogli l'Opportunità - Richiedi la Tua Consulenza Gratuita!</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ======================= -->
+    <!--          FOOTER         -->
+    <!-- ======================= -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="contatti-completi">
+                <!-- SOSTITUISCI CON I TUOI CONTATTI -->
+                <p>Affitto Smart Bologna | Telefono: <a href="tel:+390000000000">[Il Tuo Numero]</a> | Email: <a href="mailto:info@affittosmart.it">[La Tua Email]</a></p>
+            </div>
+            <div class="legal-links">
+                <!-- SOSTITUISCI # CON I LINK REALI QUANDO LI AVRAI -->
+                <a href="#">Privacy Policy</a> | <a href="#">Termini di Servizio</a>
+            </div>
+            <p>© 2024 Affitto Smart. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
