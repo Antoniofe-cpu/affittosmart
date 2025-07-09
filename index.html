@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Affitto Smart - L'Affitto a Bologna, Senza Stress e Massima Resa.</title>
+    <title>Affitto Smart. Scartiamo il 98% dei candidati. Per te.</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -86,7 +86,6 @@
         }
         .hero h1 { color: var(--colore-bianco); text-shadow: 0 3px 6px rgba(0,0,0,0.2); }
         .hero p { font-size: 1.4em; max-width: 700px; margin: 20px auto 40px auto; color: rgba(255, 255, 255, 0.9); }
-        /* Stile per il pre-titolo nella Hero */
         .hero .pre-title {
             color: var(--colore-accento);
             font-weight: 600;
@@ -94,6 +93,7 @@
             margin-bottom: 10px;
             text-shadow: none;
             letter-spacing: 1px;
+            text-transform: none; /* Rimuove il maiuscolo */
         }
 
         /* SEZIONE CONTATORE */
@@ -113,7 +113,7 @@
         #problema .dolori-list .fa-circle-xmark { color: #c0392b; margin-right: 15px; font-size: 1.5em; }
         .transizione { text-align: center; font-size: 1.5em; font-weight: 600; color: var(--colore-primario); margin-top: 50px; }
 
-        /* SEZIONE PROCESSO (5 PASSI) */
+        /* SEZIONE PROCESSO (Stile Moderno) */
         #processo { background-color: var(--colore-sfondo-chiaro); }
         .process-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
         .process-step {
@@ -133,23 +133,43 @@
         .about-us-img img { width: 100%; max-width: 350px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
         .about-us-text { flex: 2; }
         .about-us-text h3 { font-size: 2em; }
-
-        /* TABELLA DI CONFRONTO */
-        #confronto { background-color: var(--colore-sfondo-chiaro); }
-        .comparison-table {
-            width: 100%; border-collapse: collapse; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            border-radius: 10px; overflow: hidden;
+        
+        /* SEZIONE VANTAGGI (Stile "Mixato") */
+        #vantaggi { background-color: var(--colore-bianco); } /* Sfondo bianco per staccare */
+        .vantaggi-grid-mix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
         }
-        .comparison-table th, .comparison-table td { padding: 20px; text-align: center; border-bottom: 1px solid #e0e0e0; }
-        .comparison-table th { background-color: var(--colore-primario); color: white; font-size: 1.2em; }
-        .comparison-table td:first-child { text-align: left; font-weight: 600; }
-        .comparison-table .fa-check-circle { color: var(--colore-successo); font-size: 1.5em; }
-        .comparison-table .fa-times-circle { color: #c0392b; font-size: 1.5em; }
-        .comparison-table .highlight { background-color: #fffbeb; }
-        .comparison-table .highlight-header { background-color: var(--colore-accento); color: var(--colore-testo); }
+        .vantaggio-card-mix {
+            background-color: var(--colore-sfondo-chiaro);
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 5px solid var(--colore-accento);
+            transition: all 0.3s ease;
+        }
+        .vantaggio-card-mix:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        .vantaggio-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .vantaggio-header .fa-solid {
+            color: var(--colore-primario);
+            font-size: 1.8em;
+            margin-right: 15px;
+            width: 40px;
+            text-align: center;
+        }
+        .vantaggio-header h3 { margin: 0; font-size: 1.3em; color: var(--colore-primario); }
+
 
         /* SEZIONE FAQ */
-        .faq-item { margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+        #faq { background-color: var(--colore-sfondo-chiaro); }
+        .faq-item { margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background: white; }
         .faq-question {
             width: 100%; background-color: transparent; border: none; padding: 20px;
             font-size: 1.2em; font-weight: 600; text-align: left; cursor: pointer;
@@ -185,17 +205,40 @@
         @media (max-width: 768px) {
             h1 { font-size: 2.5em; } h2 { font-size: 2.2em; }
             .hero .pre-title {font-size: 1.2em;}
-            .comparison-table { display: none; }
             .about-us-img { margin-bottom: 30px; }
         }
+        /* Stile per il logo con tagline */
+.logo-container {
+    line-height: 1.2;
+}
+.logo-main {
+    font-size: 1.8em;
+    font-weight: 800;
+    color: var(--colore-primario);
+}
+.logo-main span {
+    font-weight: 400;
+    color: var(--colore-secondario);
+}
+.logo-tagline {
+    font-size: 0.7em; /* Molto più piccolo */
+    font-weight: 600;
+    color: var(--colore-testo-chiaro);
+    letter-spacing: 0.5px;
+    margin-top: -5px; /* Avvicina la tagline al logo principale */
+}
     </style>
 </head>
 <body>
 
     <header class="main-header">
         <div class="container header-content">
-            <div class="logo">Affitto <span>Smart</span></div>
+            <div class="logo-container">
+    <div class="logo-main">Affitto <span>Smart</span></div>
+    <div class="logo-tagline">Scartiamo il 98% dei candidati. Per te.</div>
+</div>
             <div class="contatti-rapidi">
+                <!-- SOSTITUISCI CON I TUOI DATI -->
                 <a href="tel:+393330000000"><i class="fa-solid fa-phone"></i> Chiama</a>
                 <a href="mailto:tuaemail@esempio.com"><i class="fa-solid fa-envelope"></i> Scrivi</a>
             </div>
@@ -208,6 +251,7 @@
                 <h2 class="pre-title">Basta agenzie e visite a vuoto.</h2>
                 <h1>Il tuo inquilino perfetto<br>è a un solo Open Day di distanza.</h1>
                 <p>Gestiamo noi tutta la pre-selezione. Tu incontri solo candidati qualificati e realmente interessati, risparmiando tempo e guadagnando serenità.</p>
+                <!-- SOSTITUISCI CON IL LINK AL TUO FORM PROPRIETARI -->
                 <a href="https://forms.gle/U2BXfWR1EQ5Nsxe26" class="cta-button" target="_blank">Scopri Come Funziona</a>
             </div>
         </section>
@@ -232,7 +276,7 @@
         <section id="problema">
             <div class="container">
                 <h2 class="hidden">La fine di un incubo chiamato "affitto".</h2>
-                <p class="sottotitolo-sezione hidden">Se queste situazioni ti suonano familiari, sei nel posto giusto. È ora di cambiare metodo.</p>
+                <p class="sottotitolo-sezione hidden">Se queste situazioni vi suonano familiari, siete nel posto giusto. È ora di cambiare metodo.</p>
                 <ul class="dolori-list hidden">
                     <li><i class="fa-solid fa-circle-xmark"></i> Passare i weekend a rispondere a decine di messaggi e telefonate inutili.</li>
                     <li><i class="fa-solid fa-circle-xmark"></i> Far visitare casa a sconosciuti che non hanno i requisiti minimi.</li>
@@ -242,45 +286,39 @@
                 <p class="transizione hidden">Con Affitto Smart, la vostra unica preoccupazione sarà scegliere tra i migliori candidati.</p>
             </div>
         </section>
-        
-        <!-- NUOVA SEZIONE PROCESSO CON TUTTE LE ICONE - PRONTA DA INCOLLARE -->
-<section id="processo">
-    <div class="container">
-        <h2 class="hidden">Il Metodo Affitto Smart: Semplice, Efficace, Rivoluzionario.</h2>
-        <div class="process-grid hidden">
-            <!-- Step 1 -->
-            <div class="process-step">
-                <div class="icon"><i class="fa-solid fa-bullseye"></i></div>
-                <h3>1. Strategia Mirata</h3>
-                <p>Insieme, definiamo il profilo dell'inquilino ideale e il canone di affitto ottimale per il vostro immobile.</p>
+
+        <section id="processo">
+            <div class="container">
+                <h2 class="hidden">Il Metodo Affitto Smart: Semplice, Efficace, Rivoluzionario.</h2>
+                <div class="process-grid hidden">
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-bullseye"></i></div>
+                        <h3>1. Strategia Mirata</h3>
+                        <p>Insieme, definiamo il profilo dell'inquilino ideale e il canone di affitto ottimale per il vostro immobile.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-camera-retro"></i></div>
+                        <h3>2. Annunci Professionali</h3>
+                        <p>Creiamo annunci accattivanti con foto di qualità e li pubblichiamo sui migliori portali per attrarre i candidati giusti.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                        <h3>3. Pre-Selezione Rigorosa</h3>
+                        <p>Filtriamo decine di candidature tramite il nostro questionario. Solo i profili idonei vengono considerati.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+                        <h3>4. Open Day Efficiente</h3>
+                        <p>Organizziamo un unico Open Day, invitando solo i migliori candidati per ottimizzare il vostro tempo.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
+                        <h3>5. La Vostra Scelta Finale</h3>
+                        <p>Vi presentiamo una rosa di candidati eccellenti. A voi resta solo il piacere di scegliere, senza stress.</p>
+                    </div>
+                </div>
             </div>
-            <!-- Step 2 -->
-            <div class="process-step">
-                <div class="icon"><i class="fa-solid fa-camera-retro"></i></div>
-                <h3>2. Annunci Professionali</h3>
-                <p>Creiamo annunci accattivanti con foto di qualità e li pubblichiamo sui migliori portali per attrarre i candidati giusti.</p>
-            </div>
-            <!-- Step 3 (ICONA CORRETTA) -->
-             <div class="process-step">
-                <div class="icon"><i class="fa-solid fa-clipboard-check"></i></div>
-                <h3>3. Pre-Selezione Rigorosa</h3>
-                <p>Filtriamo decine di candidature. Solo i profili idonei vengono considerati.</p>
-            </div>
-            <!-- Step 4 -->
-            <div class="process-step">
-                <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
-                <h3>4. Open Day Efficiente</h3>
-                <p>Organizziamo uno o più Open Day, invitando solo i migliori candidati per ottimizzare il vostro tempo.</p>
-            </div>
-            <!-- Step 5 -->
-            <div class="process-step">
-                <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
-                <h3>5. La Vostra Scelta Finale</h3>
-                <p>Vi presentiamo una rosa di candidati eccellenti. A voi resta solo il piacere di scegliere, senza stress.</p>
-            </div>
-        </div>
-    </div>
-</section>
+        </section>
 
         <section id="about-us">
             <div class="container about-us">
@@ -295,28 +333,54 @@
             </div>
         </section>
 
-        <section id="confronto">
+        <section id="vantaggi">
             <div class="container">
-                <h2 class="hidden">Il Confronto che Parla Chiaro</h2>
-                <p class="sottotitolo-sezione hidden">Vedete subito perché il nostro metodo è la scelta più intelligente per voi.</p>
-                <table class="comparison-table hidden">
-                    <thead>
-                        <tr>
-                            <th>Caratteristica</th>
-                            <th>Fai da Te</th>
-                            <th>Agenzia Tradizionale</th>
-                            <th class="highlight-header">Affitto Smart</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr> <td>Perdite di tempo</td> <td><i class="fa-solid fa-times-circle"></i></td> <td><i class="fa-solid fa-times-circle"></i></td> <td class="highlight"><i class="fa-solid fa-check-circle"></i></td> </tr>
-                        <tr> <td>Selezione Candidati</td> <td>Base</td> <td>Standard</td> <td class="highlight">Ultra-mirata</td> </tr>
-                        <tr> <td>Visite a vuoto</td> <td>Moltissime</td> <td>Molte</td> <td class="highlight">Zero</td> </tr>
-                        <tr> <td>Costi</td> <td>Bassi (ma alto stress)</td> <td>Alti e poco chiari</td> <td class="highlight">Trasparenti e vantaggiosi</td> </tr>
-                        <tr> <td>Servizio Personale</td> <td>-</td> <td>Impersonale</td> <td class="highlight"><i class="fa-solid fa-check-circle"></i></td> </tr>
-                        <tr> <td>Tranquillità</td> <td><i class="fa-solid fa-times-circle"></i></td> <td>Discreta</td> <td class="highlight">Massima</td> </tr>
-                    </tbody>
-                </table>
+                <h2 class="hidden">Oltre l'Agenzia Tradizionale: I Vostri Vantaggi Esclusivi</h2>
+                <p class="sottotitolo-sezione hidden">Ecco perché il nostro metodo è diverso e più efficace per garantire la vostra tranquillità.</p>
+                <div class="vantaggi-grid-mix hidden">
+                    <div class="vantaggio-card-mix">
+                        <div class="vantaggio-header">
+                            <i class="fa-solid fa-user-group"></i>
+                            <h3>Selezione Ultra-Mirata</h3>
+                        </div>
+                        <p>Le agenzie mostrano a tutti. Noi solo a chi è davvero in linea con le vostre richieste.</p>
+                    </div>
+                    <div class="vantaggio-card-mix">
+                        <div class="vantaggio-header">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                            <h3>Massima Efficienza</h3>
+                        </div>
+                        <p>Niente visite a vuoto, zero perdite di tempo. Un processo snello e veloce che rispetta la vostra agenda.</p>
+                    </div>
+                    <div class="vantaggio-card-mix">
+                        <div class="vantaggio-header">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <h3>Sicurezza Garantita</h3>
+                        </div>
+                        <p>Il nostro filtro iniziale rigoroso è la migliore garanzia per la vostra tranquillità, riducendo i rischi al minimo.</p>
+                    </div>
+                    <div class="vantaggio-card-mix">
+                        <div class="vantaggio-header">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                            <h3>Costi Trasparenti</h3>
+                        </div>
+                        <p>Nessuna commissione a sorpresa. Con noi pagate un costo fisso e chiaro, senza percentuali nascoste.</p>
+                    </div>
+                    <div class="vantaggio-card-mix">
+                        <div class="vantaggio-header">
+                            <i class="fa-solid fa-hands-holding-child"></i>
+                            <h3>Servizio Dedicato</h3>
+                        </div>
+                        <p>Non siete un numero in un archivio. Il nostro team si dedica personalmente alla ricerca del vostro inquilino ideale.</p>
+                    </div>
+                    <div class="vantaggio-card-mix">
+                        <div class="vantaggio-header">
+                            <i class="fa-solid fa-star"></i>
+                            <h3>Open Day Professionale</h3>
+                        </div>
+                        <p>Gestito interamente da noi per offrirvi un'esperienza organizzata e di qualità superiore.</p>
+                    </div>
+                </div>
             </div>
         </section>
         
@@ -357,12 +421,16 @@
 
     <footer class="main-footer">
         <div class="container">
-            <div class="logo">Affitto <span>Smart</span></div>
+            <div class="logo-container">
+    <div class="logo-main">Affitto <span>Smart</span></div>
+    <div class="logo-tagline">Scartiamo il 98% dei candidati. Per te.</div>
+</div>
             <div class="contatti-completi">
+                <!-- SOSTITUISCI CON I TUOI DATI -->
                 <p>Affitto Smart Bologna | P.IVA 1234567890 | <a href="tel:+393330000000">[Il Vostro Numero]</a> | <a href="mailto:tuaemail@esempio.com">[La Vostra Email]</a></p>
             </div>
             <div class="legal-links"> <a href="#">Privacy Policy</a> | <a href="#">Termini di Servizio</a> </div>
-            <p>© 2024 Affitto Smart. Tutti i diritti riservati.</p>
+            <p>© 2025 Affitto Smart. Tutti i diritti riservati.</p>
         </div>
     </footer>
 
