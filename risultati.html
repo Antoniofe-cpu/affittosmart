@@ -91,117 +91,133 @@
 
         let allProperties = [], allRequirements = [], allCandidates = [];
 
-        function csvToObjects(csv) {
-            const lines = csv.trim().split('\n');
-            if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
-            const objects = [];
-            for (let i = 1; i < lines.length; i++) {
-                if (lines[i]) {
-                    const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    const obj = {};
-                    for (let j = 0; j < headers.length; j++) {
-                        obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
+    function csvToObjects(csv) {
+        const lines = csv.trim().split('\n');
+        if (lines.length < 2) return [];
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').replace(/\r/g, ''));
+        const objects = [];
+        for (let i = 1; i < lines.length; i++) {
+            if (lines[i]) {
+                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                const obj = {};
+                for (let j = 0; j < headers.length; j++) {
+                    obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
+                }
+                objects.push(obj);
+            }
+        }
+        return objects;
+    }
+
+    function displayResults(properties) {
+        const resultsContainer = document.getElementById('results-container');
+        resultsContainer.innerHTML = '';
+        if (properties.length === 0) {
+            resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile con il tuo profilo e le tue preferenze.<br>Prova a modificare la ricerca!</p>';
+            return;
+        }
+        properties.forEach(p => {
+            if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
+            const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+            const postiTotali = parseInt(p.MaxPartecipanti);
+            const postiRimasti = postiTotali - prenotati;
+            let buttonHtml;
+            if (postiRimasti > 0) {
+                buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista il Tuo Ticket (${postiRimasti} rimasti)</button>`;
+            } else {
+                buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+            }
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'property-card';
+            cardDiv.innerHTML = `
+                <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
+                <div class="property-card-info">
+                    <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                    <h3>${p.Titolo}</h3>
+                    <div class="price">${p.Prezzo} €/mese</div>
+                    <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+                    ${buttonHtml}
+                </div>`;
+            resultsContainer.appendChild(cardDiv);
+        });
+        document.querySelectorAll('.cta-button[data-link]').forEach(button => {
+            button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
+        });
+    }
+
+    function openPaymentModal(stripeLink) {
+        const modal = document.getElementById('payment-modal');
+        document.getElementById('payment-button').href = stripeLink;
+        modal.classList.add('visible');
+        document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
+        modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
+    }
+
+    async function main() {
+        try {
+            const [propsRes, reqsRes, candsRes] = await Promise.all([
+                fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
+            ]);
+            if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
+            
+            allProperties = csvToObjects(await propsRes.text());
+            allRequirements = csvToObjects(await reqsRes.text());
+            allCandidates = csvToObjects(await candsRes.text());
+            
+            const params = new URLSearchParams(window.location.search);
+            const userProfile = {
+                tipo: (params.get('tipo') || '').toLowerCase().trim(),
+                zona: (params.get('zona') || '').toLowerCase().trim(),
+                prezzo: parseInt(params.get('prezzo')) || Infinity,
+                situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+                animali: (params.get('animali') || '').toLowerCase().trim()
+            };
+
+            const preFilteredProperties = allProperties.filter(p => {
+                const prezzoImmobile = parseInt(p.Prezzo);
+                return (p.Stato || '').toLowerCase().trim() === 'disponibile' &&
+                       (userProfile.tipo === '' || (p.Tipo || '').toLowerCase().trim() === userProfile.tipo) &&
+                       (userProfile.zona === '' || (p.Zona || '').toLowerCase().trim() === userProfile.zona) &&
+                       !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
+            });
+
+            // --- LOGICA DI FILTRAGGIO CORRETTA ---
+            const finalProperties = preFilteredProperties.filter(p => {
+                // Prendi tutti i requisiti specifici per questo immobile
+                const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
+                
+                // Se non ci sono requisiti, l'immobile è compatibile
+                if (propertyRequirements.length === 0) {
+                    return true;
+                }
+                
+                // 'every' controlla che TUTTE le condizioni siano vere
+                return propertyRequirements.every(req => {
+                    const requirementKey = (req.Requisito || '').trim(); // Es. 'situazione_lavorativa'
+                    const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim(); // Es. 'dipendente a tempo indeterminato'
+                    const userValue = userProfile[requirementKey]; // Es. il valore che l'utente ha scelto nel form
+                    
+                    // Se l'utente non ha specificato un valore per questo filtro, non è compatibile
+                    // (a meno che non abbia scelto "Qualsiasi", che qui è rappresentato da una stringa vuota)
+                    if (userValue === '' || userValue === undefined) {
+                        return false; // L'utente non ha specificato un profilo, quindi non può matchare un requisito specifico
                     }
-                    objects.push(obj);
-                }
-            }
-            return objects;
-        }
 
-        function displayResults(properties) {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '';
-            if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare i filtri!</p>';
-                return;
-            }
-            properties.forEach(p => {
-                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
-                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-                const postiTotali = parseInt(p.MaxPartecipanti);
-                const postiRimasti = postiTotali - prenotati;
-                let buttonHtml;
-                if (postiRimasti > 0) {
-                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista il Tuo Ticket (${postiRimasti} rimasti)</button>`;
-                } else {
-                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
-                }
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'property-card';
-                cardDiv.innerHTML = `
-                    <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
-                    <div class="property-card-info">
-                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                        <h3>${p.Titolo}</h3>
-                        <div class="price">${p.Prezzo} €/mese</div>
-                        <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
-                        ${buttonHtml}
-                    </div>`;
-                resultsContainer.appendChild(cardDiv);
-            });
-            document.querySelectorAll('.cta-button[data-link]').forEach(button => {
-                button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
-            });
-        }
-
-        function openPaymentModal(stripeLink) {
-            const modal = document.getElementById('payment-modal');
-            document.getElementById('payment-button').href = stripeLink;
-            modal.classList.add('visible');
-            document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
-            modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
-        }
-
-        async function main() {
-            try {
-                const [propsRes, reqsRes, candsRes] = await Promise.all([
-                    fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
-                ]);
-                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
-                
-                allProperties = csvToObjects(await propsRes.text());
-                allRequirements = csvToObjects(await reqsRes.text());
-                allCandidates = csvToObjects(await candsRes.text());
-                
-                const params = new URLSearchParams(window.location.search);
-                const userProfile = {
-                    tipo: (params.get('tipo') || '').toLowerCase().trim(),
-                    zona: (params.get('zona') || '').toLowerCase().trim(),
-                    prezzo: parseInt(params.get('prezzo')) || Infinity,
-                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
-                    animali: (params.get('animali') || '').toLowerCase().trim()
-                };
-
-                const preFilteredProperties = allProperties.filter(p => {
-                    const prezzoImmobile = parseInt(p.Prezzo);
-                    return (p.Stato || '').toLowerCase().trim() === 'disponibile' &&
-                           (userProfile.tipo === '' || (p.Tipo || '').toLowerCase().trim() === userProfile.tipo) &&
-                           (userProfile.zona === '' || (p.Zona || '').toLowerCase().trim() === userProfile.zona) &&
-                           !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
+                    // Il profilo dell'utente deve essere uguale al valore richiesto dal proprietario
+                    return userValue === requiredValue;
                 });
+            });
 
-                const finalProperties = preFilteredProperties.filter(p => {
-                    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
-                    if (propertyRequirements.length === 0) return true;
-                    return propertyRequirements.every(req => {
-                        const requirementKey = (req.Requisito || '').trim();
-                        const userValue = userProfile[requirementKey];
-                        const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
-                        if (userValue === undefined) return true;
-                        return userValue === requiredValue;
-                    });
-                });
+            displayResults(finalProperties);
 
-                displayResults(finalProperties);
-            } catch (error) {
-                console.error("ERRORE CRITICO:", error);
-                document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore. Assicurati che i link ai database siano corretti e riprova.</p>`;
-            }
+        } catch (error) {
+            console.error("ERRORE CRITICO:", error);
+            document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore. Assicurati che i link ai database siano corretti e riprova.</p>`;
         }
-        
-        document.addEventListener('DOMContentLoaded', main);
-    </script>
+    }
+    
+    document.addEventListener('DOMContentLoaded', main);
+</script>
 </body>
 </html>
 
