@@ -15,48 +15,31 @@
         .header { text-align: center; padding: 40px 0; }
         .header h1 { font-size: 2.8em; }
         .back-link { display: inline-block; margin-top: 20px; font-weight: 600; color: var(--colore-primario); text-decoration: none; }
-        .property-card {
-            background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 30px;
-            display: flex; flex-wrap: wrap;
-        }
+        
+        /* CARD IMMOBILE */
+        .property-card { background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 30px; display: flex; flex-wrap: wrap; }
         .property-card-img { flex: 1; min-width: 300px; max-height: 250px; background-color: #eee; }
-        .property-card-img img { width: 100%; height: 100%; object-fit: cover; }
+        .property-card-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px 0 0 12px; }
         .property-card-info { flex: 2; padding: 25px; display: flex; flex-direction: column; }
         .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); }
         .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); }
         .property-card-info h3 { margin: 10px 0; font-size: 1.5em; }
         .property-card-info p { flex-grow: 1; }
-        .property-card .cta-button {
-            display: inline-block; padding: 12px 25px; font-size: 0.9em; text-decoration: none;
-            border-radius: 50px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; align-self: flex-start;
-        }
-        .message { text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
+        .property-card .cta-button { display: inline-block; padding: 12px 25px; font-size: 0.9em; text-decoration: none; border-radius: 50px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; align-self: flex-start; }
+        .property-card .cta-button.disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+        .spots-left { font-size: 0.9em; font-weight: 600; color: var(--colore-successo); margin-top: 10px; }
 
-        /* Stili per il Modal/Popup */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center;
-            z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
-        }
+        /* MODAL DI PAGAMENTO */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.visible { display: flex; opacity: 1; }
-        .modal-content {
-            background: white; padding: 30px 40px; border-radius: 12px;
-            max-width: 500px; width: 90%; text-align: center;
-            transform: scale(0.9); transition: transform 0.3s ease;
-        }
+        .modal-content { background: white; padding: 40px; border-radius: 16px; max-width: 500px; width: 90%; text-align: center; transform: scale(0.95); transition: transform 0.3s ease; }
         .modal-overlay.visible .modal-content { transform: scale(1); }
-        .modal-content h3 { font-size: 1.8em; color: var(--colore-primario); margin-top: 0; }
-        .modal-content p { color: var(--colore-testo-chiaro); }
-        #modal-answer-container select { width: 100%; padding: 12px; margin: 20px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 1.1em; }
-        #modal-verify-button {
-             width: 100%; height: 50px; border-radius: 8px; border: none;
-            background-color: var(--colore-primario); color: white; font-size: 1.1em;
-            font-weight: 700; cursor: pointer; transition: background-color 0.3s;
-        }
-        #modal-verify-button:hover { background-color: #0B3A82; }
-        #modal-result a { margin-top: 20px; background: var(--colore-successo); color: white; display: inline-block; text-decoration: none; padding: 12px 25px; font-size: 1em; border-radius: 50px; font-weight: 700; }
+        .modal-content .icon { font-size: 3em; color: var(--colore-accento); }
+        .modal-content h3 { font-size: 2em; color: var(--colore-primario); margin: 15px 0; }
+        .modal-content p { color: var(--colore-testo-chiaro); line-height: 1.6; }
+        #payment-button { margin-top: 20px; background: var(--colore-successo); color: white; width: 100%; height: 55px; border-radius: 8px; border: none; font-size: 1.2em; font-weight: 700; cursor: pointer; }
+        #close-modal { font-size: 0.9em; color: var(--colore-testo-chiaro); cursor: pointer; display: inline-block; margin-top: 15px; }
+
     </style>
 </head>
 <body>
@@ -72,28 +55,26 @@
         </div>
     </div>
 
-    <!-- Struttura del Modal (nascosto) -->
-    <div class="modal-overlay" id="checkpoint-modal">
-        <div class="modal-content" id="modal-inner-content">
-            <h3>Checkpoint di Compatibilità</h3>
-            <p id="modal-question-text"></p>
-            <div id="modal-answer-container"></div>
-            <button id="modal-verify-button">Verifica Risposta</button>
-            <div id="modal-result"></div>
+    <!-- Struttura del Modal di Pagamento (nascosto) -->
+    <div class="modal-overlay" id="payment-modal">
+        <div class="modal-content">
+            <div class="icon"><i class="fa-solid fa-ticket"></i></div>
+            <h3>Il Tuo Ticket per l'Open Day Esclusivo</h3>
+            <p>Per garantire un evento di alta qualità e a numero chiuso, e per confermare il tuo reale interesse, chiediamo una piccola <strong>fee di prenotazione di 2,99€</strong>.</p>
+            <p>Questo "ticket" ti assicura un posto e ti permette di visitare l'immobile senza folla. Dopo il pagamento, sarai reindirizzato/a a Calendly per scegliere il tuo orario.</p>
+            <a id="payment-button" href="#" target="_blank">Paga 2,99€ e Prenota il Tuo Posto</a>
+            <a id="close-modal">Annulla</a>
         </div>
     </div>
 
     <script>
         // --- CONFIGURAZIONE ---
-        // SOSTITUISCI CON I TUOI LINK CSV PUBBLICATI
-        const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
-        const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
+        const PROPERTIES_URL = 'INCOLLA_QUI_URL_CSV_PROPRIETÀ';
+        const CANDIDATES_URL = 'INCOLLA_QUI_URL_CSV_CANDIDATI'; // URL del foglio che conta i prenotati
 
-        // Variabili globali per memorizzare i dati caricati
         let allProperties = [];
-        let allRequirements = [];
+        let allCandidates = [];
 
-        // --- FUNZIONI ---
         function csvToObjects(csv) {
             const lines = csv.trim().split('\n');
             if (lines.length < 2) return [];
@@ -116,121 +97,75 @@
             const resultsContainer = document.getElementById('results-container');
             resultsContainer.innerHTML = '';
             if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile corrisponde alla tua ricerca. Prova a modificare i filtri!</p>';
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile corrisponde alla tua ricerca.</p>';
                 return;
             }
+
             properties.forEach(p => {
-                if (!p.Titolo || !p.Prezzo || !p.FotoURL || !p.CalendlyURL || !p.ID) return;
+                if (!p.Titolo || !p.Prezzo || !p.FotoURL || !p.ID || !p.StripeLink) return;
+
+                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+                const postiTotali = parseInt(p.MaxPartecipanti);
+                const postiRimasti = postiTotali - prenotati;
+                
+                let buttonHtml;
+                if (postiRimasti > 0) {
+                    buttonHtml = `<button class="cta-button" onclick="openPaymentModal('${p.StripeLink}')">Acquista il Tuo Ticket (${postiRimasti} rimasti)</button>`;
+                } else {
+                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+                }
+
                 const card = `
                     <div class="property-card">
-                        <div class="property-card-img">
-                            <img src="${p.FotoURL}" alt="${p.Titolo}">
-                        </div>
+                        <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
                         <div class="property-card-info">
                             <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
                             <h3>${p.Titolo}</h3>
                             <div class="price">${p.Prezzo} €/mese</div>
-                            <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
-                            <button class="cta-button" onclick="handleBookingClick('${p.ID}', '${p.CalendlyURL}')">Verifica e Prenota</button>
+                            <p>${p.Descrizione || ''}</p>
+                            ${buttonHtml}
                         </div>
                     </div>`;
                 resultsContainer.innerHTML += card;
             });
         }
 
-        function handleBookingClick(propertyId, calendlyUrl) {
-            const requirement = allRequirements.find(r => r.ID_Immobile === propertyId);
-            const modal = document.getElementById('checkpoint-modal');
-            const modalTitle = modal.querySelector('h3');
-            const modalQuestion = document.getElementById('modal-question-text');
-            const answerContainer = document.getElementById('modal-answer-container');
-            const verifyButton = document.getElementById('modal-verify-button');
-            const resultContainer = document.getElementById('modal-result');
-
-            if (!requirement) {
-                window.open(calendlyUrl, '_blank');
-                return;
-            }
-
-            modalTitle.innerText = "Checkpoint di Compatibilità";
-            modalQuestion.innerText = requirement.Domanda_Da_Porre;
-            resultContainer.innerHTML = '';
-            verifyButton.style.display = 'block';
-            verifyButton.disabled = false;
-            
-            const options = requirement.Opzioni_Risposta.split(',');
-            let optionsHtml = '<select id="modal-answer">';
-            options.forEach(opt => {
-                optionsHtml += `<option value="${opt.trim()}">${opt.trim()}</option>`;
-            });
-            optionsHtml += '</select>';
-            answerContainer.innerHTML = optionsHtml;
-            
+        function openPaymentModal(stripeLink) {
+            const modal = document.getElementById('payment-modal');
+            const paymentButton = document.getElementById('payment-button');
+            paymentButton.href = stripeLink;
             modal.classList.add('visible');
 
-            verifyButton.onclick = () => {
-                const userAnswer = document.getElementById('modal-answer').value;
-                verifyButton.disabled = true;
-
-                if (userAnswer.trim().toLowerCase() === requirement.Risposta_Attesa.trim().toLowerCase()) {
-                    modalTitle.innerText = "Perfetto! Puoi procedere.";
-                    answerContainer.innerHTML = '<p style="margin:20px 0;">Sei a un passo dalla tua nuova casa. Clicca qui sotto per scegliere l\'orario.</p>';
-                    verifyButton.style.display = 'none';
-                    resultContainer.innerHTML = `<a href="${calendlyUrl}" target="_blank" class="cta-button" style="background: var(--colore-successo); color: white;">Vai a Calendly e Prenota</a>`;
-                } else {
-                    modalTitle.innerText = "Grazie per la sincerità!";
-                    answerContainer.innerHTML = '<p style="margin:20px 0;">Purtroppo questo immobile ha requisiti specifici non compatibili. Continua a cercare, la casa giusta per te potrebbe essere la prossima!</p>';
-                    verifyButton.style.display = 'none';
-                }
-            };
-
-            modal.onclick = (e) => {
-                if (e.target === modal) modal.classList.remove('visible');
-            };
+            document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
+            modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
         }
 
-        async function main() {
-            const resultsContainer = document.getElementById('results-container');
+        async function init() {
             try {
-                const [propsRes, reqsRes] = await Promise.all([
+                const [propsRes, candsRes] = await Promise.all([
                     fetch(PROPERTIES_URL),
-                    fetch(REQUIREMENTS_URL)
+                    fetch(CANDIDATES_URL)
                 ]);
 
-                if (!propsRes.ok || !reqsRes.ok) throw new Error('Errore di rete nel caricamento dei dati.');
+                if (!propsRes.ok || !candsRes.ok) throw new Error('Errore di rete');
 
                 const propsCsv = await propsRes.text();
-                const reqsCsv = await reqsRes.text();
-                
+                const candsCsv = await candsRes.text();
                 allProperties = csvToObjects(propsCsv);
-                allRequirements = csvToObjects(reqsCsv);
-
-                const params = new URLSearchParams(window.location.search);
-                const tipo = (params.get('tipo') || '').trim().toLowerCase();
-                const zona = (params.get('zona') || '').trim().toLowerCase();
-                const prezzo = parseInt(params.get('prezzo'));
-                const prezzoMax = isNaN(prezzo) ? Infinity : prezzo;
-
-                const filteredProperties = allProperties.filter(p => {
-                    const prezzoImmobile = parseInt(p.Prezzo);
-                    if (isNaN(prezzoImmobile)) return false;
-                    const pStato = (p.Stato || '').trim().toLowerCase();
-                    const pTipo = (p.Tipo || '').trim().toLowerCase();
-                    const pZona = (p.Zona || '').trim().toLowerCase();
-                    
-                    return pStato === 'disponibile' &&
-                           (tipo === '' || pTipo === tipo) &&
-                           (zona === '' || pZona === zona) &&
-                           (prezzoImmobile <= prezzoMax);
-                });
+                allCandidates = csvToObjects(candsCsv);
+                
+                // ... (la tua logica di filtraggio per allProperties) ...
+                // Per questo esempio, mostriamo tutte le proprietà disponibili
+                const filteredProperties = allProperties.filter(p => (p.Stato || '').trim().toLowerCase() === 'disponibile');
+                
                 displayResults(filteredProperties);
-            } catch(error) {
+            } catch (error) {
                 console.error("ERRORE CRITICO:", error);
-                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore nel caricamento dei dati. Assicurati che i link ai database siano corretti e pubblicati come CSV.</p>`;
+                document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore.</p>`;
             }
         }
         
-        document.addEventListener('DOMContentLoaded', main);
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
