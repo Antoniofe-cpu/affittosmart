@@ -83,28 +83,25 @@
         </div>
     </div>
 
-    <script>
+     <script>
         // --- CONFIGURAZIONE ---
-        // SOSTITUISCI CON I TUOI LINK CSV PUBBLICATI DAI FOGLI GOOGLE
-        const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
-        const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
-        const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+        const PROPERTIES_URL = 'INCOLLA_QUI_URL_CSV_PROPRIETÀ';
+        const REQUIREMENTS_URL = 'INCOLLA_QUI_URL_CSV_REQUISITI';
+        const CANDIDATES_URL = 'INCOLLA_QUI_URL_CSV_CANDIDATI';
 
-        let allProperties = [];
-        let allRequirements = [];
-        let allCandidates = [];
+        let allProperties = [], allRequirements = [], allCandidates = [];
 
         function csvToObjects(csv) {
             const lines = csv.trim().split('\n');
             if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').replace(/\r/g, ''));
+            const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
             const objects = [];
             for (let i = 1; i < lines.length; i++) {
                 if (lines[i]) {
                     const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     const obj = {};
                     for (let j = 0; j < headers.length; j++) {
-                        obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim().replace(/\r/g, '') : '';
+                        obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
                     }
                     objects.push(obj);
                 }
@@ -116,27 +113,20 @@
             const resultsContainer = document.getElementById('results-container');
             resultsContainer.innerHTML = '';
             if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile con il tuo profilo e le tue preferenze.<br>Prova a modificare la ricerca!</p>';
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare i filtri!</p>';
                 return;
             }
-
             properties.forEach(p => {
-                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) {
-                    console.warn(`Immobile con ID ${p.ID} scartato per dati mancanti nel foglio Proprietà.`);
-                    return;
-                }
-
+                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
                 const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
                 const postiTotali = parseInt(p.MaxPartecipanti);
                 const postiRimasti = postiTotali - prenotati;
-                
                 let buttonHtml;
                 if (postiRimasti > 0) {
-                    buttonHtml = `<button class="cta-button" data-id="${p.ID}" data-link="${p.StripeLink}">Acquista il Tuo Ticket (${postiRimasti} rimasti)</button>`;
+                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista il Tuo Ticket (${postiRimasti} rimasti)</button>`;
                 } else {
                     buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
                 }
-
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'property-card';
                 cardDiv.innerHTML = `
@@ -145,92 +135,68 @@
                         <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
                         <h3>${p.Titolo}</h3>
                         <div class="price">${p.Prezzo} €/mese</div>
-                        <p>${p.Descrizione || 'Nessuna descrizione per questo immobile.'}</p>
+                        <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
                         ${buttonHtml}
                     </div>`;
-                
                 resultsContainer.appendChild(cardDiv);
             });
-
-            document.querySelectorAll('.cta-button[data-id]').forEach(button => {
-                button.addEventListener('click', function() {
-                    openPaymentModal(this.dataset.link);
-                });
+            document.querySelectorAll('.cta-button[data-link]').forEach(button => {
+                button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
             });
         }
 
         function openPaymentModal(stripeLink) {
             const modal = document.getElementById('payment-modal');
-            const paymentButton = document.getElementById('payment-button');
-            paymentButton.href = stripeLink;
+            document.getElementById('payment-button').href = stripeLink;
             modal.classList.add('visible');
-
             document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.remove('visible');
-            }, { once: true });
+            modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
         }
 
         async function main() {
-            const resultsContainer = document.getElementById('results-container');
             try {
                 const [propsRes, reqsRes, candsRes] = await Promise.all([
-                    fetch(PROPERTIES_URL),
-                    fetch(REQUIREMENTS_URL),
-                    fetch(CANDIDATES_URL)
+                    fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
                 ]);
-
-                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Errore di rete.');
-
-                const propsCsv = await propsRes.text();
-                const reqsCsv = await reqsRes.text();
-                const candsCsv = await candsRes.text();
+                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
                 
-                allProperties = csvToObjects(propsCsv);
-                allRequirements = csvToObjects(reqsCsv);
-                allCandidates = csvToObjects(candsCsv);
+                allProperties = csvToObjects(await propsRes.text());
+                allRequirements = csvToObjects(await reqsRes.text());
+                allCandidates = csvToObjects(await candsRes.text());
                 
                 const params = new URLSearchParams(window.location.search);
                 const userProfile = {
-                    tipo: (params.get('tipo') || '').trim().toLowerCase(),
-                    zona: (params.get('zona') || '').trim().toLowerCase(),
+                    tipo: (params.get('tipo') || '').toLowerCase().trim(),
+                    zona: (params.get('zona') || '').toLowerCase().trim(),
                     prezzo: parseInt(params.get('prezzo')) || Infinity,
-                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').trim().toLowerCase(),
-                    animali: (params.get('animali') || '').trim().toLowerCase()
+                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+                    animali: (params.get('animali') || '').toLowerCase().trim()
                 };
-                
+
                 const preFilteredProperties = allProperties.filter(p => {
                     const prezzoImmobile = parseInt(p.Prezzo);
-                    if (isNaN(prezzoImmobile)) return false;
-                    return (p.Stato || '').trim().toLowerCase() === 'disponibile' &&
-                        (userProfile.tipo === '' || (p.Tipo || '').trim().toLowerCase() === userProfile.tipo) &&
-                        (userProfile.zona === '' || (p.Zona || '').trim().toLowerCase() === userProfile.zona) &&
-                        (prezzoImmobile <= userProfile.prezzo);
+                    return (p.Stato || '').toLowerCase().trim() === 'disponibile' &&
+                           (userProfile.tipo === '' || (p.Tipo || '').toLowerCase().trim() === userProfile.tipo) &&
+                           (userProfile.zona === '' || (p.Zona || '').toLowerCase().trim() === userProfile.zona) &&
+                           !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
                 });
 
                 const finalProperties = preFilteredProperties.filter(p => {
                     const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
                     if (propertyRequirements.length === 0) return true;
-                    
                     return propertyRequirements.every(req => {
-                        const requirementKey = (req.Requisito || '').trim().toLowerCase();
+                        const requirementKey = (req.Requisito || '').trim();
                         const userValue = userProfile[requirementKey];
-                        const requiredValue = (req.Valore_Richiesto || '').trim().toLowerCase();
-                        
-                        if (userValue === undefined) {
-                            console.warn(`Il requisito '${req.Requisito}' del foglio Requisiti non corrisponde a nessun filtro del form. Verrà ignorato.`);
-                            return true;
-                        }
-                        
+                        const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
+                        if (userValue === undefined) return true;
                         return userValue === requiredValue;
                     });
                 });
 
                 displayResults(finalProperties);
-
             } catch (error) {
                 console.error("ERRORE CRITICO:", error);
-                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che i link ai database siano corretti e pubblicati come CSV.</p>`;
+                document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore. Assicurati che i link ai database siano corretti e riprova.</p>`;
             }
         }
         
@@ -238,3 +204,4 @@
     </script>
 </body>
 </html>
+
