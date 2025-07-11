@@ -27,22 +27,15 @@
         .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
         .text-center { text-align: center; }
         
-        /* LAYOUT SEZIONI */
-        .section { padding: 100px 0; }
-        .section-white { background-color: var(--colore-bianco); }
-        .section-light { background-color: var(--colore-sfondo-pagina); }
-        .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); }
-        
-        .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; }
-        .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; }
-        
+        /* HEADER */
         .header { padding: 25px 0; text-align: center; background: white; border-bottom: 1px solid #eee;}
         .logo { font-size: 2.5em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
         .logo span { font-weight: 400; color: var(--colore-secondario); }
 
         /* HERO & SEARCH FORM */
-        .hero-search { padding: 60px 0 80px 0; background: var(--colore-bianco); }
-        .hero-search h1 { line-height: 1.2; }
+        .hero-search { padding: 60px 0 80px 0; background: white; }
+        .hero-search h1 { font-size: 3.5em; color: var(--colore-primario); line-height: 1.2; margin-bottom: 15px; }
+        .hero-search .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 50px auto; }
         
         .unified-form {
             background: var(--colore-bianco); padding: 40px; border-radius: 24px;
@@ -64,11 +57,30 @@
         }
         #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,160,0,0.3); }
 
+        /* NUOVA SEZIONE IMMAGINE DIVISORIA */
+        #image-divider {
+            padding: 120px 0;
+            background-image: linear-gradient(rgba(13, 71, 161, 0.7), rgba(13, 71, 161, 0.7)), url('https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200');
+            background-attachment: fixed; /* Effetto Parallax */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            color: white;
+            text-align: center;
+        }
+        #image-divider h2 {
+            font-size: 2.5em;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            margin: 0;
+        }
+
         /* WHY US / EXPLANATION SECTION */
+        .why-us { padding: 100px 0; }
+        .why-us .section-title { font-size: 2.8em; }
         .process-grid { display: flex; justify-content: center; text-align: center; margin-top: 60px; flex-wrap: wrap; gap: 30px;}
         .process-step { 
-            flex: 1 1 280px; /* MODIFICA: Regola flexbox per un allineamento migliore */
-            padding: 30px; background: white; border-radius: 16px; 
+            flex: 1 1 280px; padding: 30px; background: white; border-radius: 16px; 
             box-shadow: 0 8px 30px rgba(0,0,0,0.07);
             border-bottom: 5px solid var(--colore-accento);
             transition: transform 0.3s ease;
@@ -77,29 +89,16 @@
         .process-step .icon { font-size: 3.5em; color: var(--colore-primario); margin-bottom: 20px; line-height: 1; }
         .process-step h3 { font-size: 1.4em; color: var(--colore-primario); }
 
-        /* SEZIONE VISUAL */
-        .visual-process { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
-        .visual-process img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .visual-process h3 { font-size: 2em; }
-        
-        /* FAQ SECTION */
-        #faq .section-title { color: var(--colore-bianco); }
-        #faq .section-subtitle { color: rgba(255,255,255,0.8); }
-        .faq-item { margin-bottom: 15px; border-radius: 12px; background: rgba(255,255,255,0.1); overflow: hidden; }
-        .faq-container { margin-bottom: 40px; /* Aggiunge spazio dopo l'ultima domanda */}
-        .faq-question { width: 100%; background: transparent; border: none; padding: 20px; font-size: 1.2em; font-weight: 600; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--colore-bianco); }
-        .faq-answer { color: rgba(255,255,255,0.9); padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
-        .faq-item.active .faq-answer { max-height: 200px; padding: 0 20px 20px 20px; }
-
         /* FOOTER */
         .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 40px 0; text-align: center; font-size: 0.9em; }
         .main-footer a { color: white; }
 
         @media (max-width: 950px) {
-            .process-step { flex-basis: 100%; } /* Le card vanno una sotto l'altra su schermi più piccoli */
+            .process-step { flex-basis: 100%; }
         }
         @media (max-width: 768px) { 
             .hero-search h1 { font-size: 2.5em; }
+            #image-divider h2 { font-size: 2em; }
             .visual-process { grid-template-columns: 1fr; }
         }
     </style>
@@ -115,29 +114,33 @@
                 <h1 class="section-title">La casa giusta, senza compromessi.</h1>
                 <p class="section-subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
                 
-                <form id="unified-search-form" class="unified-form">
-                    <!-- Sezione 1: Le Tue Preferenze -->
-                    <div class="form-section">
-                        <h2><i class="fa-solid fa-map-location-dot icon"></i>Cosa cerchi?</h2>
-                        <div class="filter-grid">
-                            <div class="filter-group"><label for="tipo">Tipo di Immobile</label><select name="tipo"><option value="">Qualsiasi</option><option>Stanza Singola</option><option>Monolocale</option><option>Bilocale</option></select></div>
-                            <div class="filter-group"><label for="zona">Zona</label><select name="zona"><option value="">Qualsiasi</option><option>Centro Storico</option><option>Murri</option></select></div>
-                            <div class="filter-group"><label for="prezzo">Budget Max (€)</label><input type="number" name="prezzo" placeholder="Es. 900"></div>
+                <form id="unified-search-form">
+                    <div class="unified-form">
+                        <div class="form-section">
+                            <h2><i class="fa-solid fa-map-location-dot icon"></i>Cosa cerchi?</h2>
+                            <div class="filter-grid">
+                                <div class="filter-group"><label>Tipo di Immobile</label><select name="tipo"><option value="">Qualsiasi</option><option>Stanza Singola</option><option>Monolocale</option><option>Bilocale</option></select></div>
+                                <div class="filter-group"><label>Zona</label><select name="zona"><option value="">Qualsiasi</option><option>Centro Storico</option><option>Murri</option></select></div>
+                                <div class="filter-group"><label>Budget Max (€)</label><input type="number" name="prezzo" placeholder="Es. 900"></div>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Sezione 2: Il Tuo Profilo -->
-                    <div class="form-section">
-                        <h2><i class="fa-solid fa-user-check icon"></i>Chi sei? (Priorità dei Proprietari)</h2>
-                        <div class="filter-grid">
-                            <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa" required><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option></select></div>
-                            <div class="filter-group"><label>Possiedi animali?</label><select name="animali" required><option value="" disabled selected>Seleziona...</option><option>Sì</option><option>No</option></select></div>
+                        <div class="form-section">
+                            <h2><i class="fa-solid fa-user-check icon"></i>Chi sei? (Priorità dei Proprietari)</h2>
+                            <div class="filter-grid">
+                                <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa" required><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option></select></div>
+                                <div class="filter-group"><label>Possiedi animali?</label><select name="animali" required><option value="" disabled selected>Seleziona...</option><option>Sì</option><option>No</option></select></div>
+                            </div>
                         </div>
+                        <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                     </div>
-
-                    <!-- MODIFICA: Pulsante ora dentro il form -->
-                    <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                 </form>
+            </div>
+        </section>
+
+        <!-- NUOVA SEZIONE IMMAGINE DIVISORIA -->
+        <section id="image-divider">
+            <div class="container">
+                <h2>Il tuo prossimo capitolo inizia qui.</h2>
             </div>
         </section>
 
@@ -152,15 +155,15 @@
                         <p>Il sistema incrocia i tuoi dati con le richieste dei proprietari e ti mostra solo gli immobili per cui sei 100% compatibile. Zero perdite di tempo.</p>
                     </div>
                     <div class="process-step">
-    <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div>
-    <h3>Passo 2: Il Tuo Posto Riservato</h3>
-    <p>Per le opportunità compatibili, potrai assicurarti la partecipazione all'evento con una piccola fee di prenotazione di <strong>2,99€</strong>. Questo garantisce un Open Day a numero chiuso con solo persone realmente interessate.</p>
-</div>
+                        <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div>
+                        <h3>Passo 2: Il Tuo Posto Riservato</h3>
+                        <p>Per le case idonee, potrai assicurarti la partecipazione con una piccola fee di <strong>2,99€</strong>, garantendo un Open Day a numero chiuso con solo persone realmente interessate.</p>
+                    </div>
                     <div class="process-step">
-    <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
-    <h3>Passo 3: L'Esperienza Open Day</h3>
-    <p>Non una semplice visita, ma un incontro di qualità. Avrai tutto il tempo per esplorare la casa, fare domande specifiche e, soprattutto, per presentarti al meglio. È qui che la tua candidatura prende vita e puoi davvero distinguerti.</p>
-</div>
+                        <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
+                        <h3>Passo 3: L'Esperienza Open Day</h3>
+                        <p>Non una semplice visita, ma un incontro di qualità. Avrai tutto il tempo per esplorare la casa, fare domande e, soprattutto, per presentarti al meglio.</p>
+                    </div>
                 </div>
             </div>
         </section>
