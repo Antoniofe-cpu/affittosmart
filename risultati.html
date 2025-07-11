@@ -59,25 +59,28 @@
 
     // Funzione per convertire il testo CSV in un array di oggetti JavaScript
     function csvToObjects(csv) {
-        // Separa il testo in righe, ignorando le righe vuote alla fine
-        const lines = csv.trim().split('\n');
-        if (lines.length < 2) return []; // Se non c'è almeno un'intestazione e una riga di dati, esci
+    const lines = csv.trim().split('\n');
+    if (lines.length < 2) return [];
 
-        const headers = lines[0].split(',').map(h => h.trim());
-        const objects = [];
-        for (let i = 1; i < lines.length; i++) {
-            if (lines[i]) {
-                const values = lines[i].split(',');
-                const obj = {};
-                for (let j = 0; j < headers.length; j++) {
-                    // Pulisce ogni valore da eventuali doppi apici che Google Sheets aggiunge
-                    obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
-                }
-                objects.push(obj);
+    // Rimuove eventuali caratteri di ritorno a capo (\r) e pulisce le intestazioni
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    
+    const objects = [];
+    for (let i = 1; i < lines.length; i++) {
+        if (lines[i]) {
+            // Usa una regex più potente per splittare, gestendo le virgole dentro le virgolette
+            const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            
+            const obj = {};
+            for (let j = 0; j < headers.length; j++) {
+                // Pulisce ogni valore
+                obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
             }
+            objects.push(obj);
         }
-        return objects;
     }
+    return objects;
+}
 
     // Funzione per mostrare le card delle proprietà nel contenitore
     function displayResults(properties) {
@@ -112,50 +115,54 @@
     }
 
     // Funzione principale che carica i dati e li filtra
-    async function loadAndFilterProperties() {
-    console.log("1. Funzione loadAndFilterProperties avviata.");
+   async function loadAndFilterProperties() {
+    console.log("1. Funzione avviata.");
     const resultsContainer = document.getElementById('results-container');
     try {
         const params = new URLSearchParams(window.location.search);
-        // Pulisce e normalizza i filtri dall'URL
-        const tipo = params.get('tipo') ? params.get('tipo').trim().toLowerCase() : '';
-        const zona = params.get('zona') ? params.get('zona').trim().toLowerCase() : '';
+        const tipo = (params.get('tipo') || '').trim().toLowerCase();
+        const zona = (params.get('zona') || '').trim().toLowerCase();
         const prezzo = parseInt(params.get('prezzo'));
         const prezzoMax = isNaN(prezzo) ? Infinity : prezzo;
-        console.log(`2. Filtri letti e normalizzati: tipo=${tipo}, zona=${zona}, prezzoMax=${prezzoMax}`);
+        console.log(`2. Filtri: tipo=${tipo}, zona=${zona}, prezzoMax=${prezzoMax}`);
 
         const response = await fetch(GOOGLE_SHEET_URL);
         if (!response.ok) { throw new Error(`Errore di rete: ${response.statusText}`); }
         const csvData = await response.text();
-        console.log("3. Dati CSV caricati con successo.");
+        console.log("3. Dati CSV caricati.");
         
         const properties = csvToObjects(csvData);
         console.log(`4. Convertite ${properties.length} proprietà.`);
+        
+        // LOG DI DEBUG: Stampa la prima proprietà per vedere come viene letta
+        if (properties.length > 0) {
+            console.log("DEBUG: Dati della prima proprietà letta:", properties[0]);
+        }
 
-        // Filtra le proprietà con normalizzazione dei dati
         const filteredProperties = properties.filter(p => {
             const prezzoImmobile = parseInt(p.Prezzo);
             if (isNaN(prezzoImmobile)) return false;
 
-            // Normalizza i dati dal foglio di calcolo prima di confrontarli
-            const pTipo = p.Tipo ? p.Tipo.trim().toLowerCase() : '';
-            const pZona = p.Zona ? p.Zona.trim().toLowerCase() : '';
-            const pStato = p.Stato ? p.Stato.trim().toLowerCase() : '';
+            const pStato = (p.Stato || '').trim().toLowerCase();
+            const pTipo = (p.Tipo || '').trim().toLowerCase();
+            const pZona = (p.Zona || '').trim().toLowerCase();
+            
+            // CONFRONTO
+            const statoOk = pStato === 'disponibile';
+            const tipoOk = tipo === '' || pTipo === tipo;
+            const zonaOk = zona === '' || pZona === zona;
+            const prezzoOk = prezzoImmobile <= prezzoMax;
 
-            // Applica i filtri
-            return pStato === 'disponibile' &&
-                   (tipo === '' || pTipo === tipo) &&
-                   (zona === '' || pZona === zona) &&
-                   (prezzoImmobile <= prezzoMax);
+            return statoOk && tipoOk && zonaOk && prezzoOk;
         });
         console.log(`5. Trovate ${filteredProperties.length} proprietà dopo il filtro.`);
 
         displayResults(filteredProperties);
-        console.log("6. Risultati mostrati sulla pagina.");
+        console.log("6. Risultati mostrati.");
 
     } catch (error) {
         console.error('ERRORE CRITICO:', error);
-        resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che l'URL del database sia corretto e pubblicato come CSV.</p>`;
+        resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Riprova.</p>`;
     }
 }
 
