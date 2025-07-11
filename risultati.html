@@ -182,31 +182,36 @@
             });
 
             // --- NUOVA E CORRETTA LOGICA DI FILTRAGGIO ---
-            const finalProperties = preFilteredProperties.filter(p => {
-                // Prendi tutti i requisiti specifici per questo immobile
-                const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
-                
-                // Se questo immobile non ha requisiti specifici, è SEMPRE compatibile.
-                if (propertyRequirements.length === 0) {
-                    return true;
-                }
-                
-                // Altrimenti, controlla se l'utente soddisfa TUTTI i requisiti esistenti.
-                // 'every' ritorna true solo se OGNI condizione al suo interno è vera.
-                return propertyRequirements.every(req => {
-                    const requirementKey = (req.Requisito || '').trim(); // Es. 'situazione_lavorativa'
-                    const userValue = userProfile[requirementKey]; // Il valore che l'utente ha scelto
-                    const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
-                    
-                    // Se l'utente non ha compilato un campo del profilo, non può soddisfare un requisito specifico.
-                    if (!userValue) {
-                        return false;
-                    }
+            // --- LOGICA DI FILTRAGGIO CORRETTA ---
+const finalProperties = preFilteredProperties.filter(p => {
+    // Prendi tutti i requisiti specifici per questo immobile
+    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
+    
+    // Se l'immobile non ha requisiti, è sempre compatibile.
+    if (propertyRequirements.length === 0) {
+        return true; 
+    }
+    
+    // Altrimenti, controlla se il profilo dell'utente soddisfa OGNI singolo requisito.
+    // La funzione .every() ritorna 'true' solo se TUTTE le iterazioni ritornano 'true'.
+    return propertyRequirements.every(req => {
+        const requirementKey = (req.Requisito || '').trim(); // Es. 'situazione_lavorativa'
+        const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim(); // Es. 'dipendente a tempo indeterminato'
+        
+        // Prende il valore corrispondente dal profilo dell'utente.
+        const userValue = userProfile[requirementKey]; // Es. 'studente/ssa con garante'
 
-                    // Il profilo dell'utente deve essere uguale al valore richiesto dal proprietario.
-                    return userValue === requiredValue;
-                });
-            });
+        // CONFRONTO DECISIVO:
+        // Il valore fornito dall'utente deve esistere e deve essere identico a quello richiesto.
+        if (userValue && userValue === requiredValue) {
+            // Se corrisponde, questa regola è soddisfatta.
+            return true;
+        } else {
+            // Se non corrisponde o se l'utente non ha fornito il dato, la regola fallisce.
+            return false;
+        }
+    });
+});
 
             displayResults(finalProperties);
 
