@@ -181,29 +181,29 @@
                        !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
             });
 
-            // --- LOGICA DI FILTRAGGIO CORRETTA ---
+            // --- NUOVA E CORRETTA LOGICA DI FILTRAGGIO ---
             const finalProperties = preFilteredProperties.filter(p => {
                 // Prendi tutti i requisiti specifici per questo immobile
                 const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
                 
-                // Se non ci sono requisiti, l'immobile è compatibile
+                // Se questo immobile non ha requisiti specifici, è SEMPRE compatibile.
                 if (propertyRequirements.length === 0) {
                     return true;
                 }
                 
-                // 'every' controlla che TUTTE le condizioni siano vere
+                // Altrimenti, controlla se l'utente soddisfa TUTTI i requisiti esistenti.
+                // 'every' ritorna true solo se OGNI condizione al suo interno è vera.
                 return propertyRequirements.every(req => {
                     const requirementKey = (req.Requisito || '').trim(); // Es. 'situazione_lavorativa'
-                    const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim(); // Es. 'dipendente a tempo indeterminato'
-                    const userValue = userProfile[requirementKey]; // Es. il valore che l'utente ha scelto nel form
+                    const userValue = userProfile[requirementKey]; // Il valore che l'utente ha scelto
+                    const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
                     
-                    // Se l'utente non ha specificato un valore per questo filtro, non è compatibile
-                    // (a meno che non abbia scelto "Qualsiasi", che qui è rappresentato da una stringa vuota)
-                    if (userValue === '' || userValue === undefined) {
-                        return false; // L'utente non ha specificato un profilo, quindi non può matchare un requisito specifico
+                    // Se l'utente non ha compilato un campo del profilo, non può soddisfare un requisito specifico.
+                    if (!userValue) {
+                        return false;
                     }
 
-                    // Il profilo dell'utente deve essere uguale al valore richiesto dal proprietario
+                    // Il profilo dell'utente deve essere uguale al valore richiesto dal proprietario.
                     return userValue === requiredValue;
                 });
             });
