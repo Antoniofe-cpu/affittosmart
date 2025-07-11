@@ -72,36 +72,45 @@
         }
 
         async function loadAndFilterProperties() {
-            const resultsContainer = document.getElementById('results-container');
-            try {
-                // Leggi i parametri dall'URL
-                const params = new URLSearchParams(window.location.search);
-                const tipo = params.get('tipo') || '';
-                const zona = params.get('zona') || '';
-                const prezzo = parseInt(params.get('prezzo')) || Infinity;
+    const resultsContainer = document.getElementById('results-container');
+    try {
+        // Leggi i parametri dall'URL
+        const params = new URLSearchParams(window.location.search);
+        const tipo = params.get('tipo') || '';
+        const zona = params.get('zona') || '';
+        const prezzo = parseInt(params.get('prezzo')) || Infinity;
+        // Se il prezzo è NaN (es. l'utente non ha scritto nulla), lo impostiamo a Infinito
+        const prezzoMax = isNaN(prezzo) ? Infinity : prezzo;
 
-                // Carica i dati dal Google Sheet
-                const response = await fetch(GOOGLE_SHEET_URL);
-                const csvData = await response.text();
-                const properties = csvToObjects(csvData);
-
-                // Filtra le proprietà
-                const filteredProperties = properties.filter(p => {
-                    return p.Stato === 'Disponibile' &&
-                           (tipo === '' || p.Tipo === tipo) &&
-                           (zona === '' || p.Zona === zona)
-                });
-                
-                let finalProperties = filteredProperties.filter(p => parseInt(p.Prezzo) <= prezzo)
-                
-
-                // Mostra i risultati
-                displayResults(finalProperties);
-            } catch (error) {
-                console.error('Errore:', error);
-                resultsContainer.innerHTML = '<p class="message">Si è verificato un errore nel caricamento dei dati.</p>';
-            }
+        // Carica i dati dal Google Sheet
+        const response = await fetch(GOOGLE_SHEET_URL);
+        if (!response.ok) { // Controlla se la chiamata ha avuto successo
+            throw new Error(`Errore di rete: ${response.statusText}`);
         }
+        const csvData = await response.text();
+        const properties = csvToObjects(csvData);
+
+        // Filtra le proprietà
+        const filteredProperties = properties.filter(p => {
+            const prezzoImmobile = parseInt(p.Prezzo);
+            
+            // Controlla che il prezzo sia un numero valido
+            if (isNaN(prezzoImmobile)) return false;
+
+            // Applica i filtri
+            return p.Stato === 'Disponibile' &&
+                   (tipo === '' || p.Tipo === tipo) &&
+                   (zona === '' || p.Zona === zona) &&
+                   (prezzoImmobile <= prezzoMax);
+        });
+
+        // Mostra i risultati
+        displayResults(filteredProperties);
+    } catch (error) {
+        console.error('Errore nel caricamento o filtraggio:', error);
+        resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che il database sia pubblicato correttamente e riprova.</p>`;
+    }
+}
         
         function displayResults(properties) {
             const resultsContainer = document.getElementById('results-container');
