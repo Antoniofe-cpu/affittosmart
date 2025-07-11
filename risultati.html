@@ -181,37 +181,45 @@
                        !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
             });
 
-            // --- NUOVA E CORRETTA LOGICA DI FILTRAGGIO ---
-            // --- LOGICA DI FILTRAGGIO CORRETTA ---
-const finalProperties = preFilteredProperties.filter(p => {
-    // Prendi tutti i requisiti specifici per questo immobile
-    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
-    
-    // Se l'immobile non ha requisiti, è sempre compatibile.
-    if (propertyRequirements.length === 0) {
-        return true; 
-    }
-    
-    // Altrimenti, controlla se il profilo dell'utente soddisfa OGNI singolo requisito.
-    // La funzione .every() ritorna 'true' solo se TUTTE le iterazioni ritornano 'true'.
-    return propertyRequirements.every(req => {
-        const requirementKey = (req.Requisito || '').trim(); // Es. 'situazione_lavorativa'
-        const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim(); // Es. 'dipendente a tempo indeterminato'
-        
-        // Prende il valore corrispondente dal profilo dell'utente.
-        const userValue = userProfile[requirementKey]; // Es. 'studente/ssa con garante'
+            // --- NUOVA LOGICA DI FILTRAGGIO CON DEBUG DETTAGLIATO ---
+            console.log("--- INIZIO MATCHING AVANZATO ---");
+            console.log("PROFILO UTENTE:", userProfile);
 
-        // CONFRONTO DECISIVO:
-        // Il valore fornito dall'utente deve esistere e deve essere identico a quello richiesto.
-        if (userValue && userValue === requiredValue) {
-            // Se corrisponde, questa regola è soddisfatta.
-            return true;
-        } else {
-            // Se non corrisponde o se l'utente non ha fornito il dato, la regola fallisce.
-            return false;
-        }
-    });
-});
+            const finalProperties = preFilteredProperties.filter(property => {
+                console.log(`\n--- Valutando Immobile ID: ${property.ID} (${property.Titolo}) ---`);
+                
+                // Prendi i requisiti solo per questo immobile
+                const propertyRequirements = allRequirements.filter(req => req.ID_Immobile === property.ID);
+
+                // Se non ci sono requisiti, l'immobile è OK
+                if (propertyRequirements.length === 0) {
+                    console.log("RISULTATO: OK (Nessun requisito specifico per questo immobile).");
+                    return true;
+                }
+
+                // Altrimenti, cicliamo su ogni requisito
+                for (const req of propertyRequirements) {
+                    const requirementKey = (req.Requisito || '').trim(); // Es. 'situazione_lavorativa'
+                    const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim(); // Es. 'dipendente a tempo indeterminato'
+                    const userValue = userProfile[requirementKey];
+
+                    console.log(`CONTROLLO: Requisito '${requirementKey}' | Richiesto: '${requiredValue}' | Utente: '${userValue}'`);
+                    
+                    // Se l'utente non ha fornito un valore per un requisito obbligatorio, o se il valore è diverso,
+                    // l'immobile viene scartato immediatamente.
+                    if (!userValue || userValue !== requiredValue) {
+                        console.log(`RISULTATO: SCARTATO (Requisito '${requirementKey}' non soddisfatto).`);
+                        return false; // Esce dal ciclo e scarta l'immobile
+                    }
+                }
+
+                // Se il ciclo finisce senza mai aver ritornato 'false', significa che tutti i requisiti sono stati superati.
+                console.log("RISULTATO: OK (Tutti i requisiti sono stati soddisfatti).");
+                return true;
+            });
+
+            console.log("--- FINE MATCHING ---");
+            console.log(`Trovate ${finalProperties.length} proprietà finali.`);
 
             displayResults(finalProperties);
 
