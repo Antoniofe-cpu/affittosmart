@@ -4,54 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Risultati della tua Ricerca - Affitto Smart</title>
+    <!-- Collegamenti a Font e Icone -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Incolla qui il CSS dalla versione precedente o linka un file CSS esterno -->
     <style>
+        /* Per favore, copia e incolla qui il blocco <style> completo dalla risposta precedente */
         :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; --colore-successo: #2E7D32; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
         .header { text-align: center; padding: 40px 0; }
         .header h1 { font-size: 2.8em; }
         .back-link { display: inline-block; margin-top: 20px; font-weight: 600; color: var(--colore-primario); text-decoration: none; }
-        
-        /* CARD IMMOBILE */
-        .property-card { background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 30px; display: flex; flex-wrap: wrap; }
+        .property-card {
+            background: white; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 30px;
+            display: flex; flex-wrap: wrap;
+        }
         .property-card-img { flex: 1; min-width: 300px; max-height: 250px; background-color: #eee; }
-        .property-card-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px 0 0 12px; }
+        .property-card-img img { width: 100%; height: 100%; object-fit: cover; }
         .property-card-info { flex: 2; padding: 25px; display: flex; flex-direction: column; }
         .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); }
         .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); }
         .property-card-info h3 { margin: 10px 0; font-size: 1.5em; }
         .property-card-info p { flex-grow: 1; }
-        .property-card .cta-button { display: inline-block; padding: 12px 25px; font-size: 0.9em; text-decoration: none; border-radius: 50px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; align-self: flex-start; }
-        .property-card .cta-button.disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+        .property-card .cta-button {
+            display: inline-block; padding: 12px 25px; font-size: 0.9em; text-decoration: none;
+            border-radius: 50px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; align-self: flex-start;
+        }
+        .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; }
         .spots-left { font-size: 0.9em; font-weight: 600; color: var(--colore-successo); margin-top: 10px; }
+        .message { text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
 
-        /* MODAL DI PAGAMENTO */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; transition: opacity 0.3s ease; }
+        /* Stili per il Modal/Popup */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
+        }
         .modal-overlay.visible { display: flex; opacity: 1; }
-        .modal-content { background: white; padding: 40px; border-radius: 16px; max-width: 500px; width: 90%; text-align: center; transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal-content {
+            background: white; padding: 40px; border-radius: 16px;
+            max-width: 500px; width: 90%; text-align: center;
+            transform: scale(0.95); transition: transform 0.3s ease;
+        }
         .modal-overlay.visible .modal-content { transform: scale(1); }
         .modal-content .icon { font-size: 3em; color: var(--colore-accento); }
         .modal-content h3 { font-size: 2em; color: var(--colore-primario); margin: 15px 0; }
         .modal-content p { color: var(--colore-testo-chiaro); line-height: 1.6; }
-        #payment-button { margin-top: 20px; background: var(--colore-successo); color: white; width: 100%; height: 55px; border-radius: 8px; border: none; font-size: 1.2em; font-weight: 700; cursor: pointer; }
+        #payment-button { margin-top: 20px; background: var(--colore-successo); color: white; width: 100%; height: 55px; border-radius: 8px; border: none; font-size: 1.2em; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; }
         #close-modal { font-size: 0.9em; color: var(--colore-testo-chiaro); cursor: pointer; display: inline-block; margin-top: 15px; }
-
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1>Ecco le proposte per te</h1>
+            <h1>Le Tue Opportunità Esclusive</h1>
         </header>
         <div id="results-container">
-            <p class="message">Caricamento degli immobili in corso...</p>
+            <p class="message">Analizzando la compatibilità tra te e le nostre proposte...</p>
         </div>
         <div style="text-align: center;">
-            <a href="cerca.html" class="back-link">Modifica la tua ricerca</a>
+            <a href="cerca.html" class="back-link">Modifica la tua Ricerca</a>
         </div>
     </div>
 
@@ -60,31 +78,39 @@
         <div class="modal-content">
             <div class="icon"><i class="fa-solid fa-ticket"></i></div>
             <h3>Il Tuo Ticket per l'Open Day Esclusivo</h3>
-            <p>Per garantire un evento di alta qualità e a numero chiuso, e per confermare il tuo reale interesse, chiediamo una piccola <strong>fee di prenotazione di 2,99€</strong>.</p>
+            <p>Per garantire un evento di alta qualità a numero chiuso e confermare il tuo reale interesse, è richiesta una piccola <strong>fee di prenotazione di 2,99€</strong>.</p>
             <p>Questo "ticket" ti assicura un posto e ti permette di visitare l'immobile senza folla. Dopo il pagamento, sarai reindirizzato/a a Calendly per scegliere il tuo orario.</p>
-            <a id="payment-button" href="#" target="_blank">Paga 2,99€ e Prenota il Tuo Posto</a>
+            <a id="payment-button" href="#" target="_blank">Paga 2,99€ e Ottieni l'Accesso</a>
             <a id="close-modal">Annulla</a>
         </div>
     </div>
 
     <script>
         // --- CONFIGURAZIONE ---
-        const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
-        const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv'; // URL del foglio che conta i prenotati
+        // SOSTITUISCI CON I TUOI LINK CSV PUBBLICATI DAI FOGLI GOOGLE
+        const PROPERTIES_URL = 'INCOLLA_QUI_URL_CSV_PROPRIETÀ';
+        const REQUIREMENTS_URL = 'INCOLLA_QUI_URL_CSV_REQUISITI';
+        const CANDIDATES_URL = 'INCOLLA_QUI_URL_CSV_CANDIDATI';
 
+        // Variabili globali per memorizzare i dati caricati una sola volta
         let allProperties = [];
+        let allRequirements = [];
         let allCandidates = [];
 
+        // --- FUNZIONI ---
         function csvToObjects(csv) {
             const lines = csv.trim().split('\n');
             if (lines.length < 2) return [];
+
             const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
             const objects = [];
+
             for (let i = 1; i < lines.length; i++) {
                 if (lines[i]) {
                     const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     const obj = {};
                     for (let j = 0; j < headers.length; j++) {
+                        // Pulisce ogni valore da virgolette e spazi extra
                         obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
                     }
                     objects.push(obj);
@@ -96,13 +122,17 @@
         function displayResults(properties) {
             const resultsContainer = document.getElementById('results-container');
             resultsContainer.innerHTML = '';
+
             if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile corrisponde alla tua ricerca.</p>';
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile con il tuo profilo e le tue preferenze.<br>Prova a modificare la ricerca!</p>';
                 return;
             }
 
             properties.forEach(p => {
-                if (!p.Titolo || !p.Prezzo || !p.FotoURL || !p.ID || !p.StripeLink) return;
+                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) {
+                    console.warn(`Immobile con ID ${p.ID} scartato per dati mancanti.`);
+                    return;
+                }
 
                 const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
                 const postiTotali = parseInt(p.MaxPartecipanti);
@@ -122,7 +152,7 @@
                             <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
                             <h3>${p.Titolo}</h3>
                             <div class="price">${p.Prezzo} €/mese</div>
-                            <p>${p.Descrizione || ''}</p>
+                            <p>${p.Descrizione || 'Nessuna descrizione per questo immobile.'}</p>
                             ${buttonHtml}
                         </div>
                     </div>`;
@@ -137,35 +167,76 @@
             modal.classList.add('visible');
 
             document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
-            modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.classList.remove('visible');
+            };
         }
 
-        async function init() {
+        async function main() {
+            const resultsContainer = document.getElementById('results-container');
             try {
-                const [propsRes, candsRes] = await Promise.all([
+                // 1. Carica tutti e 3 i database contemporaneamente
+                const [propsRes, reqsRes, candsRes] = await Promise.all([
                     fetch(PROPERTIES_URL),
+                    fetch(REQUIREMENTS_URL),
                     fetch(CANDIDATES_URL)
                 ]);
 
-                if (!propsRes.ok || !candsRes.ok) throw new Error('Errore di rete');
+                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) {
+                    throw new Error('Errore di rete nel caricamento di uno o più database.');
+                }
 
                 const propsCsv = await propsRes.text();
+                const reqsCsv = await reqsRes.text();
                 const candsCsv = await candsRes.text();
+                
                 allProperties = csvToObjects(propsCsv);
+                allRequirements = csvToObjects(reqsCsv);
                 allCandidates = csvToObjects(candsCsv);
-                
-                // ... (la tua logica di filtraggio per allProperties) ...
-                // Per questo esempio, mostriamo tutte le proprietà disponibili
-                const filteredProperties = allProperties.filter(p => (p.Stato || '').trim().toLowerCase() === 'disponibile');
-                
-                displayResults(filteredProperties);
+
+                // 2. Leggi i filtri e le qualifiche dell'utente dall'URL
+                const params = new URLSearchParams(window.location.search);
+                const userProfile = {
+                    tipo: (params.get('tipo') || '').trim().toLowerCase(),
+                    zona: (params.get('zona') || '').trim().toLowerCase(),
+                    prezzo: parseInt(params.get('prezzo')) || Infinity,
+                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').trim().toLowerCase(),
+                    animali: (params.get('animali') || '').trim().toLowerCase()
+                    // Aggiungi qui altri campi se hai più filtri
+                };
+
+                // 3. Primo filtro: basato sulle preferenze dell'utente (tipo, zona, prezzo)
+                const preFilteredProperties = allProperties.filter(p => {
+                    const prezzoImmobile = parseInt(p.Prezzo);
+                    return (p.Stato || '').trim().toLowerCase() === 'disponibile' &&
+                           (userProfile.tipo === '' || (p.Tipo || '').trim().toLowerCase() === userProfile.tipo) &&
+                           (userProfile.zona === '' || (p.Zona || '').trim().toLowerCase() === userProfile.zona) &&
+                           !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
+                });
+
+                // 4. Secondo filtro, il più importante: il matching con i requisiti del proprietario
+                const finalProperties = preFilteredProperties.filter(p => {
+                    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
+                    if (propertyRequirements.length === 0) {
+                        return true; // Se un immobile non ha requisiti specifici, passa il filtro
+                    }
+                    // 'every' si assicura che l'utente soddisfi TUTTI i requisiti per questo immobile
+                    return propertyRequirements.every(req => {
+                        const userValue = userProfile[req.Requisito.toLowerCase()];
+                        const requiredValue = (req.Valore_Richiesto || '').trim().toLowerCase();
+                        return userValue === requiredValue;
+                    });
+                });
+
+                displayResults(finalProperties);
+
             } catch (error) {
                 console.error("ERRORE CRITICO:", error);
-                document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore.</p>`;
+                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore nel caricamento dei dati. Assicurati che i link ai database siano corretti e pubblicati come CSV.</p>`;
             }
         }
         
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', main);
     </script>
 </body>
 </html>
