@@ -9,221 +9,105 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { 
-            --colore-primario: #0D47A1; 
-            --colore-secondario: #1976D2; 
-            --colore-accento: #FFB300; 
-            --colore-testo: #212121; 
-            --colore-testo-chiaro: #5f6368; 
-            --colore-sfondo-chiaro: #f5f7fa; 
-            --colore-bianco: #ffffff;
-        }
-        html { scroll-behavior: smooth; }
+        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
-        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
         .text-center { text-align: center; }
         
-        /* SEZIONI CON SFONDI DIVERSI */
-        .section-white { background-color: var(--colore-bianco); padding: 80px 0; }
-        .section-light { background-color: var(--colore-sfondo-chiaro); padding: 80px 0; }
-        .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); padding: 60px 0; }
+        .hero-search { padding: 80px 0; background: white; }
+        .hero-search h1 { font-size: 3.2em; color: var(--colore-primario); }
+        .hero-search .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 15px auto 40px auto; }
         
-        .section-title { font-size: 2.8em; color: var(--colore-primario); margin-bottom: 15px; }
-        .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 50px auto; }
-        
-        /* BARRA DI RICERCA INIZIALE */
-        .filter-bar {
-            background: white; padding: 30px; border-radius: 16px;
+        .unified-form {
+            background: white; padding: 30px 40px; border-radius: 16px;
             box-shadow: 0 15px 50px rgba(0,0,0,0.1);
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: flex-end;
         }
-        .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; text-align: left; }
+        .form-section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 30px; }
+        .form-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
+        .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; }
+        .form-section .icon { color: var(--colore-accento); }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; }
         .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
-
-        /* SEZIONE PRIORITÀ INTERATTIVA */
-        .priority-box {
-            background: var(--colore-bianco); padding: 40px; border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08); max-width: 600px; margin: 0 auto;
-        }
-        #priority-form .filter-step { display: none; animation: fadeIn 0.5s; }
-        #priority-form .filter-step.active { display: block; }
-        .progress-bar { width: 100%; background-color: #e0e0e0; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
-        .progress-bar-inner { height: 8px; background-color: var(--colore-accento); border-radius: 10px; transition: width 0.4s ease; }
-        .priority-nav { margin-top: 20px; display: flex; justify-content: space-between; }
-        .nav-button { padding: 12px 30px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; }
-        .prev-button { background-color: #e0e0e0; }
-        .next-button { background-color: var(--colore-primario); color: white; }
-
-        /* PULSANTE FINALE */
+        
         #search-button {
-            width: 100%; max-width: 450px; margin: 40px auto 0 auto; display: none; /* Nascosto all'inizio */
-            height: 60px; border-radius: 50px; border: none; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            width: 100%; height: 60px; border-radius: 8px; border: none; margin-top: 30px;
+            background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
             color: var(--colore-testo); font-size: 1.3em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
         }
-        #search-button.visible { display: block; animation: fadeIn 1s; }
-        #search-button:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 768px) { .filter-bar { grid-template-columns: 1fr; } }
+        #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,179,0,0.2); }
     </style>
 </head>
 <body>
-    <header style="padding: 20px; text-align: center; background: white;">
-        <div class="logo" style="font-size: 2em; font-weight: 800; color: var(--colore-primario);">Affitto <span>Smart</span></div>
-    </header>
-
-    <main>
-        <form id="combined-form">
-            <!-- SEZIONE 1: RICERCA BASE -->
-            <section class="section-white text-center">
-                <div class="container">
-                    <h1 class="section-title">Trova la casa che ti sceglie.</h1>
-                    <p class="section-subtitle">Inizia con le tue preferenze base. Nel prossimo passo, le confronteremo con i desideri dei proprietari per darti risultati più pertinenti.</p>
-                    <div class="filter-bar">
+    <div class="container">
+        <section class="hero-search text-center">
+            <h1>La casa giusta, senza compromessi.</h1>
+            <p class="subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo gli immobili a Bologna per cui sei perfettamente compatibile.</p>
+            
+            <form id="unified-search-form" class="unified-form">
+                <!-- Sezione 1: Le Tue Preferenze -->
+                <div class="form-section">
+                    <h2><i class="fa-solid fa-map-location-dot icon"></i>Le Tue Preferenze</h2>
+                    <div class="filter-grid">
                         <div class="filter-group">
                             <label for="filter-tipo">Tipo di Immobile</label>
                             <select name="tipo">
                                 <option value="">Qualsiasi</option>
-                                <option value="Stanza Singola">Stanza Singola</option>
-                                <option value="Monolocale">Monolocale</option>
-                                <option value="Bilocale">Bilocale</option>
-                                <option value="Trilocale">Trilocale</option>
+                                <option>Stanza Singola</option>
+                                <option>Monolocale</option>
+                                <option>Bilocale</option>
                             </select>
                         </div>
                         <div class="filter-group">
                             <label for="filter-zona">Zona</label>
                             <select name="zona">
                                 <option value="">Qualsiasi</option>
-                                <option value="Centro Storico">Centro Storico</option>
-                                <option value="Murri">Murri</option>
-                                <option value="Bolognina">Bolognina</option>
+                                <option>Centro Storico</option>
+                                <option>Murri</option>
                             </select>
                         </div>
                         <div class="filter-group">
-                            <label for="filter-prezzo">Budget Max (€)</label>
+                            <label for="filter-prezzo">Budget Massimo (€)</label>
                             <input type="number" name="prezzo" placeholder="Es. 900">
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- SEZIONE 2: PRIORITÀ DEL PROPRIETARIO (OBBLIGATORIA) -->
-            <section id="priority-section" class="section-light text-center">
-                <div class="container">
-                    <h2 class="section-title">Passo 2: Verifica la Compatibilità</h2>
-                    <p class="section-subtitle">Per farti risparmiare tempo, ogni proprietario ci indica delle priorità. Rispondi a queste brevi domande per sbloccare la ricerca e vedere solo gli immobili per cui hai una chance reale.</p>
-                    <div class="priority-box">
-                        <div class="progress-bar">
-                            <div class="progress-bar-inner" id="progress-bar"></div>
+                <!-- Sezione 2: Il Tuo Profilo -->
+                <div class="form-section">
+                    <h2><i class="fa-solid fa-user-check icon"></i>Il Tuo Profilo</h2>
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label>Situazione Lavorativa</label>
+                            <select name="situazione_lavorativa" required>
+                                <option value="">Seleziona...</option>
+                                <option>Dipendente a tempo indeterminato</option>
+                                <option>Studente/ssa con garante</option>
+                                <option>Lavoratore Autonomo / P.IVA</option>
+                            </select>
                         </div>
-                        <div id="priority-form-steps">
-                            <!-- Step 1 -->
-                            <div class="filter-step active">
-                                <div class="filter-group">
-                                    <label>Qual è la tua situazione lavorativa principale?</label>
-                                    <select name="situazione_lavorativa" required>
-                                        <option value="" disabled selected>Seleziona un'opzione...</option>
-                                        <option>Dipendente a tempo indeterminato</option>
-                                        <option>Studente/ssa con garante</option>
-                                        <option>Lavoratore Autonomo / P.IVA</option>
-                                        <option>Altro</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <!-- Step 2 -->
-                            <div class="filter-step">
-                                <div class="filter-group">
-                                    <label>Possiedi animali domestici?</label>
-                                    <select name="animali" required>
-                                        <option value="" disabled selected>Seleziona un'opzione...</option>
-                                        <option>Sì</option>
-                                        <option>No</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <!-- Aggiungi qui altri step per altre priorità -->
-                        </div>
-                        <div class="priority-nav">
-                            <button type="button" class="nav-button prev-button" style="display: none;">Indietro</button>
-                            <button type="button" class="nav-button next-button">Avanti</button>
+                        <div class="filter-group">
+                            <label>Possiedi animali?</label>
+                            <select name="animali" required>
+                                <option value="">Seleziona...</option>
+                                <option>Sì</option>
+                                <option>No</option>
+                            </select>
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- SEZIONE 3: PULSANTE DI RICERCA FINALE -->
-            <section id="final-search-section" class="text-center">
-                <div class="container">
-                    <h2 id="final-search-title" style="display: none;">Perfetto! Sei pronto per la ricerca.</h2>
-                    <button type="submit" id="search-button">Trova la mia Casa Ideale</button>
-                </div>
-            </section>
-        </form>
+                <button type="submit" id="search-button">Trova Immobili Compatibili</button>
+            </form>
+        </section>
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('combined-form');
-            const steps = Array.from(document.querySelectorAll('#priority-form-steps .filter-step'));
-            const nextButton = document.querySelector('.next-button');
-            const prevButton = document.querySelector('.prev-button');
-            const searchButton = document.getElementById('search-button');
-            const finalSearchTitle = document.getElementById('final-search-title');
-            const progressBar = document.getElementById('progress-bar');
-            let currentStep = 0;
-
-            function updateStepView() {
-                steps.forEach((step, index) => {
-                    step.classList.toggle('active', index === currentStep);
-                });
-                
-                // Aggiorna la barra di progresso
-                const progressPercentage = ((currentStep + 1) / steps.length) * 100;
-                progressBar.style.width = `${progressPercentage}%`;
-                
-                // Gestisce la visibilità dei pulsanti
-                prevButton.style.display = currentStep > 0 ? 'inline-block' : 'none';
-                if (currentStep === steps.length - 1) {
-                    nextButton.innerText = "Fine";
-                } else {
-                    nextButton.innerText = "Avanti";
-                }
-            }
-
-            nextButton.addEventListener('click', () => {
-                // Controlla se l'input dello step corrente è valido
-                const currentSelect = steps[currentStep].querySelector('select');
-                if (currentSelect && !currentSelect.value) {
-                    alert("Per favore, seleziona un'opzione per continuare.");
-                    return;
-                }
-
-                if (currentStep < steps.length - 1) {
-                    currentStep++;
-                    updateStepView();
-                } else {
-                    // Fine del quiz, mostra il pulsante di ricerca finale
-                    document.getElementById('priority-section').style.display = 'none';
-                    finalSearchTitle.style.display = 'block';
-                    searchButton.classList.add('visible');
-                }
-            });
-
-            prevButton.addEventListener('click', () => {
-                if (currentStep > 0) {
-                    currentStep--;
-                    updateStepView();
-                }
-            });
-
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const formData = new FormData(form);
-                const queryString = new URLSearchParams(formData).toString();
-                window.location.href = 'risultati.html?' + queryString;
-            });
-            
-            updateStepView(); // Inizializza la vista
+        document.getElementById('unified-search-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const queryString = new URLSearchParams(formData).toString();
+            window.location.href = 'risultati.html?' + queryString;
         });
     </script>
 </body>
