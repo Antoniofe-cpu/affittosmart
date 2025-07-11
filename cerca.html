@@ -3,117 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trova la Tua Casa a Bologna - Affitto Smart</title>
+    <title>Accesso Esclusivo agli Affitti di Bologna - Affitto Smart</title>
+    <!-- Stili e Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --colore-primario: #0D47A1; --colore-secondario: #1976D2; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; --colore-bianco: #ffffff;}
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-        .hero-search {
-            background: linear-gradient(180deg, var(--colore-bianco) 60%, var(--colore-sfondo-chiaro) 100%);
-            padding: 80px 0; text-align: center;
+        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .text-center { text-align: center; }
+        
+        /* Hero Section */
+        .hero { padding: 80px 0; background: white; }
+        .hero h1 { font-size: 3.2em; color: var(--colore-primario); line-height: 1.2; }
+        .hero .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 20px auto 0 auto; }
+
+        /* Sezione Priorità */
+        .priority-section { padding: 80px 0; }
+        .priority-box {
+            background: white; padding: 40px; border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 600px; margin: 40px auto 0 auto;
         }
-        .hero-search h1 { font-size: 3.2em; color: var(--colore-primario); }
-        .hero-search .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 600px; margin: 15px auto 40px auto; }
-        .filter-bar {
-            background: white; padding: 25px; border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; align-items: flex-end;
-            max-width: 900px; margin: 0 auto;
-        }
-        .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; text-align: left; }
-        .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
-        #search-button {
-            height: 55px; border-radius: 8px; border: none; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo); font-size: 1.2em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
-        }
-        #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,179,0,0.2); }
-        .process-section { padding: 80px 20px; background-color: var(--colore-sfondo-chiaro); }
-        .process-section h2 { font-size: 2.8em; }
-        .process-grid { display: flex; justify-content: space-around; text-align: center; margin-top: 60px; position: relative; flex-wrap: wrap; }
-        .process-step { flex: 1; padding: 20px; min-width: 250px; }
-        .process-step .icon {
-            font-size: 3em; color: var(--colore-primario); margin-bottom: 20px;
-            background: white; border-radius: 50%; width: 80px; height: 80px;
-            display: inline-flex; justify-content: center; align-items: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
-        }
-        .process-step h3 { font-size: 1.4em; }
-        .process-grid::before {
-            content: ''; position: absolute; top: 40px; left: 15%; right: 15%;
-            height: 2px; background: repeating-linear-gradient(90deg, #ccc, #ccc 10px, transparent 10px, transparent 20px);
-            z-index: -1;
-        }
+        .priority-box h3 { font-size: 1.5em; margin-top: 0; }
+        .filter-step { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .filter-step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; font-size: 1.2em; }
+        .filter-group select { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; }
+        .priority-nav { margin-top: 20px; text-align: right; }
+        .nav-button { padding: 10px 25px; border-radius: 8px; border: none; font-size: 1em; font-weight: 700; cursor: pointer; }
+        
+        /* Sezione Ricerca Finale */
+        #search-section { background: var(--colore-primario); color: white; padding: 60px 0; }
+        #search-section h2 { color: white; }
+        .final-search-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: flex-end; }
+        #search-button { height: 55px; border-radius: 8px; border: none; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-size: 1.2em; font-weight: 700; cursor: pointer; }
+
     </style>
 </head>
 <body>
+    <header style="padding: 20px; text-align: center; background: white;">
+        <div class="logo" style="font-size: 2em; font-weight: 800; color: var(--colore-primario);">Affitto <span>Smart</span></div>
+    </header>
+
     <main>
-        <section class="hero-search">
+        <section class="hero text-center">
             <div class="container">
-                <h1>La tua ricerca finisce qui.</h1>
-                <p class="subtitle">A Bologna, la casa che cerchi trova te. Dicci le tue preferenze e ti mostreremo solo le opportunità per cui hai una chance reale.</p>
-                
-                <form id="filter-form" class="filter-bar">
-                    <div class="filter-group">
-                        <label for="filter-tipo">Tipo</label>
-                        <select id="filter-tipo" name="tipo">
-                            <option value="">Qualsiasi</option>
-                            <option value="Stanza Singola">Stanza Singola</option>
-                            <option value="Monolocale">Monolocale</option>
-                            <option value="Bilocale">Bilocale</option>
-                            <option value="Trilocale">Trilocale</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filter-zona">Zona</label>
-                        <select id="filter-zona" name="zona">
-                            <option value="">Qualsiasi</option>
-                            <option value="Centro Storico">Centro Storico</option>
-                            <option value="Murri">Murri</option>
-                            <option value="Savena">Savena</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filter-prezzo">Budget Max</label>
-                        <input type="number" id="filter-prezzo" name="prezzo" placeholder="€">
-                    </div>
-                    <button type="submit" id="search-button">Cerca</button>
-                </form>
+                <h1>Non cercare una casa. Fatti trovare da quella giusta.</h1>
+                <p class="subtitle">Benvenuto nel nostro canale esclusivo. Qui non ti candidi per un annuncio, ma verifichi la tua compatibilità per accedere a Open Day a numero chiuso.</p>
             </div>
         </section>
 
-        <section class="process-section">
+        <section class="priority-section text-center">
             <div class="container">
-                <h2 style="text-align: center;">Il nostro non è un semplice annuncio.<br>È un invito esclusivo.</h2>
-                <div class="process-grid">
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-file-circle-xmark"></i></div>
-                        <h3>1. Dimentica il Caos</h3>
-                        <p>Niente più candidature a vuoto. Il nostro sistema ti mostra solo le case per cui sei veramente compatibile.</p>
-                    </div>
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-star"></i></div>
-                        <h3>2. Entra nel Canale Preferenziale</h3>
-                        <p>Superando la ricerca, entri in una lista ristretta. La tua candidatura ha più valore fin da subito.</p>
-                    </div>
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-champagne-glasses"></i></div>
-                        <h3>3. Vivi l'Esperienza Open Day</h3>
-                        <p>Un evento tranquillo, a numero chiuso, dove puoi visitare la casa con calma e parlare con noi. La tua opportunità, senza stress.</p>
-                    </div>
+                <h2>Verifica le Priorità del Proprietario</h2>
+                <p class="sottotitolo-sezione" style="max-width: 700px;">I proprietari hanno delle esigenze precise. Rispondi a queste domande per capire con quali immobili sei più compatibile. Questo ci aiuterà a mostrarti solo opportunità reali.</p>
+                
+                <div class="priority-box">
+                    <form id="priority-form">
+                        <!-- Step 1 -->
+                        <div class="filter-step active">
+                            <div class="filter-group">
+                                <label>Qual è la tua situazione lavorativa?</label>
+                                <select name="situazione_lavorativa">
+                                    <option value="">Seleziona...</option>
+                                    <option>Dipendente a tempo indeterminato</option>
+                                    <option>Studente/ssa con garante</option>
+                                    <option>Lavoratore Autonomo / P.IVA</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="filter-step">
+                            <div class="filter-group">
+                                <label>Possiedi animali domestici?</label>
+                                <select name="animali">
+                                    <option value="">Seleziona...</option>
+                                    <option>Sì</option>
+                                    <option>No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Altri step/domande qui -->
+                        <div class="priority-nav">
+                            <button type="button" class="nav-button next-button">Prossima Domanda</button>
+                        </div>
+                    </form>
                 </div>
+            </div>
+        </section>
+
+        <section id="search-section" class="text-center">
+            <div class="container">
+                <h2>Ora, affina la tua ricerca</h2>
+                <form id="final-search-form" class="final-search-form">
+                    <div class="filter-group">
+                        <label style="color:white;">Tipo</label>
+                        <select name="tipo">
+                            <option value="">Qualsiasi</option>
+                            <option>Monolocale</option>
+                            <option>Bilocale</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label style="color:white;">Zona</label>
+                        <select name="zona">
+                            <option value="">Qualsiasi</option>
+                            <option>Centro Storico</option>
+                            <option>Murri</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label style="color:white;">Budget Max</label>
+                        <input type="number" name="prezzo" placeholder="€">
+                    </div>
+                    <button type="submit" id="search-button">Trova la mia casa</button>
+                </form>
             </div>
         </section>
     </main>
 
     <script>
-        document.getElementById('filter-form').addEventListener('submit', function(e) {
+        // Script per gestire la navigazione a step del form delle priorità
+        const priorityForm = document.getElementById('priority-form');
+        const steps = Array.from(priorityForm.querySelectorAll('.filter-step'));
+        const nextButton = priorityForm.querySelector('.next-button');
+        let currentStep = 0;
+
+        nextButton.addEventListener('click', () => {
+            if(currentStep < steps.length - 1) {
+                steps[currentStep].classList.remove('active');
+                currentStep++;
+                steps[currentStep].classList.add('active');
+            } else {
+                // Fine delle domande, magari mostra un messaggio
+                priorityForm.innerHTML = "<h3>Grazie! Ora puoi affinare la ricerca qui sotto.</h3>";
+            }
+        });
+
+        // Script per gestire l'invio finale
+        document.getElementById('final-search-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            const formData = new FormData(e.target);
-            const queryString = new URLSearchParams(formData).toString();
+            const priorityData = new FormData(priorityForm);
+            const searchData = new FormData(e.target);
+            
+            // Unisce i dati dei due form
+            for (let [key, value] of searchData.entries()) {
+                priorityData.append(key, value);
+            }
+
+            const queryString = new URLSearchParams(priorityData).toString();
             window.location.href = 'risultati.html?' + queryString;
         });
     </script>
