@@ -109,76 +109,96 @@
         }
 
         function displayResults(properties) {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '';
-            if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile corrisponde alla tua ricerca. Prova a modificare i filtri!</p>';
-                return;
-            }
-            properties.forEach(p => {
-                if (!p.Titolo || !p.Prezzo || !p.FotoURL || !p.CalendlyURL) return;
-                const card = `
-                    <div class="property-card">
-                        <div class="property-card-img">
-                            <img src="${p.FotoURL}" alt="${p.Titolo}">
-                        </div>
-                        <div class="property-card-info">
-                            <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                            <h3>${p.Titolo}</h3>
-                            <div class="price">${p.Prezzo} €/mese</div>
-                            <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
-                            <button class="cta-button" onclick="handleBookingClick('${p.ID}', '${p.CalendlyURL}')">Prenota Open Day</button>
-                        </div>
-                    </div>`;
-                resultsContainer.innerHTML += card;
-            });
-        }
+    const resultsContainer = document.getElementById('results-container');
+    resultsContainer.innerHTML = '';
+    if (properties.length === 0) {
+        resultsContainer.innerHTML = '<p class="message">Nessun immobile corrisponde alla tua ricerca. Prova a modificare i filtri!</p>';
+        return;
+    }
+    properties.forEach(p => {
+        if (!p.Titolo || !p.Prezzo || !p.FotoURL || !p.CalendlyURL || !p.ID) return;
+        
+        // --- LA MODIFICA CHIAVE È QUI ---
+        // Invece di un link <a>, creiamo un <button> che chiama la nostra funzione JavaScript
+        const card = `
+            <div class="property-card">
+                <div class="property-card-img">
+                    <img src="${p.FotoURL}" alt="${p.Titolo}">
+                </div>
+                <div class="property-card-info">
+                    <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                    <h3>${p.Titolo}</h3>
+                    <div class="price">${p.Prezzo} €/mese</div>
+                    <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
+                    <button class="cta-button" onclick="handleBookingClick('${p.ID}', '${p.CalendlyURL}')">Verifica e Prenota</button>
+                </div>
+            </div>`;
+        resultsContainer.innerHTML += card;
+    });
+}
 
         function handleBookingClick(propertyId, calendlyUrl) {
-            const requirement = allRequirements.find(r => r.ID_Immobile === propertyId);
-            if (!requirement) {
-                window.open(calendlyUrl, '_blank');
-                return;
-            }
-            const modal = document.getElementById('checkpoint-modal');
-            const modalQuestion = document.getElementById('modal-question-text');
-            const answerContainer = document.getElementById('modal-answer-container');
-            const verifyButton = document.getElementById('modal-verify-button');
-            const resultContainer = document.getElementById('modal-result');
+    const requirement = allRequirements.find(r => r.ID_Immobile === propertyId);
+    
+    // Se non ci sono requisiti extra per questo immobile, manda direttamente a Calendly
+    if (!requirement) {
+        window.open(calendlyUrl, '_blank');
+        return;
+    }
 
-            modalQuestion.innerText = requirement.Domanda_Da_Porre;
-            resultContainer.innerHTML = '';
-            verifyButton.style.display = 'block';
+    // Se ci sono requisiti, prepariamo e mostriamo il popup (modal)
+    const modal = document.getElementById('checkpoint-modal');
+    const modalQuestion = document.getElementById('modal-question-text');
+    const answerContainer = document.getElementById('modal-answer-container');
+    const verifyButton = document.getElementById('modal-verify-button');
+    const resultContainer = document.getElementById('modal-result');
 
-            const options = requirement.Opzioni_Risposta.split(',');
-            let optionsHtml = '<select id="modal-answer">';
-            options.forEach(opt => {
-                optionsHtml += `<option value="${opt.trim()}">${opt.trim()}</option>`;
-            });
-            optionsHtml += '</select>';
-            answerContainer.innerHTML = optionsHtml;
-            
-            modal.classList.add('visible');
+    // Resetta il modal al suo stato iniziale
+    modalQuestion.innerText = requirement.Domanda_Da_Porre;
+    resultContainer.innerHTML = '';
+    verifyButton.style.display = 'block';
+    verifyButton.disabled = false;
+    document.querySelector('.modal-content h3').innerText = "Checkpoint di Compatibilità";
 
-            verifyButton.onclick = () => {
-                const userAnswer = document.getElementById('modal-answer').value;
-                if (userAnswer === requirement.Risposta_Attesa) {
-                    modalQuestion.innerText = "Perfetto! Puoi procedere.";
-                    answerContainer.innerHTML = '<p style="margin:20px 0;">Sei a un passo dalla tua nuova casa. Clicca qui sotto per scegliere l\'orario.</p>';
-                    verifyButton.style.display = 'none';
-                    resultContainer.innerHTML = `<a href="${calendlyUrl}" class="cta-button" target="_blank" style="background: var(--colore-successo); color: white;">Vai a Calendly e Prenota</a>`;
-                } else {
-                    modalQuestion.innerText = "Grazie per la sincerità!";
-                    answerContainer.innerHTML = '<p style="margin:20px 0;">Purtroppo questo immobile ha requisiti specifici non compatibili. Continua a cercare, la casa giusta per te potrebbe essere la prossima!</p>';
-                    verifyButton.style.display = 'none';
-                }
-            };
-            
-            modal.addEventListener('click', (e) => {
-                if(e.target === modal) modal.classList.remove('visible');
-            }, { once: true });
+
+    // Popola le opzioni di risposta
+    const options = requirement.Opzioni_Risposta.split(',');
+    let optionsHtml = '<select id="modal-answer" class="modal-select">';
+    options.forEach(opt => {
+        optionsHtml += `<option value="${opt.trim()}">${opt.trim()}</option>`;
+    });
+    optionsHtml += '</select>';
+    answerContainer.innerHTML = optionsHtml;
+    
+    // Mostra il modal
+    modal.classList.add('visible');
+
+    // Gestore per il click sul pulsante "Verifica"
+    verifyButton.onclick = () => {
+        const userAnswer = document.getElementById('modal-answer').value;
+        verifyButton.disabled = true; // Disabilita il pulsante dopo il primo click
+
+        if (userAnswer.toLowerCase() === requirement.Risposta_Attesa.toLowerCase()) {
+            // Risposta CORRETTA
+            document.querySelector('.modal-content h3').innerText = "Perfetto! Puoi procedere.";
+            answerContainer.innerHTML = '<p style="margin:20px 0;">Sei a un passo dalla tua nuova casa. Clicca qui sotto per scegliere l\'orario.</p>';
+            verifyButton.style.display = 'none';
+            resultContainer.innerHTML = `<a href="${calendlyUrl}" class="cta-button" target="_blank" style="background: var(--colore-successo); color: white;">Vai a Calendly e Prenota</a>`;
+        } else {
+            // Risposta SBAGLIATA
+            document.querySelector('.modal-content h3').innerText = "Grazie per la sincerità!";
+            answerContainer.innerHTML = '<p style="margin:20px 0;">Purtroppo questo immobile ha requisiti specifici non compatibili. Continua a cercare, la casa giusta per te potrebbe essere la prossima!</p>';
+            verifyButton.style.display = 'none';
         }
-
+    };
+    
+    // Chiudi il modal se si clicca sullo sfondo
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('visible');
+        }
+    };
+}
         async function init() {
             const resultsContainer = document.getElementById('results-container');
             try {
