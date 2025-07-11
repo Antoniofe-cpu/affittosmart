@@ -113,53 +113,51 @@
 
     // Funzione principale che carica i dati e li filtra
     async function loadAndFilterProperties() {
-        console.log("1. Funzione loadAndFilterProperties avviata."); // <-- Log di controllo
-        const resultsContainer = document.getElementById('results-container');
-        try {
-            // Leggi i parametri dall'URL
-            const params = new URLSearchParams(window.location.search);
-            const tipo = params.get('tipo') || '';
-            const zona = params.get('zona') || '';
-            const prezzo = parseInt(params.get('prezzo'));
-            const prezzoMax = isNaN(prezzo) ? Infinity : prezzo;
-            console.log(`2. Filtri letti dall'URL: tipo=${tipo}, zona=${zona}, prezzoMax=${prezzoMax}`); // <-- Log di controllo
+    console.log("1. Funzione loadAndFilterProperties avviata.");
+    const resultsContainer = document.getElementById('results-container');
+    try {
+        const params = new URLSearchParams(window.location.search);
+        // Pulisce e normalizza i filtri dall'URL
+        const tipo = params.get('tipo') ? params.get('tipo').trim().toLowerCase() : '';
+        const zona = params.get('zona') ? params.get('zona').trim().toLowerCase() : '';
+        const prezzo = parseInt(params.get('prezzo'));
+        const prezzoMax = isNaN(prezzo) ? Infinity : prezzo;
+        console.log(`2. Filtri letti e normalizzati: tipo=${tipo}, zona=${zona}, prezzoMax=${prezzoMax}`);
 
-            // Carica i dati dal Google Sheet
-            const response = await fetch(GOOGLE_SHEET_URL);
-            if (!response.ok) {
-                throw new Error(`Errore di rete: ${response.statusText}`);
-            }
-            const csvData = await response.text();
-            console.log("3. Dati CSV caricati con successo."); // <-- Log di controllo
-            
-            const properties = csvToObjects(csvData);
-            if (properties.length === 0) {
-                console.warn("4. Attenzione: nessun dato convertito dal CSV. Controlla il formato del file.");
-            } else {
-                console.log(`4. Convertite ${properties.length} proprietà.`);
-            }
+        const response = await fetch(GOOGLE_SHEET_URL);
+        if (!response.ok) { throw new Error(`Errore di rete: ${response.statusText}`); }
+        const csvData = await response.text();
+        console.log("3. Dati CSV caricati con successo.");
+        
+        const properties = csvToObjects(csvData);
+        console.log(`4. Convertite ${properties.length} proprietà.`);
 
-            // Filtra le proprietà
-            const filteredProperties = properties.filter(p => {
-                const prezzoImmobile = parseInt(p.Prezzo);
-                if (isNaN(prezzoImmobile)) return false;
+        // Filtra le proprietà con normalizzazione dei dati
+        const filteredProperties = properties.filter(p => {
+            const prezzoImmobile = parseInt(p.Prezzo);
+            if (isNaN(prezzoImmobile)) return false;
 
-                return p.Stato === 'Disponibile' &&
-                       (tipo === '' || p.Tipo === tipo) &&
-                       (zona === '' || p.Zona === zona) &&
-                       (prezzoImmobile <= prezzoMax);
-            });
-            console.log(`5. Trovate ${filteredProperties.length} proprietà dopo il filtro.`); // <-- Log di controllo
+            // Normalizza i dati dal foglio di calcolo prima di confrontarli
+            const pTipo = p.Tipo ? p.Tipo.trim().toLowerCase() : '';
+            const pZona = p.Zona ? p.Zona.trim().toLowerCase() : '';
+            const pStato = p.Stato ? p.Stato.trim().toLowerCase() : '';
 
-            // Mostra i risultati
-            displayResults(filteredProperties);
-            console.log("6. Risultati mostrati sulla pagina."); // <-- Log di controllo
+            // Applica i filtri
+            return pStato === 'disponibile' &&
+                   (tipo === '' || pTipo === tipo) &&
+                   (zona === '' || pZona === zona) &&
+                   (prezzoImmobile <= prezzoMax);
+        });
+        console.log(`5. Trovate ${filteredProperties.length} proprietà dopo il filtro.`);
 
-        } catch (error) {
-            console.error('ERRORE CRITICO:', error);
-            resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che l'URL del database sia corretto e pubblicato come CSV.</p>`;
-        }
+        displayResults(filteredProperties);
+        console.log("6. Risultati mostrati sulla pagina.");
+
+    } catch (error) {
+        console.error('ERRORE CRITICO:', error);
+        resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che l'URL del database sia corretto e pubblicato come CSV.</p>`;
     }
+}
 
     // --- INNESCO DELLO SCRIPT ---
     // Usiamo DOMContentLoaded, che è più moderno e veloce di window.onload
