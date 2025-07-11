@@ -63,6 +63,23 @@
             transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255,160,0,0.4);
         }
         #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,160,0,0.3); }
+        /* NUOVA SEZIONE IMMAGINE DIVISORIA */
+        #image-divider {
+            padding: 120px 0;
+            background-image: linear-gradient(rgba(13, 71, 161, 0.7), rgba(13, 71, 161, 0.7)), url('https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200');
+            background-attachment: fixed; /* Effetto Parallax */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            color: white;
+            text-align: center;
+        }
+        #image-divider h2 {
+            font-size: 2.5em;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            margin: 0;
+        }
 
         /* WHY US / EXPLANATION SECTION (CARDS AFFIANCATE) */
         .process-grid { display: flex; justify-content: center; text-align: center; margin-top: 60px; flex-wrap: wrap; gap: 30px;}
@@ -132,6 +149,13 @@
                     </div>
                     <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                 </form>
+            </div>
+        </section>
+
+        <!-- NUOVA SEZIONE IMMAGINE DIVISORIA -->
+        <section id="image-divider">
+            <div class="container">
+                <h2>Il tuo prossimo capitolo inizia qui.</h2>
             </div>
         </section>
 
