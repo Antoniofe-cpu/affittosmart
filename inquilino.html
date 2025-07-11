@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidatura Affitto Smart - Il Nuovo Modo di Trovare Casa a Bologna</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Stesso stile della pagina principale per coerenza -->
+    <style>
+        :root {
+            --colore-primario: #0D47A1;
+            --colore-secondario: #1976D2;
+            --colore-accento: #FFB300;
+            --colore-successo: #2E7D32;
+            --colore-testo: #212121;
+            --colore-testo-chiaro: #5f6368;
+            --colore-sfondo-chiaro: #f5f7fa;
+            --colore-bianco: #ffffff;
+            --font-principale: 'Poppins', sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-principale);
+            margin: 0;
+            color: var(--colore-testo);
+            line-height: 1.7;
+            background-color: var(--colore-bianco);
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        section { padding: 80px 0; text-align: center; }
+
+        h1, h2, h3 { font-weight: 700; color: var(--colore-primario); }
+        h1 { font-size: 3em; line-height: 1.2; font-weight: 800; }
+        h2 { font-size: 2.5em; margin-bottom: 20px; }
+        .sottotitolo-sezione { color: var(--colore-testo-chiaro); font-size: 1.2em; max-width: 600px; margin: 0 auto 60px auto; }
+        
+        .cta-button {
+            display: inline-block;
+            background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo);
+            padding: 18px 40px;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 25px rgba(255, 179, 0, 0.3);
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .cta-button:hover { transform: translateY(-5px); }
+        
+        /* HEADER */
+        .main-header { padding: 20px 0; border-bottom: 1px solid #e0e0e0; }
+        .header-content { text-align: center; }
+        .logo { font-size: 2em; font-weight: 800; color: var(--colore-primario); }
+        .logo span { font-weight: 400; color: var(--colore-secondario); }
+        .slogan { font-style: italic; color: var(--colore-testo-chiaro); }
+        
+        /* HERO SECTION */
+        .hero p { font-size: 1.3em; margin: 20px auto 40px auto; }
+        .hero .icon { font-size: 4em; color: var(--colore-accento); margin-bottom: 20px; }
+
+        /* VANTAGGI E PROCESSO */
+        #vantaggi, #processo { background-color: var(--colore-sfondo-chiaro); }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            text-align: left;
+        }
+        .card {
+            background-color: var(--colore-bianco);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+        }
+        .card .icon { font-size: 2.5em; color: var(--colore-secondario); margin-bottom: 15px; }
+        .card h3 { margin-top: 0; }
+        
+        /* FOOTER */
+        .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 40px 0; text-align: center; }
+        .main-footer a { color: var(--colore-bianco); }
+
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">Affitto <span>Smart</span></div>
+            <p class="slogan">La casa giusta, in modo semplice e trasparente.</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="icon"><i class="fa-solid fa-key"></i></div>
+                <h1>Stai cercando casa a Bologna? Dimentica lo stress.</h1>
+                <p class="sottotitolo-sezione">Benvenuto/a nel nuovo modo di trovare l'affitto perfetto. Con il nostro metodo, non perdi tempo in visite inutili. Se sei qui, è perché hai già un'opportunità reale. Compila il questionario per partecipare ai nostri Open Day esclusivi.</p>
+                <!-- SOSTITUISCI CON IL LINK AL TUO FORM INQUILINI SPECIFICO -->
+                <a href="https://forms.gle/ILTUOLINKFORM" class="cta-button" target="_blank">Candidati Ora per l'Open Day</a>
+            </div>
+        </section>
+        
+        <section id="vantaggi">
+            <div class="container">
+                <h2>Il Tuo Vantaggio con Affitto Smart</h2>
+                <div class="grid">
+                    <div class="card">
+                        <div class="icon">⏱️</div>
+                        <h3>Nessuna Perdita di Tempo</h3>
+                        <p>Basta con le "cacce al tesoro" e le visite a vuoto. Se ti invitiamo, è perché il tuo profilo è già compatibile con l'immobile.</p>
+                    </div>
+                    <div class="card">
+                        <div class="icon">✅</div>
+                        <h3>Processo Trasparente</h3>
+                        <p>Sai esattamente quali sono i requisiti del proprietario fin dall'inizio. Massima chiarezza, zero sorprese.</p>
+                    </div>
+                    <div class="card">
+                        <div class="icon">🔒</div>
+                        <h3>Accesso Esclusivo</h3>
+                        <p>I nostri Open Day sono solo su invito. Questo significa meno folla e più tempo per vedere la casa con calma.</p>
+                    </div>
+                     <div class="card">
+                        <div class="icon">🏅</div>
+                        <h3>Opportunità Reali</h3>
+                        <p>Non competi con centinaia di candidati casuali. Se superi la pre-selezione, sei già in una rosa ristretta di profili qualificati.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="processo">
+            <div class="container">
+                <h2>Il Processo in 3 Semplici Passi</h2>
+                 <div class="grid">
+                    <div class="card">
+                        <h3>1. Compila il Questionario</h3>
+                        <p>Rispondi sinceramente alle domande. Ci aiuta a capire le tue esigenze e a proporti solo le case giuste per te.</p>
+                    </div>
+                    <div class="card">
+                        <h3>2. Ricevi il Tuo Invito</h3>
+                        <p>Se il tuo profilo è in linea con i requisiti, riceverai un'email per prenotare il tuo posto al nostro Open Day esclusivo.</p>
+                    </div>
+                    <div class="card">
+                        <h3>3. Visita e Fai la Tua Proposta</h3>
+                        <p>Partecipa all'Open Day e, se la casa ti piace, potrai formalizzare il tuo interesse. Semplice, no?</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta-finale">
+            <div class="container">
+                <h2>Pronto/a a Trovare la Tua Prossima Casa a Bologna?</h2>
+                <p class="sottotitolo-sezione">Il tuo percorso verso la casa dei tuoi sogni inizia da qui. Compila il questionario ora: è il primo passo per distinguerti e accedere alle migliori opportunità.</p>
+                <!-- SOSTITUISCI CON IL LINK AL TUO FORM INQUILINI SPECIFICO -->
+                <a href="https://forms.gle/ILTUOLINKFORM" class="cta-button" target="_blank">Inizia la Tua Candidatura Ora</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>© 2024 Affitto Smart | <a href="#">Privacy Policy</a></p>
+        </div>
+    </footer>
+
+</body>
+</html>
