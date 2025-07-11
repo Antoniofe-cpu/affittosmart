@@ -9,191 +9,112 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --colore-primario: #0D47A1; --colore-secondario: #1976D2; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
-        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        
-        /* Header */
-        .main-header { background-color: white; padding: 20px 0; text-align: center; border-bottom: 1px solid #eee;}
-        .logo { font-size: 2em; font-weight: 800; color: var(--colore-primario); }
-        .logo span { font-weight: 400; color: var(--colore-secondario); }
-
-        /* Sezioni */
-        .hero, .benefits { text-align: center; padding: 80px 20px; }
-        .hero h1 { font-size: 3em; margin-bottom: 15px; }
-        .hero p { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto; }
-
-        .benefits { background-color: white; }
-        .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 50px; }
-        .benefit-card { text-align: center; }
-        .benefit-card .icon { font-size: 3em; color: var(--colore-accento); margin-bottom: 15px; }
-        .benefit-card h3 { font-size: 1.4em; }
-        
-        /* Sezione Ricerca */
-        #search-section { padding: 80px 20px; text-align: center; }
-        .search-container {
-            background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            max-width: 500px; width: 100%; margin: 0 auto;
+        :root { --colore-primario: #0D47A1; --colore-secondario: #1976D2; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; --colore-bianco: #ffffff;}
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .hero-search {
+            background: linear-gradient(180deg, var(--colore-bianco) 60%, var(--colore-sfondo-chiaro) 100%);
+            padding: 80px 0; text-align: center;
         }
-        .filter-form { margin-top: 30px; }
-        .filter-step { display: none; animation: fadeIn 0.5s ease-in-out; }
-        .filter-step.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; text-align: left; font-size: 1.2em; }
-        .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; margin-bottom: 20px; }
-        .navigation-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
-        .nav-button, #search-button {
-            padding: 12px 30px; border-radius: 8px; border: none; font-size: 1em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+        .hero-search h1 { font-size: 3.2em; color: var(--colore-primario); }
+        .hero-search .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 600px; margin: 15px auto 40px auto; }
+        .filter-bar {
+            background: white; padding: 25px; border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; align-items: flex-end;
+            max-width: 900px; margin: 0 auto;
         }
-        .prev-button { background-color: #e0e0e0; }
-        .next-button { background-color: var(--colore-primario); color: white; }
+        .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; text-align: left; }
+        .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
         #search-button {
-            width: 100%; height: 55px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo); font-size: 1.2em;
+            height: 55px; border-radius: 8px; border: none; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo); font-size: 1.2em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
         }
-        
-        /* Footer */
-        .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 20px 0; text-align: center; font-size: 0.9em; }
-        .main-footer a { color: white; }
-
+        #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,179,0,0.2); }
+        .process-section { padding: 80px 20px; background-color: var(--colore-sfondo-chiaro); }
+        .process-section h2 { font-size: 2.8em; }
+        .process-grid { display: flex; justify-content: space-around; text-align: center; margin-top: 60px; position: relative; flex-wrap: wrap; }
+        .process-step { flex: 1; padding: 20px; min-width: 250px; }
+        .process-step .icon {
+            font-size: 3em; color: var(--colore-primario); margin-bottom: 20px;
+            background: white; border-radius: 50%; width: 80px; height: 80px;
+            display: inline-flex; justify-content: center; align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
+        }
+        .process-step h3 { font-size: 1.4em; }
+        .process-grid::before {
+            content: ''; position: absolute; top: 40px; left: 15%; right: 15%;
+            height: 2px; background: repeating-linear-gradient(90deg, #ccc, #ccc 10px, transparent 10px, transparent 20px);
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
-
-    <header class="main-header">
-        <div class="logo">Affitto <span>Smart</span></div>
-    </header>
-
     <main>
-        <section class="hero">
+        <section class="hero-search">
             <div class="container">
-                <h1>Trovare casa a Bologna è appena diventato più semplice.</h1>
-                <p>Basta candidarsi per decine di annunci e non ricevere risposta. Il nostro metodo ti dà accesso a opportunità reali e ti fa risparmiare tempo prezioso.</p>
+                <h1>La tua ricerca finisce qui.</h1>
+                <p class="subtitle">A Bologna, la casa che cerchi trova te. Dicci le tue preferenze e ti mostreremo solo le opportunità per cui hai una chance reale.</p>
+                
+                <form id="filter-form" class="filter-bar">
+                    <div class="filter-group">
+                        <label for="filter-tipo">Tipo</label>
+                        <select id="filter-tipo" name="tipo">
+                            <option value="">Qualsiasi</option>
+                            <option value="Stanza Singola">Stanza Singola</option>
+                            <option value="Monolocale">Monolocale</option>
+                            <option value="Bilocale">Bilocale</option>
+                            <option value="Trilocale">Trilocale</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-zona">Zona</label>
+                        <select id="filter-zona" name="zona">
+                            <option value="">Qualsiasi</option>
+                            <option value="Centro Storico">Centro Storico</option>
+                            <option value="Murri">Murri</option>
+                            <option value="Savena">Savena</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-prezzo">Budget Max</label>
+                        <input type="number" id="filter-prezzo" name="prezzo" placeholder="€">
+                    </div>
+                    <button type="submit" id="search-button">Cerca</button>
+                </form>
             </div>
         </section>
 
-        <section class="benefits">
+        <section class="process-section">
             <div class="container">
-                <h2>Il Vantaggio dell'Open Day Esclusivo</h2>
-                <div class="benefits-grid">
-                    <div class="benefit-card">
-                        <div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                        <h3>Zero Perdite di Tempo</h3>
-                        <p>Visiti solo immobili per cui sei già stato pre-qualificato. Se ti invitiamo, sai già di avere una chance concreta.</p>
+                <h2 style="text-align: center;">Il nostro non è un semplice annuncio.<br>È un invito esclusivo.</h2>
+                <div class="process-grid">
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-file-circle-xmark"></i></div>
+                        <h3>1. Dimentica il Caos</h3>
+                        <p>Niente più candidature a vuoto. Il nostro sistema ti mostra solo le case per cui sei veramente compatibile.</p>
                     </div>
-                    <div class="benefit-card">
-                        <div class="icon"><i class="fa-solid fa-users-viewfinder"></i></div>
-                        <h3>Meno Folla, Più Qualità</h3>
-                        <p>Dimentica le visite con 30 persone. I nostri Open Day sono a numero chiuso per darti il tempo di vedere la casa con calma.</p>
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-star"></i></div>
+                        <h3>2. Entra nel Canale Preferenziale</h3>
+                        <p>Superando la ricerca, entri in una lista ristretta. La tua candidatura ha più valore fin da subito.</p>
                     </div>
-                    <div class="benefit-card">
-                        <div class="icon"><i class="fa-solid fa-file-signature"></i></div>
-                        <h3>Processo Chiaro e Trasparente</h3>
-                        <p>Niente sorprese. Conosci i requisiti fin da subito e sei guidato in ogni passo, dalla ricerca alla proposta.</p>
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-champagne-glasses"></i></div>
+                        <h3>3. Vivi l'Esperienza Open Day</h3>
+                        <p>Un evento tranquillo, a numero chiuso, dove puoi visitare la casa con calma e parlare con noi. La tua opportunità, senza stress.</p>
                     </div>
                 </div>
             </div>
         </section>
-
-        <section id="search-section">
-            <div class="search-container">
-                <h2>Inizia la tua ricerca</h2>
-                <p style="color: var(--colore-testo-chiaro); font-size: 1.1em;">Dicci cosa cerchi. Al resto pensiamo noi.</p>
-                
-                <form id="filter-form" class="filter-form">
-                    <!-- Step 1: Tipo di Immobile -->
-                    <div class="filter-step active" data-step="1">
-                        <div class="filter-group">
-                            <label for="filter-tipo">Per iniziare, che tipo di immobile cerchi?</label>
-                            <select id="filter-tipo" name="tipo">
-                                <option value="">Qualsiasi tipo</option>
-                                <option value="Stanza Singola">Stanza Singola</option>
-                                <option value="Monolocale">Monolocale</option>
-                                <option value="Bilocale">Bilocale</option>
-                                <option value="Trilocale">Trilocale</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Zona -->
-                    <div class="filter-step" data-step="2">
-                        <div class="filter-group">
-                            <label for="filter-zona">Ottimo! Hai una zona di preferenza?</label>
-                            <select id="filter-zona" name="zona">
-                                <option value="">Tutte le zone</option>
-                                <option value="Centro Storico">Centro Storico</option>
-                                <option value="Murri">Murri</option>
-                                <option value="Savena">Savena</option>
-                                <option value="Saragozza">Saragozza</option>
-                                <option value="Bolognina">Bolognina</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Prezzo -->
-                    <div class="filter-step" data-step="3">
-                        <div class="filter-group">
-                            <label for="filter-prezzo">Perfetto. Qual è il tuo budget massimo mensile?</label>
-                            <input type="number" id="filter-prezzo" name="prezzo" placeholder="Es. 900 €">
-                        </div>
-                        <button type="submit" id="search-button">Mostra Immobili Compatibili</button>
-                    </div>
-
-                    <!-- Pulsanti di Navigazione -->
-                    <div class="navigation-buttons">
-                        <button type="button" class="nav-button prev-button" style="display: none;">Indietro</button>
-                        <button type="button" class="nav-button next-button">Avanti</button>
-                    </div>
-                </form>
-            </div>
-        </section>
     </main>
 
-    <footer class="main-footer">
-        <p>© 2024 Affitto Smart | <a href="#">Privacy Policy</a></p>
-    </footer>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('filter-form');
-            const steps = Array.from(document.querySelectorAll('.filter-step'));
-            const nextButton = document.querySelector('.next-button');
-            const prevButton = document.querySelector('.prev-button');
-            const searchButton = document.getElementById('search-button');
-            let currentStep = 0;
-
-            function showStep(stepIndex) {
-                steps.forEach((step, index) => {
-                    step.classList.toggle('active', index === stepIndex);
-                });
-                prevButton.style.display = stepIndex > 0 ? 'inline-block' : 'none';
-                nextButton.style.display = stepIndex < steps.length - 1 ? 'inline-block' : 'none';
-                searchButton.style.display = stepIndex === steps.length - 1 ? 'block' : 'none';
-            }
-
-            nextButton.addEventListener('click', () => {
-                if (currentStep < steps.length - 1) {
-                    currentStep++;
-                    showStep(currentStep);
-                }
-            });
-
-            prevButton.addEventListener('click', () => {
-                if (currentStep > 0) {
-                    currentStep--;
-                    showStep(currentStep);
-                }
-            });
-
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const formData = new FormData(form);
-                const queryString = new URLSearchParams(formData).toString();
-                window.location.href = 'risultati.html?' + queryString;
-            });
-
-            // Inizializza la visualizzazione
-            showStep(currentStep);
+        document.getElementById('filter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const queryString = new URLSearchParams(formData).toString();
+            window.location.href = 'risultati.html?' + queryString;
         });
     </script>
 </body>
