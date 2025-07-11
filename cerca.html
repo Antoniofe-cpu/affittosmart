@@ -9,222 +9,221 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --colore-primario: #0D47A1; --colore-secondario: #1976D2; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; --colore-bianco: #ffffff;}
+        :root { 
+            --colore-primario: #0D47A1; 
+            --colore-secondario: #1976D2; 
+            --colore-accento: #FFB300; 
+            --colore-testo: #212121; 
+            --colore-testo-chiaro: #5f6368; 
+            --colore-sfondo-chiaro: #f5f7fa; 
+            --colore-bianco: #ffffff;
+        }
         html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
         .text-center { text-align: center; }
         
-        /* HERO & SEARCH SECTION */
-        .hero-search {
-            padding: 80px 0;
-            background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(245,247,250,1) 100%);
-        }
-        .hero-search h1 { font-size: 3.5em; color: var(--colore-primario); line-height: 1.2; margin-bottom: 15px; }
-        .hero-search .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 50px auto; }
+        /* SEZIONI CON SFONDI DIVERSI */
+        .section-white { background-color: var(--colore-bianco); padding: 80px 0; }
+        .section-light { background-color: var(--colore-sfondo-chiaro); padding: 80px 0; }
+        .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); padding: 60px 0; }
+        
+        .section-title { font-size: 2.8em; color: var(--colore-primario); margin-bottom: 15px; }
+        .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 50px auto; }
+        
+        /* BARRA DI RICERCA INIZIALE */
         .filter-bar {
             background: white; padding: 30px; border-radius: 16px;
             box-shadow: 0 15px 50px rgba(0,0,0,0.1);
-            display: grid; grid-template-columns: 2fr 2fr 1.5fr 1fr; gap: 20px; align-items: flex-end;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: flex-end;
         }
         .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; text-align: left; }
         .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
+
+        /* SEZIONE PRIORITÀ INTERATTIVA */
+        .priority-box {
+            background: var(--colore-bianco); padding: 40px; border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08); max-width: 600px; margin: 0 auto;
+        }
+        #priority-form .filter-step { display: none; animation: fadeIn 0.5s; }
+        #priority-form .filter-step.active { display: block; }
+        .progress-bar { width: 100%; background-color: #e0e0e0; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+        .progress-bar-inner { height: 8px; background-color: var(--colore-accento); border-radius: 10px; transition: width 0.4s ease; }
+        .priority-nav { margin-top: 20px; display: flex; justify-content: space-between; }
+        .nav-button { padding: 12px 30px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; }
+        .prev-button { background-color: #e0e0e0; }
+        .next-button { background-color: var(--colore-primario); color: white; }
+
+        /* PULSANTE FINALE */
         #search-button {
-            height: 55px; width: 100%; border-radius: 8px; border: none; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo); font-size: 1.2em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+            width: 100%; max-width: 450px; margin: 40px auto 0 auto; display: none; /* Nascosto all'inizio */
+            height: 60px; border-radius: 50px; border: none; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo); font-size: 1.3em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
         }
-        #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,179,0,0.2); }
-        .priority-link {
-            display: block; margin-top: 25px; font-weight: 600; color: var(--colore-primario);
-            cursor: pointer; text-decoration: underline;
-        }
-
-        /* WHY US SECTION */
-        .why-us { padding: 80px 0; }
-        .why-us h2 { font-size: 2.8em; }
-        .process-grid { display: flex; justify-content: space-around; text-align: center; margin-top: 60px; position: relative; flex-wrap: wrap; gap: 20px;}
-        .process-step { flex: 1; padding: 20px; min-width: 250px; background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
-        .process-step .icon { font-size: 3em; color: var(--colore-accento); margin-bottom: 20px; }
-        .process-step h3 { font-size: 1.4em; }
-
-        /* MODAL STYLES */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
-            display: none; justify-content: center; align-items: center; z-index: 2000;
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        .modal-overlay.visible { display: flex; opacity: 1; }
-        .modal-content {
-            background: white; padding: 40px; border-radius: 16px; max-width: 600px;
-            width: 90%; text-align: center; transform: scale(0.95); transition: transform 0.3s ease;
-        }
-        .modal-overlay.visible .modal-content { transform: scale(1); }
-        .modal-content h2 { margin-top: 0; }
-        #priority-form .filter-step { display: none; }
-        #priority-form .filter-step.active { display: block; animation: fadeIn 0.5s; }
-        .priority-nav { margin-top: 20px; text-align: right; }
-        .nav-button { padding: 10px 25px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; }
-        #priority-form-submit { display: none; width: 100%; margin-top: 20px; background-color: var(--colore-primario); color: white; height: 50px; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #search-button.visible { display: block; animation: fadeIn 1s; }
+        #search-button:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         
-        @media (max-width: 768px) {
-            .filter-bar { grid-template-columns: 1fr; }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) { .filter-bar { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
+    <header style="padding: 20px; text-align: center; background: white;">
+        <div class="logo" style="font-size: 2em; font-weight: 800; color: var(--colore-primario);">Affitto <span>Smart</span></div>
+    </header>
+
     <main>
-        <section class="hero-search text-center">
-            <div class="container">
-                <h1>Trova la casa che ti sceglie.</h1>
-                <p class="subtitle">Benvenuto nel canale preferenziale per gli affitti a Bologna. Inserisci le tue preferenze qui sotto e scopri solo le opportunità per cui hai una chance reale.</p>
-                
-                <form id="search-form" class="filter-bar">
-                    <div class="filter-group">
-                        <label for="filter-tipo">Tipo di Immobile</label>
-                        <select id="filter-tipo" name="tipo">
-                            <option value="">Qualsiasi</option>
-                            <option value="Stanza Singola">Stanza Singola</option>
-                            <option value="Monolocale">Monolocale</option>
-                            <option value="Bilocale">Bilocale</option>
-                            <option value="Trilocale">Trilocale</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filter-zona">Zona</label>
-                        <select id="filter-zona" name="zona">
-                            <option value="">Qualsiasi</option>
-                            <option value="Centro Storico">Centro Storico</option>
-                            <option value="Murri">Murri</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filter-prezzo">Budget Max (€)</label>
-                        <input type="number" id="filter-prezzo" name="prezzo" placeholder="Es. 900">
-                    </div>
-                    <button type="submit" id="search-button"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </form>
-
-                <a class="priority-link" id="open-priority-modal">Vuoi aumentare le tue chance? Verifica subito le Priorità del Proprietario.</a>
-            </div>
-        </section>
-
-        <section class="why-us">
-            <div class="container text-center">
-                <h2>Il nostro non è un semplice annuncio.<br>È un invito esclusivo.</h2>
-                <p class="subtitle" style="margin-bottom: 60px;">Ecco perché il nostro metodo è un vantaggio anche per te.</p>
-                <div class="process-grid">
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-file-circle-xmark"></i></div>
-                        <h3>Zero Candidature a Vuoto</h3>
-                        <p>Il sistema ti mostra solo le case che corrispondono alle tue esigenze base (zona, prezzo, tipo).</p>
-                    </div>
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-star"></i></div>
-                        <h3>Accesso a Open Day Esclusivi</h3>
-                        <p>Dimentica le visite caotiche. Parteciperai a eventi a numero chiuso, dove potrai vedere la casa con la giusta calma.</p>
-                    </div>
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-shield-heart"></i></div>
-                        <h3>Massima Trasparenza</h3>
-                        <p>Grazie al nostro "Checkpoint di Compatibilità", scopri subito se rispetti i requisiti fondamentali del proprietario.</p>
+        <form id="combined-form">
+            <!-- SEZIONE 1: RICERCA BASE -->
+            <section class="section-white text-center">
+                <div class="container">
+                    <h1 class="section-title">Trova la casa che ti sceglie.</h1>
+                    <p class="section-subtitle">Inizia con le tue preferenze base. Nel prossimo passo, le confronteremo con i desideri dei proprietari per darti risultati più pertinenti.</p>
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <label for="filter-tipo">Tipo di Immobile</label>
+                            <select name="tipo">
+                                <option value="">Qualsiasi</option>
+                                <option value="Stanza Singola">Stanza Singola</option>
+                                <option value="Monolocale">Monolocale</option>
+                                <option value="Bilocale">Bilocale</option>
+                                <option value="Trilocale">Trilocale</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-zona">Zona</label>
+                            <select name="zona">
+                                <option value="">Qualsiasi</option>
+                                <option value="Centro Storico">Centro Storico</option>
+                                <option value="Murri">Murri</option>
+                                <option value="Bolognina">Bolognina</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-prezzo">Budget Max (€)</label>
+                            <input type="number" name="prezzo" placeholder="Es. 900">
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Modal per le Priorità del Proprietario -->
-        <div class="modal-overlay" id="priority-modal">
-            <div class="modal-content">
-                <h2>Priorità del Proprietario</h2>
-                <p>Rispondi a queste domande. Le tue risposte verranno aggiunte come filtri alla tua ricerca.</p>
-                <form id="priority-form">
-                    <div class="filter-step active">
-                        <div class="filter-group">
-                            <label>Qual è la tua situazione lavorativa?</label>
-                            <select name="situazione_lavorativa">
-                                <option value="">Indifferente</option>
-                                <option>Dipendente a tempo indeterminato</option>
-                                <option>Studente/ssa con garante</option>
-                            </select>
+            <!-- SEZIONE 2: PRIORITÀ DEL PROPRIETARIO (OBBLIGATORIA) -->
+            <section id="priority-section" class="section-light text-center">
+                <div class="container">
+                    <h2 class="section-title">Passo 2: Verifica la Compatibilità</h2>
+                    <p class="section-subtitle">Per farti risparmiare tempo, ogni proprietario ci indica delle priorità. Rispondi a queste brevi domande per sbloccare la ricerca e vedere solo gli immobili per cui hai una chance reale.</p>
+                    <div class="priority-box">
+                        <div class="progress-bar">
+                            <div class="progress-bar-inner" id="progress-bar"></div>
+                        </div>
+                        <div id="priority-form-steps">
+                            <!-- Step 1 -->
+                            <div class="filter-step active">
+                                <div class="filter-group">
+                                    <label>Qual è la tua situazione lavorativa principale?</label>
+                                    <select name="situazione_lavorativa" required>
+                                        <option value="" disabled selected>Seleziona un'opzione...</option>
+                                        <option>Dipendente a tempo indeterminato</option>
+                                        <option>Studente/ssa con garante</option>
+                                        <option>Lavoratore Autonomo / P.IVA</option>
+                                        <option>Altro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Step 2 -->
+                            <div class="filter-step">
+                                <div class="filter-group">
+                                    <label>Possiedi animali domestici?</label>
+                                    <select name="animali" required>
+                                        <option value="" disabled selected>Seleziona un'opzione...</option>
+                                        <option>Sì</option>
+                                        <option>No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Aggiungi qui altri step per altre priorità -->
+                        </div>
+                        <div class="priority-nav">
+                            <button type="button" class="nav-button prev-button" style="display: none;">Indietro</button>
+                            <button type="button" class="nav-button next-button">Avanti</button>
                         </div>
                     </div>
-                    <div class="filter-step">
-                        <div class="filter-group">
-                            <label>Possiedi animali domestici?</label>
-                            <select name="animali">
-                                <option value="">Indifferente</option>
-                                <option>Sì</option>
-                                <option>No</option>
-                            </select>
-                        </div>
-                    </div>
-                    <!-- Aggiungi qui altri filtri/priorità come nuovi .filter-step -->
-                    <div class="priority-nav">
-                        <button type="button" class="nav-button next-button">Prossima</button>
-                    </div>
-                    <button type="submit" id="priority-form-submit" class="nav-button">Applica Priorità e Cerca</button>
-                </form>
-            </div>
-        </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 3: PULSANTE DI RICERCA FINALE -->
+            <section id="final-search-section" class="text-center">
+                <div class="container">
+                    <h2 id="final-search-title" style="display: none;">Perfetto! Sei pronto per la ricerca.</h2>
+                    <button type="submit" id="search-button">Trova la mia Casa Ideale</button>
+                </div>
+            </section>
+        </form>
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Gestione del Modal per le priorità
-            const modal = document.getElementById('priority-modal');
-            const openModalLink = document.getElementById('open-priority-modal');
-            
-            openModalLink.addEventListener('click', () => modal.classList.add('visible'));
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.remove('visible');
-            });
-
-            // Gestione della navigazione a step nel modal
-            const priorityForm = document.getElementById('priority-form');
-            const steps = Array.from(priorityForm.querySelectorAll('.filter-step'));
-            const nextButton = priorityForm.querySelector('.next-button');
-            const submitPriorityButton = document.getElementById('priority-form-submit');
+            const form = document.getElementById('combined-form');
+            const steps = Array.from(document.querySelectorAll('#priority-form-steps .filter-step'));
+            const nextButton = document.querySelector('.next-button');
+            const prevButton = document.querySelector('.prev-button');
+            const searchButton = document.getElementById('search-button');
+            const finalSearchTitle = document.getElementById('final-search-title');
+            const progressBar = document.getElementById('progress-bar');
             let currentStep = 0;
 
-            nextButton.addEventListener('click', () => {
-                if (currentStep < steps.length - 1) {
-                    steps[currentStep].classList.remove('active');
-                    currentStep++;
-                    steps[currentStep].classList.add('active');
-                } else {
-                    nextButton.style.display = 'none';
-                    submitPriorityButton.style.display = 'block';
-                }
-            });
-
-            // Gestione dell'invio dei form
-            const searchForm = document.getElementById('search-form');
-            
-            function launchSearch() {
-                const searchData = new FormData(searchForm);
-                const priorityData = new FormData(priorityForm);
-
-                for (let [key, value] of priorityData.entries()) {
-                    if (value) { // Aggiunge solo i filtri di priorità che sono stati selezionati
-                        searchData.append(key, value);
-                    }
-                }
+            function updateStepView() {
+                steps.forEach((step, index) => {
+                    step.classList.toggle('active', index === currentStep);
+                });
                 
-                const queryString = new URLSearchParams(searchData).toString();
-                window.location.href = 'risultati.html?' + queryString;
+                // Aggiorna la barra di progresso
+                const progressPercentage = ((currentStep + 1) / steps.length) * 100;
+                progressBar.style.width = `${progressPercentage}%`;
+                
+                // Gestisce la visibilità dei pulsanti
+                prevButton.style.display = currentStep > 0 ? 'inline-block' : 'none';
+                if (currentStep === steps.length - 1) {
+                    nextButton.innerText = "Fine";
+                } else {
+                    nextButton.innerText = "Avanti";
+                }
             }
 
-            searchForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                launchSearch();
+            nextButton.addEventListener('click', () => {
+                // Controlla se l'input dello step corrente è valido
+                const currentSelect = steps[currentStep].querySelector('select');
+                if (currentSelect && !currentSelect.value) {
+                    alert("Per favore, seleziona un'opzione per continuare.");
+                    return;
+                }
+
+                if (currentStep < steps.length - 1) {
+                    currentStep++;
+                    updateStepView();
+                } else {
+                    // Fine del quiz, mostra il pulsante di ricerca finale
+                    document.getElementById('priority-section').style.display = 'none';
+                    finalSearchTitle.style.display = 'block';
+                    searchButton.classList.add('visible');
+                }
             });
 
-            priorityForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                modal.classList.remove('visible');
-                launchSearch();
+            prevButton.addEventListener('click', () => {
+                if (currentStep > 0) {
+                    currentStep--;
+                    updateStepView();
+                }
             });
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                const queryString = new URLSearchParams(formData).toString();
+                window.location.href = 'risultati.html?' + queryString;
+            });
+            
+            updateStepView(); // Inizializza la vista
         });
     </script>
 </body>
