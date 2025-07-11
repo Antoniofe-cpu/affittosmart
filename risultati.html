@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Risultati della tua Ricerca - Affitto Smart</title>
-    <!-- Stessi stili -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; }
+        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; --colore-successo: #2E7D32; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
         .header { text-align: center; padding: 40px 0; }
@@ -20,19 +20,43 @@
             box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 30px;
             display: flex; flex-wrap: wrap;
         }
-        .property-card-img { flex: 1; min-width: 300px; max-height: 250px; }
+        .property-card-img { flex: 1; min-width: 300px; max-height: 250px; background-color: #eee; }
         .property-card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .property-card-info { flex: 2; padding: 25px; }
+        .property-card-info { flex: 2; padding: 25px; display: flex; flex-direction: column; }
         .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); }
         .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); }
         .property-card-info h3 { margin: 10px 0; font-size: 1.5em; }
-        .property-card-info .address { margin-bottom: 15px; }
+        .property-card-info p { flex-grow: 1; }
         .property-card .cta-button {
             display: inline-block; padding: 12px 25px; font-size: 0.9em; text-decoration: none;
             border-radius: 50px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo); font-weight: 700; transition: all 0.3s ease;
+            color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; align-self: flex-start;
         }
         .message { text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
+
+        /* Stili per il Modal/Popup */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.visible { display: flex; opacity: 1; }
+        .modal-content {
+            background: white; padding: 30px 40px; border-radius: 12px;
+            max-width: 500px; width: 90%; text-align: center;
+            transform: scale(0.9); transition: transform 0.3s ease;
+        }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
+        .modal-content h3 { font-size: 1.8em; color: var(--colore-primario); margin-top: 0; }
+        .modal-content p { color: var(--colore-testo-chiaro); }
+        #modal-answer-container select { width: 100%; padding: 12px; margin: 20px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 1.1em; }
+        #modal-verify-button {
+             width: 100%; height: 50px; border-radius: 8px; border: none;
+            background-color: var(--colore-primario); color: white; font-size: 1.1em;
+            font-weight: 700; cursor: pointer; transition: background-color 0.3s;
+        }
+        #modal-verify-button:hover { background-color: #0B3A82; }
+        #modal-result a { margin-top: 20px; background: var(--colore-successo); color: white; }
     </style>
 </head>
 <body>
@@ -40,136 +64,165 @@
         <header class="header">
             <h1>Ecco le proposte per te</h1>
         </header>
-
         <div id="results-container">
             <p class="message">Caricamento degli immobili in corso...</p>
         </div>
-        
         <div style="text-align: center;">
             <a href="cerca.html" class="back-link">Modifica la tua ricerca</a>
         </div>
     </div>
 
+    <!-- Struttura del Modal (nascosto) -->
+    <div class="modal-overlay" id="checkpoint-modal">
+        <div class="modal-content" id="modal-inner-content">
+            <h3>Checkpoint di Compatibilità</h3>
+            <p id="modal-question-text"></p>
+            <div id="modal-answer-container"></div>
+            <button id="modal-verify-button">Verifica Risposta</button>
+            <div id="modal-result"></div>
+        </div>
+    </div>
+
     <script>
-    // --- CONFIGURAZIONE ---
-    // Assicurati che questo link sia quello corretto da "File > Condividi > Pubblica sul web" (formato CSV)
-    const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
+        const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
+        const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
 
-    // --- FUNZIONI ---
+        let allProperties = [];
+        let allRequirements = [];
 
-    // Funzione per convertire il testo CSV in un array di oggetti JavaScript
-    function csvToObjects(csv) {
-    const lines = csv.trim().split('\n');
-    if (lines.length < 2) return [];
-
-    // Rimuove eventuali caratteri di ritorno a capo (\r) e pulisce le intestazioni
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-    
-    const objects = [];
-    for (let i = 1; i < lines.length; i++) {
-        if (lines[i]) {
-            // Usa una regex più potente per splittare, gestendo le virgole dentro le virgolette
-            const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            
-            const obj = {};
-            for (let j = 0; j < headers.length; j++) {
-                // Pulisce ogni valore
-                obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
+        function csvToObjects(csv) {
+            const lines = csv.trim().split('\n');
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const objects = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i]) {
+                    const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    const obj = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
+                    }
+                    objects.push(obj);
+                }
             }
-            objects.push(obj);
-        }
-    }
-    return objects;
-}
-
-    // Funzione per mostrare le card delle proprietà nel contenitore
-    function displayResults(properties) {
-        const resultsContainer = document.getElementById('results-container');
-        resultsContainer.innerHTML = ''; // Pulisce i risultati precedenti
-
-        if (properties.length === 0) {
-            resultsContainer.innerHTML = '<p class="message">Nessun immobile corrisponde alla tua ricerca. Prova a modificare i filtri!</p>';
-            return;
+            return objects;
         }
 
-        properties.forEach(p => {
-            // Controlla che i dati essenziali non siano vuoti prima di creare la card
-            if (!p.Titolo || !p.Prezzo || !p.FotoURL || !p.CalendlyURL) return;
-
-            const card = `
-                <div class="property-card">
-                    <div class="property-card-img">
-                        <img src="${p.FotoURL}" alt="${p.Titolo}">
-                    </div>
-                    <div class="property-card-info">
-                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                        <h3>${p.Titolo}</h3>
-                        <div class="price">${p.Prezzo} €/mese</div>
-                        <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
-                        <a href="${p.CalendlyURL}" class="cta-button" target="_blank">Prenota Open Day</a>
-                    </div>
-                </div>
-            `;
-            resultsContainer.innerHTML += card;
-        });
-    }
-
-    // Funzione principale che carica i dati e li filtra
-   async function loadAndFilterProperties() {
-    console.log("1. Funzione avviata.");
-    const resultsContainer = document.getElementById('results-container');
-    try {
-        const params = new URLSearchParams(window.location.search);
-        const tipo = (params.get('tipo') || '').trim().toLowerCase();
-        const zona = (params.get('zona') || '').trim().toLowerCase();
-        const prezzo = parseInt(params.get('prezzo'));
-        const prezzoMax = isNaN(prezzo) ? Infinity : prezzo;
-        console.log(`2. Filtri: tipo=${tipo}, zona=${zona}, prezzoMax=${prezzoMax}`);
-
-        const response = await fetch(GOOGLE_SHEET_URL);
-        if (!response.ok) { throw new Error(`Errore di rete: ${response.statusText}`); }
-        const csvData = await response.text();
-        console.log("3. Dati CSV caricati.");
-        
-        const properties = csvToObjects(csvData);
-        console.log(`4. Convertite ${properties.length} proprietà.`);
-        
-        // LOG DI DEBUG: Stampa la prima proprietà per vedere come viene letta
-        if (properties.length > 0) {
-            console.log("DEBUG: Dati della prima proprietà letta:", properties[0]);
+        function displayResults(properties) {
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '';
+            if (properties.length === 0) {
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile corrisponde alla tua ricerca. Prova a modificare i filtri!</p>';
+                return;
+            }
+            properties.forEach(p => {
+                if (!p.Titolo || !p.Prezzo || !p.FotoURL || !p.CalendlyURL) return;
+                const card = `
+                    <div class="property-card">
+                        <div class="property-card-img">
+                            <img src="${p.FotoURL}" alt="${p.Titolo}">
+                        </div>
+                        <div class="property-card-info">
+                            <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                            <h3>${p.Titolo}</h3>
+                            <div class="price">${p.Prezzo} €/mese</div>
+                            <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
+                            <button class="cta-button" onclick="handleBookingClick('${p.ID}', '${p.CalendlyURL}')">Prenota Open Day</button>
+                        </div>
+                    </div>`;
+                resultsContainer.innerHTML += card;
+            });
         }
 
-        const filteredProperties = properties.filter(p => {
-            const prezzoImmobile = parseInt(p.Prezzo);
-            if (isNaN(prezzoImmobile)) return false;
+        function handleBookingClick(propertyId, calendlyUrl) {
+            const requirement = allRequirements.find(r => r.ID_Immobile === propertyId);
+            if (!requirement) {
+                window.open(calendlyUrl, '_blank');
+                return;
+            }
+            const modal = document.getElementById('checkpoint-modal');
+            const modalQuestion = document.getElementById('modal-question-text');
+            const answerContainer = document.getElementById('modal-answer-container');
+            const verifyButton = document.getElementById('modal-verify-button');
+            const resultContainer = document.getElementById('modal-result');
 
-            const pStato = (p.Stato || '').trim().toLowerCase();
-            const pTipo = (p.Tipo || '').trim().toLowerCase();
-            const pZona = (p.Zona || '').trim().toLowerCase();
+            modalQuestion.innerText = requirement.Domanda_Da_Porre;
+            resultContainer.innerHTML = '';
+            verifyButton.style.display = 'block';
+
+            const options = requirement.Opzioni_Risposta.split(',');
+            let optionsHtml = '<select id="modal-answer">';
+            options.forEach(opt => {
+                optionsHtml += `<option value="${opt.trim()}">${opt.trim()}</option>`;
+            });
+            optionsHtml += '</select>';
+            answerContainer.innerHTML = optionsHtml;
             
-            // CONFRONTO
-            const statoOk = pStato === 'disponibile';
-            const tipoOk = tipo === '' || pTipo === tipo;
-            const zonaOk = zona === '' || pZona === zona;
-            const prezzoOk = prezzoImmobile <= prezzoMax;
+            modal.classList.add('visible');
 
-            return statoOk && tipoOk && zonaOk && prezzoOk;
-        });
-        console.log(`5. Trovate ${filteredProperties.length} proprietà dopo il filtro.`);
+            verifyButton.onclick = () => {
+                const userAnswer = document.getElementById('modal-answer').value;
+                if (userAnswer === requirement.Risposta_Attesa) {
+                    modalQuestion.innerText = "Perfetto! Puoi procedere.";
+                    answerContainer.innerHTML = '<p style="margin:20px 0;">Sei a un passo dalla tua nuova casa. Clicca qui sotto per scegliere l\'orario.</p>';
+                    verifyButton.style.display = 'none';
+                    resultContainer.innerHTML = `<a href="${calendlyUrl}" class="cta-button" target="_blank" style="background: var(--colore-successo); color: white;">Vai a Calendly e Prenota</a>`;
+                } else {
+                    modalQuestion.innerText = "Grazie per la sincerità!";
+                    answerContainer.innerHTML = '<p style="margin:20px 0;">Purtroppo questo immobile ha requisiti specifici non compatibili. Continua a cercare, la casa giusta per te potrebbe essere la prossima!</p>';
+                    verifyButton.style.display = 'none';
+                }
+            };
+            
+            modal.addEventListener('click', (e) => {
+                if(e.target === modal) modal.classList.remove('visible');
+            }, { once: true });
+        }
 
-        displayResults(filteredProperties);
-        console.log("6. Risultati mostrati.");
+        async function init() {
+            const resultsContainer = document.getElementById('results-container');
+            try {
+                const [propsRes, reqsRes] = await Promise.all([
+                    fetch(PROPERTIES_URL),
+                    fetch(REQUIREMENTS_URL)
+                ]);
 
-    } catch (error) {
-        console.error('ERRORE CRITICO:', error);
-        resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Riprova.</p>`;
-    }
-}
+                if (!propsRes.ok || !reqsRes.ok) throw new Error('Errore di rete nel caricamento dei dati.');
 
-    // --- INNESCO DELLO SCRIPT ---
-    // Usiamo DOMContentLoaded, che è più moderno e veloce di window.onload
-    document.addEventListener('DOMContentLoaded', loadAndFilterProperties);
+                const propsCsv = await propsRes.text();
+                const reqsCsv = await reqsRes.text();
+                
+                allProperties = csvToObjects(propsCsv);
+                allRequirements = csvToObjects(reqsCsv);
 
-</script>
+                const params = new URLSearchParams(window.location.search);
+                const tipo = (params.get('tipo') || '').trim().toLowerCase();
+                const zona = (params.get('zona') || '').trim().toLowerCase();
+                const prezzo = parseInt(params.get('prezzo'));
+                const prezzoMax = isNaN(prezzo) ? Infinity : prezzo;
+
+                const filteredProperties = allProperties.filter(p => {
+                    const prezzoImmobile = parseInt(p.Prezzo);
+                    if (isNaN(prezzoImmobile)) return false;
+                    const pStato = (p.Stato || '').trim().toLowerCase();
+                    const pTipo = (p.Tipo || '').trim().toLowerCase();
+                    const pZona = (p.Zona || '').trim().toLowerCase();
+                    
+                    return pStato === 'disponibile' &&
+                           (tipo === '' || pTipo === tipo) &&
+                           (zona === '' || pZona === zona) &&
+                           (prezzoImmobile <= prezzoMax);
+                });
+                displayResults(filteredProperties);
+            } catch(error) {
+                console.error("ERRORE CRITICO:", error);
+                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore nel caricamento dei dati. Assicurati che i link ai database siano corretti e pubblicati come CSV.</p>`;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
 </body>
 </html>
