@@ -51,98 +51,120 @@
     </div>
 
     <script>
-        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
+    // --- CONFIGURAZIONE ---
+    // Assicurati che questo link sia quello corretto da "File > Condividi > Pubblica sul web" (formato CSV)
+    const GOOGLE_SHEET_URL = 'INCOLLA_QUI_IL_TUO_LINK_CSV_PUBBLICATO';
 
-        // Funzione per convertire CSV in un array di oggetti
-        function csvToObjects(csv) {
-            const lines = csv.split('\n');
-            const headers = lines[0].split(',').map(h => h.trim());
-            const objects = [];
-            for (let i = 1; i < lines.length; i++) {
-                if (lines[i]) {
-                    const values = lines[i].split(',');
-                    const obj = {};
-                    for (let j = 0; j < headers.length; j++) {
-                        obj[headers[j]] = values[j] ? values[j].trim() : '';
-                    }
-                    objects.push(obj);
+    // --- FUNZIONI ---
+
+    // Funzione per convertire il testo CSV in un array di oggetti JavaScript
+    function csvToObjects(csv) {
+        // Separa il testo in righe, ignorando le righe vuote alla fine
+        const lines = csv.trim().split('\n');
+        if (lines.length < 2) return []; // Se non c'è almeno un'intestazione e una riga di dati, esci
+
+        const headers = lines[0].split(',').map(h => h.trim());
+        const objects = [];
+        for (let i = 1; i < lines.length; i++) {
+            if (lines[i]) {
+                const values = lines[i].split(',');
+                const obj = {};
+                for (let j = 0; j < headers.length; j++) {
+                    // Pulisce ogni valore da eventuali doppi apici che Google Sheets aggiunge
+                    obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
                 }
+                objects.push(obj);
             }
-            return objects;
         }
-
-        async function loadAndFilterProperties() {
-    const resultsContainer = document.getElementById('results-container');
-    try {
-        // Leggi i parametri dall'URL
-        const params = new URLSearchParams(window.location.search);
-        const tipo = params.get('tipo') || '';
-        const zona = params.get('zona') || '';
-        const prezzo = parseInt(params.get('prezzo')) || Infinity;
-        // Se il prezzo è NaN (es. l'utente non ha scritto nulla), lo impostiamo a Infinito
-        const prezzoMax = isNaN(prezzo) ? Infinity : prezzo;
-
-        // Carica i dati dal Google Sheet
-        const response = await fetch(GOOGLE_SHEET_URL);
-        if (!response.ok) { // Controlla se la chiamata ha avuto successo
-            throw new Error(`Errore di rete: ${response.statusText}`);
-        }
-        const csvData = await response.text();
-        const properties = csvToObjects(csvData);
-
-        // Filtra le proprietà
-        const filteredProperties = properties.filter(p => {
-            const prezzoImmobile = parseInt(p.Prezzo);
-            
-            // Controlla che il prezzo sia un numero valido
-            if (isNaN(prezzoImmobile)) return false;
-
-            // Applica i filtri
-            return p.Stato === 'Disponibile' &&
-                   (tipo === '' || p.Tipo === tipo) &&
-                   (zona === '' || p.Zona === zona) &&
-                   (prezzoImmobile <= prezzoMax);
-        });
-
-        // Mostra i risultati
-        displayResults(filteredProperties);
-    } catch (error) {
-        console.error('Errore nel caricamento o filtraggio:', error);
-        resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che il database sia pubblicato correttamente e riprova.</p>`;
+        return objects;
     }
-}
-        
-        function displayResults(properties) {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '';
 
+    // Funzione per mostrare le card delle proprietà nel contenitore
+    function displayResults(properties) {
+        const resultsContainer = document.getElementById('results-container');
+        resultsContainer.innerHTML = ''; // Pulisce i risultati precedenti
+
+        if (properties.length === 0) {
+            resultsContainer.innerHTML = '<p class="message">Nessun immobile corrisponde alla tua ricerca. Prova a modificare i filtri!</p>';
+            return;
+        }
+
+        properties.forEach(p => {
+            // Controlla che i dati essenziali non siano vuoti prima di creare la card
+            if (!p.Titolo || !p.Prezzo || !p.FotoURL || !p.CalendlyURL) return;
+
+            const card = `
+                <div class="property-card">
+                    <div class="property-card-img">
+                        <img src="${p.FotoURL}" alt="${p.Titolo}">
+                    </div>
+                    <div class="property-card-info">
+                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                        <h3>${p.Titolo}</h3>
+                        <div class="price">${p.Prezzo} €/mese</div>
+                        <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
+                        <a href="${p.CalendlyURL}" class="cta-button" target="_blank">Prenota Open Day</a>
+                    </div>
+                </div>
+            `;
+            resultsContainer.innerHTML += card;
+        });
+    }
+
+    // Funzione principale che carica i dati e li filtra
+    async function loadAndFilterProperties() {
+        console.log("1. Funzione loadAndFilterProperties avviata."); // <-- Log di controllo
+        const resultsContainer = document.getElementById('results-container');
+        try {
+            // Leggi i parametri dall'URL
+            const params = new URLSearchParams(window.location.search);
+            const tipo = params.get('tipo') || '';
+            const zona = params.get('zona') || '';
+            const prezzo = parseInt(params.get('prezzo'));
+            const prezzoMax = isNaN(prezzo) ? Infinity : prezzo;
+            console.log(`2. Filtri letti dall'URL: tipo=${tipo}, zona=${zona}, prezzoMax=${prezzoMax}`); // <-- Log di controllo
+
+            // Carica i dati dal Google Sheet
+            const response = await fetch(GOOGLE_SHEET_URL);
+            if (!response.ok) {
+                throw new Error(`Errore di rete: ${response.statusText}`);
+            }
+            const csvData = await response.text();
+            console.log("3. Dati CSV caricati con successo."); // <-- Log di controllo
+            
+            const properties = csvToObjects(csvData);
             if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile corrisponde alla tua ricerca. Prova a modificare i filtri!</p>';
-                return;
+                console.warn("4. Attenzione: nessun dato convertito dal CSV. Controlla il formato del file.");
+            } else {
+                console.log(`4. Convertite ${properties.length} proprietà.`);
             }
 
-            properties.forEach(p => {
-                // Per ora, il bottone porta direttamente a Calendly. Non c'è bisogno di un form intermedio.
-                const card = `
-                    <div class="property-card">
-                        <div class="property-card-img">
-                            <img src="${p.FotoURL}" alt="${p.Titolo}">
-                        </div>
-                        <div class="property-card-info">
-                            <div class="type-zone">${p.Tipo} - ${p.Zona}</div>
-                            <h3>${p.Titolo}</h3>
-                            <div class="price">${p.Prezzo} €/mese</div>
-                            <p>${p.Descrizione}</p>
-                            <a href="${p.CalendlyURL}" class="cta-button" target="_blank">Prenota Open Day</a>
-                        </div>
-                    </div>
-                `;
-                resultsContainer.innerHTML += card;
+            // Filtra le proprietà
+            const filteredProperties = properties.filter(p => {
+                const prezzoImmobile = parseInt(p.Prezzo);
+                if (isNaN(prezzoImmobile)) return false;
+
+                return p.Stato === 'Disponibile' &&
+                       (tipo === '' || p.Tipo === tipo) &&
+                       (zona === '' || p.Zona === zona) &&
+                       (prezzoImmobile <= prezzoMax);
             });
+            console.log(`5. Trovate ${filteredProperties.length} proprietà dopo il filtro.`); // <-- Log di controllo
+
+            // Mostra i risultati
+            displayResults(filteredProperties);
+            console.log("6. Risultati mostrati sulla pagina."); // <-- Log di controllo
+
+        } catch (error) {
+            console.error('ERRORE CRITICO:', error);
+            resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che l'URL del database sia corretto e pubblicato come CSV.</p>`;
         }
-        
-        // Esegui la funzione quando la pagina si carica
-        window.onload = loadAndFilterProperties;
-    </script>
+    }
+
+    // --- INNESCO DELLO SCRIPT ---
+    // Usiamo DOMContentLoaded, che è più moderno e veloce di window.onload
+    document.addEventListener('DOMContentLoaded', loadAndFilterProperties);
+
+</script>
 </body>
 </html>
