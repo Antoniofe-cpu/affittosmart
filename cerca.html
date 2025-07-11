@@ -9,21 +9,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
-        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        :root { 
+            --colore-primario: #0D47A1; 
+            --colore-secondario: #1976D2; 
+            --colore-accento: #FFB300; 
+            --colore-testo: #212121; 
+            --colore-testo-chiaro: #5f6368; 
+            --colore-sfondo-chiaro: #f5f7fa; 
+            --colore-bianco: #ffffff;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
         .text-center { text-align: center; }
         
-        .hero-search { padding: 80px 0; background: white; }
-        .hero-search h1 { font-size: 3.2em; color: var(--colore-primario); }
-        .hero-search .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 15px auto 40px auto; }
+        .header { padding: 20px 0; text-align: center; border-bottom: 1px solid #eee;}
+        .logo { font-size: 2em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
+        .logo span { font-weight: 400; color: var(--colore-secondario); }
+
+        /* HERO & SEARCH SECTION */
+        .hero-search {
+            padding: 60px 0 80px 0;
+            background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(245,247,250,1) 100%);
+        }
+        .hero-search h1 { font-size: 3.5em; color: var(--colore-primario); line-height: 1.2; margin-bottom: 15px; }
+        .hero-search .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 50px auto; }
         
+        /* UNIFIED FORM */
         .unified-form {
             background: white; padding: 30px 40px; border-radius: 16px;
             box-shadow: 0 15px 50px rgba(0,0,0,0.1);
         }
-        .form-section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 30px; }
-        .form-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
+        .form-section { margin-bottom: 30px; padding-bottom: 30px; border-bottom: 2px dashed #f0f0f0; }
+        .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; }
         .form-section .icon { color: var(--colore-accento); }
         .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
@@ -36,71 +54,124 @@
             color: var(--colore-testo); font-size: 1.3em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
         }
         #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,179,0,0.2); }
+
+        /* WHY US / EXPLANATION SECTION */
+        .why-us { padding: 80px 0; background-color: var(--colore-sfondo-chiaro); }
+        .why-us h2 { font-size: 2.8em; }
+        .process-grid { display: flex; justify-content: space-around; text-align: center; margin-top: 60px; position: relative; flex-wrap: wrap; gap: 20px;}
+        .process-step { flex: 1; padding: 25px; min-width: 250px; background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
+        .process-step .icon { font-size: 3em; color: var(--colore-primario); margin-bottom: 20px; }
+        .process-step h3 { font-size: 1.4em; color: var(--colore-primario); }
+
+        /* FOOTER */
+        .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 40px 0; text-align: center; font-size: 0.9em; }
+        .main-footer a { color: white; }
+
+        @media (max-width: 768px) { .filter-bar { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <div class="container">
+    <header class="header">
+        <a href="#" class="logo">Affitto <span>Smart</span></a>
+    </header>
+
+    <main>
         <section class="hero-search text-center">
-            <h1>La casa giusta, senza compromessi.</h1>
-            <p class="subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo gli immobili a Bologna per cui sei perfettamente compatibile.</p>
-            
-            <form id="unified-search-form" class="unified-form">
-                <!-- Sezione 1: Le Tue Preferenze -->
-                <div class="form-section">
-                    <h2><i class="fa-solid fa-map-location-dot icon"></i>Le Tue Preferenze</h2>
-                    <div class="filter-grid">
-                        <div class="filter-group">
-                            <label for="filter-tipo">Tipo di Immobile</label>
-                            <select name="tipo">
-                                <option value="">Qualsiasi</option>
-                                <option>Stanza Singola</option>
-                                <option>Monolocale</option>
-                                <option>Bilocale</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="filter-zona">Zona</label>
-                            <select name="zona">
-                                <option value="">Qualsiasi</option>
-                                <option>Centro Storico</option>
-                                <option>Murri</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="filter-prezzo">Budget Massimo (€)</label>
-                            <input type="number" name="prezzo" placeholder="Es. 900">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sezione 2: Il Tuo Profilo -->
-                <div class="form-section">
-                    <h2><i class="fa-solid fa-user-check icon"></i>Il Tuo Profilo</h2>
-                    <div class="filter-grid">
-                        <div class="filter-group">
-                            <label>Situazione Lavorativa</label>
-                            <select name="situazione_lavorativa" required>
-                                <option value="">Seleziona...</option>
-                                <option>Dipendente a tempo indeterminato</option>
-                                <option>Studente/ssa con garante</option>
-                                <option>Lavoratore Autonomo / P.IVA</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label>Possiedi animali?</label>
-                            <select name="animali" required>
-                                <option value="">Seleziona...</option>
-                                <option>Sì</option>
-                                <option>No</option>
-                            </select>
+            <div class="container">
+                <h1>La casa giusta, senza compromessi.</h1>
+                <p class="subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo gli immobili a Bologna per cui sei perfettamente compatibile.</p>
+                
+                <form id="unified-search-form" class="unified-form">
+                    <!-- Sezione 1: Le Tue Preferenze -->
+                    <div class="form-section">
+                        <h2><i class="fa-solid fa-map-location-dot icon"></i>Le Tue Preferenze</h2>
+                        <div class="filter-grid">
+                            <div class="filter-group">
+                                <label for="filter-tipo">Tipo di Immobile</label>
+                                <select name="tipo">
+                                    <option value="">Qualsiasi</option>
+                                    <option value="Stanza Singola">Stanza Singola</option>
+                                    <option value="Monolocale">Monolocale</option>
+                                    <option value="Bilocale">Bilocale</option>
+                                    <option value="Trilocale">Trilocale</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filter-zona">Zona</label>
+                                <select name="zona">
+                                    <option value="">Qualsiasi</option>
+                                    <option value="Centro Storico">Centro Storico</option>
+                                    <option value="Murri">Murri</option>
+                                    <option value="Bolognina">Bolognina</option>
+                                    <option value="Savena">Savena</option>
+                                    <option value="Saragozza">Saragozza</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filter-prezzo">Budget Massimo (€)</label>
+                                <input type="number" name="prezzo" placeholder="Es. 900">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <button type="submit" id="search-button">Trova Immobili Compatibili</button>
-            </form>
+                    <!-- Sezione 2: Il Tuo Profilo (ex Priorità) -->
+                    <div class="form-section">
+                        <h2><i class="fa-solid fa-user-check icon"></i>Il Tuo Profilo</h2>
+                        <div class="filter-grid">
+                            <div class="filter-group">
+                                <label>Situazione Lavorativa</label>
+                                <select name="situazione_lavorativa" required>
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option>Dipendente a tempo indeterminato</option>
+                                    <option>Studente/ssa con garante</option>
+                                    <option>Lavoratore Autonomo / P.IVA</option>
+                                    <option>Altro</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Possiedi animali?</label>
+                                <select name="animali" required>
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option>Sì</option>
+                                    <option>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="search-button">Trova Immobili 100% Compatibili</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="why-us">
+            <div class="container text-center">
+                <h2>Il nostro non è un semplice annuncio.<br>È un invito a un evento esclusivo.</h2>
+                <p class="subtitle" style="margin-bottom: 60px;">Capire il nostro metodo significa capire perché avrai più chance di trovare la casa che desideri, senza stress.</p>
+                <div class="process-grid">
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-file-circle-xmark"></i></div>
+                        <h3>Passo 1: Il Matching Intelligente</h3>
+                        <p>Il pulsante "Trova" non ti mostra tutti gli annunci, ma solo quelli per cui rispetti al 100% sia le tue preferenze (prezzo, zona) sia i requisiti fondamentali del proprietario (lavoro, animali, etc.). Zero perdite di tempo.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-ticket"></i></div>
+                        <h3>Passo 2: Il Ticket Esclusivo</h3>
+                        <p>Per le case compatibili, potrai acquistare un "ticket" di accesso all'Open Day a soli <strong>2,99€</strong>. Questa piccola fee ci permette di organizzare eventi a numero chiusissimo, garantendo solo persone realmente interessate e un'esperienza di visita di alta qualità.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-champagne-glasses"></i></div>
+                        <h3>Passo 3: L'Open Day Vincente</h3>
+                        <p>Parteciperai a una visita rilassata e professionale, senza la folla delle agenzie. Avrai tutto il tempo per vedere la casa, fare domande e presentarti al meglio. È la tua occasione per fare la differenza.</p>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
+
+    <footer class="main-footer">
+        <p>© 2024 Affitto Smart | <a href="/index.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
+    </footer>
 
     <script>
         document.getElementById('unified-search-form').addEventListener('submit', function(e) {
