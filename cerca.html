@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trova la Tua Casa a Bologna - Affitto Smart</title>
-    <!-- Stessi stili delle altre pagine -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -14,15 +13,35 @@
         .search-container {
             background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             max-width: 500px; width: 100%; text-align: center;
+            transition: all 0.5s ease;
         }
         h1 { font-size: 2.5em; color: var(--colore-primario); margin-top: 0; }
         p { color: var(--colore-testo-chiaro); font-size: 1.1em; }
-        .filter-form { display: flex; flex-direction: column; gap: 20px; margin-top: 30px; }
-        .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; text-align: left; }
-        .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
+        
+        /* Stile per i filtri a step */
+        .filter-form { margin-top: 30px; }
+        .filter-step {
+            display: none; /* Nascosti di default */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .filter-step.active {
+            display: block; /* Mostra solo lo step attivo */
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; text-align: left; font-size: 1.2em; }
+        .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; margin-bottom: 20px; }
+        
+        .navigation-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+        .nav-button, #search-button {
+            padding: 12px 30px; border-radius: 8px; border: none; font-size: 1em; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .prev-button { background-color: #e0e0e0; }
+        .next-button { background-color: var(--colore-primario); color: white; }
         #search-button {
-            height: 55px; border-radius: 8px; border: none; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo); font-size: 1.2em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+            width: 100%; height: 55px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo); font-size: 1.2em;
         }
         #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,179,0,0.2); }
     </style>
@@ -30,50 +49,96 @@
 <body>
     <div class="search-container">
         <h1>Trova la tua casa ideale a Bologna</h1>
-        <p>Dicci cosa cerchi. Al resto pensiamo noi.</p>
+        <p>Rispondi a poche domande per scoprire le proposte perfette per te.</p>
         
         <form id="filter-form" class="filter-form">
-            <div class="filter-group">
-                <label for="filter-tipo">Tipo di Immobile</label>
-                <select id="filter-tipo" name="tipo">
-                    <option value="">Qualsiasi</option>
-                    <option value="Stanza Singola">Stanza Singola</option>
-                    <option value="Monolocale">Monolocale</option>
-                    <option value="Bilocale">Bilocale</option>
-                    <option value="Trilocale">Trilocale</option>
-                </select>
+            <!-- Step 1: Tipo di Immobile -->
+            <div class="filter-step active" data-step="1">
+                <div class="filter-group">
+                    <label for="filter-tipo">Per iniziare, che tipo di immobile cerchi?</label>
+                    <select id="filter-tipo" name="tipo">
+                        <option value="">Qualsiasi tipo</option>
+                        <option value="Stanza Singola">Stanza Singola</option>
+                        <option value="Monolocale">Monolocale</option>
+                        <option value="Bilocale">Bilocale</option>
+                        <option value="Trilocale">Trilocale</option>
+                    </select>
+                </div>
             </div>
-            <div class="filter-group">
-                <label for="filter-zona">Zona di Interesse</label>
-                <select id="filter-zona" name="zona">
-                    <option value="">Qualsiasi</option>
-                    <option value="Centro Storico">Centro Storico</option>
-                    <option value="Murri">Murri</option>
-                    <option value="Savena">Savena</option>
-                    <option value="Saragozza">Saragozza</option>
-                </select>
+
+            <!-- Step 2: Zona -->
+            <div class="filter-step" data-step="2">
+                <div class="filter-group">
+                    <label for="filter-zona">Ottimo! Hai una zona di preferenza?</label>
+                    <select id="filter-zona" name="zona">
+                        <option value="">Tutte le zone</option>
+                        <option value="Centro Storico">Centro Storico</option>
+                        <option value="Murri">Murri</option>
+                        <option value="Savena">Savena</option>
+                        <option value="Saragozza">Saragozza</option>
+                        <option value="Bolognina">Bolognina</option>
+                    </select>
+                </div>
             </div>
-            <div class="filter-group">
-                <label for="filter-prezzo">Il tuo budget massimo (€)</label>
-                <input type="number" id="filter-prezzo" name="prezzo" placeholder="Es. 900">
+
+            <!-- Step 3: Prezzo -->
+            <div class="filter-step" data-step="3">
+                <div class="filter-group">
+                    <label for="filter-prezzo">Perfetto. Qual è il tuo budget massimo mensile?</label>
+                    <input type="number" id="filter-prezzo" name="prezzo" placeholder="Es. 900 €">
+                </div>
+                <button type="submit" id="search-button">Mostra Risultati</button>
             </div>
-            <button type="submit" id="search-button">Mostra Risultati</button>
+
+            <!-- Pulsanti di Navigazione -->
+            <div class="navigation-buttons">
+                <button type="button" class="nav-button prev-button" style="display: none;">Indietro</button>
+                <button type="button" class="nav-button next-button">Avanti</button>
+            </div>
         </form>
     </div>
 
     <script>
-        document.getElementById('filter-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Impedisce l'invio tradizionale del form
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('filter-form');
+            const steps = Array.from(document.querySelectorAll('.filter-step'));
+            const nextButton = document.querySelector('.next-button');
+            const prevButton = document.querySelector('.prev-button');
+            const searchButton = document.getElementById('search-button');
+            let currentStep = 0;
 
-            const tipo = document.getElementById('filter-tipo').value;
-            const zona = document.getElementById('filter-zona').value;
-            const prezzo = document.getElementById('filter-prezzo').value;
+            function showStep(stepIndex) {
+                steps.forEach((step, index) => {
+                    step.classList.toggle('active', index === stepIndex);
+                });
+                prevButton.style.display = stepIndex > 0 ? 'inline-block' : 'none';
+                nextButton.style.display = stepIndex < steps.length - 1 ? 'inline-block' : 'none';
+                searchButton.style.display = stepIndex === steps.length - 1 ? 'block' : 'none';
+            }
 
-            // Costruiamo un URL con i parametri di ricerca
-            const queryString = `?tipo=${encodeURIComponent(tipo)}&zona=${encodeURIComponent(zona)}&prezzo=${encodeURIComponent(prezzo)}`;
-            
-            // Reindirizziamo l'utente alla pagina dei risultati con i filtri nell'URL
-            window.location.href = 'risultati.html' + queryString;
+            nextButton.addEventListener('click', () => {
+                if (currentStep < steps.length - 1) {
+                    currentStep++;
+                    showStep(currentStep);
+                }
+            });
+
+            prevButton.addEventListener('click', () => {
+                if (currentStep > 0) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            });
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                const queryString = new URLSearchParams(formData).toString();
+                window.location.href = 'risultati.html?' + queryString;
+            });
+
+            // Inizializza la visualizzazione
+            showStep(currentStep);
         });
     </script>
 </body>
