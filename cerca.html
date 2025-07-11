@@ -7,35 +7,43 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        :root { --colore-primario: #0D47A1; --colore-secondario: #1976D2; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Header */
+        .main-header { background-color: white; padding: 20px 0; text-align: center; border-bottom: 1px solid #eee;}
+        .logo { font-size: 2em; font-weight: 800; color: var(--colore-primario); }
+        .logo span { font-weight: 400; color: var(--colore-secondario); }
+
+        /* Sezioni */
+        .hero, .benefits { text-align: center; padding: 80px 20px; }
+        .hero h1 { font-size: 3em; margin-bottom: 15px; }
+        .hero p { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto; }
+
+        .benefits { background-color: white; }
+        .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 50px; }
+        .benefit-card { text-align: center; }
+        .benefit-card .icon { font-size: 3em; color: var(--colore-accento); margin-bottom: 15px; }
+        .benefit-card h3 { font-size: 1.4em; }
+        
+        /* Sezione Ricerca */
+        #search-section { padding: 80px 20px; text-align: center; }
         .search-container {
             background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            max-width: 500px; width: 100%; text-align: center;
-            transition: all 0.5s ease;
+            max-width: 500px; width: 100%; margin: 0 auto;
         }
-        h1 { font-size: 2.5em; color: var(--colore-primario); margin-top: 0; }
-        p { color: var(--colore-testo-chiaro); font-size: 1.1em; }
-        
-        /* Stile per i filtri a step */
         .filter-form { margin-top: 30px; }
-        .filter-step {
-            display: none; /* Nascosti di default */
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        .filter-step.active {
-            display: block; /* Mostra solo lo step attivo */
-        }
+        .filter-step { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .filter-step.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; text-align: left; font-size: 1.2em; }
         .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; margin-bottom: 20px; }
-        
         .navigation-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
         .nav-button, #search-button {
-            padding: 12px 30px; border-radius: 8px; border: none; font-size: 1em; font-weight: 700; cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 12px 30px; border-radius: 8px; border: none; font-size: 1em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
         }
         .prev-button { background-color: #e0e0e0; }
         .next-button { background-color: var(--colore-primario); color: white; }
@@ -43,60 +51,107 @@
             width: 100%; height: 55px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
             color: var(--colore-testo); font-size: 1.2em;
         }
-        #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,179,0,0.2); }
+        
+        /* Footer */
+        .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 20px 0; text-align: center; font-size: 0.9em; }
+        .main-footer a { color: white; }
+
     </style>
 </head>
 <body>
-    <div class="search-container">
-        <h1>Trova la tua casa ideale a Bologna</h1>
-        <p>Rispondi a poche domande per scoprire le proposte perfette per te.</p>
-        
-        <form id="filter-form" class="filter-form">
-            <!-- Step 1: Tipo di Immobile -->
-            <div class="filter-step active" data-step="1">
-                <div class="filter-group">
-                    <label for="filter-tipo">Per iniziare, che tipo di immobile cerchi?</label>
-                    <select id="filter-tipo" name="tipo">
-                        <option value="">Qualsiasi tipo</option>
-                        <option value="Stanza Singola">Stanza Singola</option>
-                        <option value="Monolocale">Monolocale</option>
-                        <option value="Bilocale">Bilocale</option>
-                        <option value="Trilocale">Trilocale</option>
-                    </select>
+
+    <header class="main-header">
+        <div class="logo">Affitto <span>Smart</span></div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Trovare casa a Bologna è appena diventato più semplice.</h1>
+                <p>Basta candidarsi per decine di annunci e non ricevere risposta. Il nostro metodo ti dà accesso a opportunità reali e ti fa risparmiare tempo prezioso.</p>
+            </div>
+        </section>
+
+        <section class="benefits">
+            <div class="container">
+                <h2>Il Vantaggio dell'Open Day Esclusivo</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <h3>Zero Perdite di Tempo</h3>
+                        <p>Visiti solo immobili per cui sei già stato pre-qualificato. Se ti invitiamo, sai già di avere una chance concreta.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="icon"><i class="fa-solid fa-users-viewfinder"></i></div>
+                        <h3>Meno Folla, Più Qualità</h3>
+                        <p>Dimentica le visite con 30 persone. I nostri Open Day sono a numero chiuso per darti il tempo di vedere la casa con calma.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="icon"><i class="fa-solid fa-file-signature"></i></div>
+                        <h3>Processo Chiaro e Trasparente</h3>
+                        <p>Niente sorprese. Conosci i requisiti fin da subito e sei guidato in ogni passo, dalla ricerca alla proposta.</p>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Step 2: Zona -->
-            <div class="filter-step" data-step="2">
-                <div class="filter-group">
-                    <label for="filter-zona">Ottimo! Hai una zona di preferenza?</label>
-                    <select id="filter-zona" name="zona">
-                        <option value="">Tutte le zone</option>
-                        <option value="Centro Storico">Centro Storico</option>
-                        <option value="Murri">Murri</option>
-                        <option value="Savena">Savena</option>
-                        <option value="Saragozza">Saragozza</option>
-                        <option value="Bolognina">Bolognina</option>
-                    </select>
-                </div>
-            </div>
+        <section id="search-section">
+            <div class="search-container">
+                <h2>Inizia la tua ricerca</h2>
+                <p style="color: var(--colore-testo-chiaro); font-size: 1.1em;">Dicci cosa cerchi. Al resto pensiamo noi.</p>
+                
+                <form id="filter-form" class="filter-form">
+                    <!-- Step 1: Tipo di Immobile -->
+                    <div class="filter-step active" data-step="1">
+                        <div class="filter-group">
+                            <label for="filter-tipo">Per iniziare, che tipo di immobile cerchi?</label>
+                            <select id="filter-tipo" name="tipo">
+                                <option value="">Qualsiasi tipo</option>
+                                <option value="Stanza Singola">Stanza Singola</option>
+                                <option value="Monolocale">Monolocale</option>
+                                <option value="Bilocale">Bilocale</option>
+                                <option value="Trilocale">Trilocale</option>
+                            </select>
+                        </div>
+                    </div>
 
-            <!-- Step 3: Prezzo -->
-            <div class="filter-step" data-step="3">
-                <div class="filter-group">
-                    <label for="filter-prezzo">Perfetto. Qual è il tuo budget massimo mensile?</label>
-                    <input type="number" id="filter-prezzo" name="prezzo" placeholder="Es. 900 €">
-                </div>
-                <button type="submit" id="search-button">Mostra Risultati</button>
-            </div>
+                    <!-- Step 2: Zona -->
+                    <div class="filter-step" data-step="2">
+                        <div class="filter-group">
+                            <label for="filter-zona">Ottimo! Hai una zona di preferenza?</label>
+                            <select id="filter-zona" name="zona">
+                                <option value="">Tutte le zone</option>
+                                <option value="Centro Storico">Centro Storico</option>
+                                <option value="Murri">Murri</option>
+                                <option value="Savena">Savena</option>
+                                <option value="Saragozza">Saragozza</option>
+                                <option value="Bolognina">Bolognina</option>
+                            </select>
+                        </div>
+                    </div>
 
-            <!-- Pulsanti di Navigazione -->
-            <div class="navigation-buttons">
-                <button type="button" class="nav-button prev-button" style="display: none;">Indietro</button>
-                <button type="button" class="nav-button next-button">Avanti</button>
+                    <!-- Step 3: Prezzo -->
+                    <div class="filter-step" data-step="3">
+                        <div class="filter-group">
+                            <label for="filter-prezzo">Perfetto. Qual è il tuo budget massimo mensile?</label>
+                            <input type="number" id="filter-prezzo" name="prezzo" placeholder="Es. 900 €">
+                        </div>
+                        <button type="submit" id="search-button">Mostra Immobili Compatibili</button>
+                    </div>
+
+                    <!-- Pulsanti di Navigazione -->
+                    <div class="navigation-buttons">
+                        <button type="button" class="nav-button prev-button" style="display: none;">Indietro</button>
+                        <button type="button" class="nav-button next-button">Avanti</button>
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>© 2024 Affitto Smart | <a href="#">Privacy Policy</a></p>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
