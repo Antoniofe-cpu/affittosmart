@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Risultati della tua Ricerca - Affitto Smart</title>
-    <!-- Collegamenti a Font e Icone -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Incolla qui il CSS dalla versione precedente o linka un file CSS esterno -->
     <style>
-        /* Per favore, copia e incolla qui il blocco <style> completo dalla risposta precedente */
+        /* Per favore, copia e incolla qui il blocco <style> completo dalla risposta precedente per avere la grafica corretta */
         :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; --colore-successo: #2E7D32; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
@@ -85,162 +83,158 @@
         </div>
     </div>
 
-  <script>
-    // --- CONFIGURAZIONE ---
-    const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
-    const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv
-';
-    const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+    <script>
+        // --- CONFIGURAZIONE ---
+        // SOSTITUISCI CON I TUOI LINK CSV PUBBLICATI DAI FOGLI GOOGLE
+        const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
+        const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
+        const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
-    let allProperties = [];
-    let allRequirements = [];
-    let allCandidates = [];
+        let allProperties = [];
+        let allRequirements = [];
+        let allCandidates = [];
 
-    // --- FUNZIONI ---
-    function csvToObjects(csv) {
-        const lines = csv.trim().split('\n');
-        if (lines.length < 2) return [];
-        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').replace(/\r/g, ''));
-        const objects = [];
-        for (let i = 1; i < lines.length; i++) {
-            if (lines[i]) {
-                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                const obj = {};
-                for (let j = 0; j < headers.length; j++) {
-                    obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim().replace(/\r/g, '') : '';
+        function csvToObjects(csv) {
+            const lines = csv.trim().split('\n');
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').replace(/\r/g, ''));
+            const objects = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i]) {
+                    const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    const obj = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim().replace(/\r/g, '') : '';
+                    }
+                    objects.push(obj);
                 }
-                objects.push(obj);
             }
-        }
-        return objects;
-    }
-
-    function displayResults(properties) {
-        const resultsContainer = document.getElementById('results-container');
-        resultsContainer.innerHTML = '';
-        if (properties.length === 0) {
-            resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile con il tuo profilo e le tue preferenze.<br>Prova a modificare la ricerca!</p>';
-            return;
+            return objects;
         }
 
-        properties.forEach(p => {
-            if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) {
-                console.warn(`Immobile con ID ${p.ID} scartato per dati mancanti nel foglio Proprietà.`);
+        function displayResults(properties) {
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '';
+            if (properties.length === 0) {
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile con il tuo profilo e le tue preferenze.<br>Prova a modificare la ricerca!</p>';
                 return;
             }
 
-            const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-            const postiTotali = parseInt(p.MaxPartecipanti);
-            const postiRimasti = postiTotali - prenotati;
-            
-            let buttonHtml;
-            if (postiRimasti > 0) {
-                // Abbiamo reso la chiamata onclick più sicura
-                buttonHtml = `<button class="cta-button" data-id="${p.ID}" data-link="${p.StripeLink}">Acquista il Tuo Ticket (${postiRimasti} rimasti)</button>`;
-            } else {
-                buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
-            }
+            properties.forEach(p => {
+                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) {
+                    console.warn(`Immobile con ID ${p.ID} scartato per dati mancanti nel foglio Proprietà.`);
+                    return;
+                }
 
-            // --- CORREZIONE PRINCIPALE: Ho riscritto la creazione della card in modo più pulito ---
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'property-card';
-            cardDiv.innerHTML = `
-                <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
-                <div class="property-card-info">
-                    <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                    <h3>${p.Titolo}</h3>
-                    <div class="price">${p.Prezzo} €/mese</div>
-                    <p>${p.Descrizione || 'Nessuna descrizione per questo immobile.'}</p>
-                    ${buttonHtml}
-                </div>`;
-            
-            resultsContainer.appendChild(cardDiv);
-        });
-
-        // Aggiungiamo gli event listener ai pulsanti DOPO averli creati
-        document.querySelectorAll('.cta-button[data-id]').forEach(button => {
-            button.addEventListener('click', function() {
-                openPaymentModal(this.dataset.link);
-            });
-        });
-    }
-
-    function openPaymentModal(stripeLink) {
-        const modal = document.getElementById('payment-modal');
-        const paymentButton = document.getElementById('payment-button');
-        paymentButton.href = stripeLink;
-        modal.classList.add('visible');
-
-        document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.remove('visible');
-        }, { once: true });
-    }
-
-    async function main() {
-        const resultsContainer = document.getElementById('results-container');
-        try {
-            const [propsRes, reqsRes, candsRes] = await Promise.all([
-                fetch(PROPERTIES_URL),
-                fetch(REQUIREMENTS_URL),
-                fetch(CANDIDATES_URL)
-            ]);
-
-            if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Errore di rete.');
-
-            const propsCsv = await propsRes.text();
-            const reqsCsv = await reqsRes.text();
-            const candsCsv = await candsRes.text();
-            
-            allProperties = csvToObjects(propsCsv);
-            allRequirements = csvToObjects(reqsCsv);
-            allCandidates = csvToObjects(candsCsv);
-            
-            const params = new URLSearchParams(window.location.search);
-            const userProfile = {
-                tipo: (params.get('tipo') || '').trim().toLowerCase(),
-                zona: (params.get('zona') || '').trim().toLowerCase(),
-                prezzo: parseInt(params.get('prezzo')) || Infinity,
-                situazione_lavorativa: (params.get('situazione_lavorativa') || '').trim().toLowerCase(),
-                animali: (params.get('animali') || '').trim().toLowerCase()
-            };
-            
-            const preFilteredProperties = allProperties.filter(p => {
-                const prezzoImmobile = parseInt(p.Prezzo);
-                return (p.Stato || '').trim().toLowerCase() === 'disponibile' &&
-                       (userProfile.tipo === '' || (p.Tipo || '').trim().toLowerCase() === userProfile.tipo) &&
-                       (userProfile.zona === '' || (p.Zona || '').trim().toLowerCase() === userProfile.zona) &&
-                       !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
-            });
-
-            const finalProperties = preFilteredProperties.filter(p => {
-                const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
-                if (propertyRequirements.length === 0) return true;
+                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+                const postiTotali = parseInt(p.MaxPartecipanti);
+                const postiRimasti = postiTotali - prenotati;
                 
-                return propertyRequirements.every(req => {
-                    // Normalizza il nome del requisito per farlo corrispondere alle chiavi di userProfile
-                    const requirementKey = (req.Requisito || '').trim().toLowerCase();
-                    const userValue = userProfile[requirementKey];
-                    const requiredValue = (req.Valore_Richiesto || '').trim().toLowerCase();
-                    
-                    if (userValue === undefined) {
-                        console.warn(`Il requisito '${req.Requisito}' non corrisponde a nessun filtro utente.`);
-                        return true; // Ignora la regola se non trova corrispondenza
-                    }
-                    
-                    return userValue === requiredValue;
+                let buttonHtml;
+                if (postiRimasti > 0) {
+                    buttonHtml = `<button class="cta-button" data-id="${p.ID}" data-link="${p.StripeLink}">Acquista il Tuo Ticket (${postiRimasti} rimasti)</button>`;
+                } else {
+                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+                }
+
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'property-card';
+                cardDiv.innerHTML = `
+                    <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
+                    <div class="property-card-info">
+                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                        <h3>${p.Titolo}</h3>
+                        <div class="price">${p.Prezzo} €/mese</div>
+                        <p>${p.Descrizione || 'Nessuna descrizione per questo immobile.'}</p>
+                        ${buttonHtml}
+                    </div>`;
+                
+                resultsContainer.appendChild(cardDiv);
+            });
+
+            document.querySelectorAll('.cta-button[data-id]').forEach(button => {
+                button.addEventListener('click', function() {
+                    openPaymentModal(this.dataset.link);
                 });
             });
-
-            displayResults(finalProperties);
-
-        } catch (error) {
-            console.error("ERRORE CRITICO:", error);
-            resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che i link ai database siano corretti e pubblicati come CSV.</p>`;
         }
-    }
-    
-    document.addEventListener('DOMContentLoaded', main);
-</script>
+
+        function openPaymentModal(stripeLink) {
+            const modal = document.getElementById('payment-modal');
+            const paymentButton = document.getElementById('payment-button');
+            paymentButton.href = stripeLink;
+            modal.classList.add('visible');
+
+            document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('visible');
+            }, { once: true });
+        }
+
+        async function main() {
+            const resultsContainer = document.getElementById('results-container');
+            try {
+                const [propsRes, reqsRes, candsRes] = await Promise.all([
+                    fetch(PROPERTIES_URL),
+                    fetch(REQUIREMENTS_URL),
+                    fetch(CANDIDATES_URL)
+                ]);
+
+                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Errore di rete.');
+
+                const propsCsv = await propsRes.text();
+                const reqsCsv = await reqsRes.text();
+                const candsCsv = await candsRes.text();
+                
+                allProperties = csvToObjects(propsCsv);
+                allRequirements = csvToObjects(reqsCsv);
+                allCandidates = csvToObjects(candsCsv);
+                
+                const params = new URLSearchParams(window.location.search);
+                const userProfile = {
+                    tipo: (params.get('tipo') || '').trim().toLowerCase(),
+                    zona: (params.get('zona') || '').trim().toLowerCase(),
+                    prezzo: parseInt(params.get('prezzo')) || Infinity,
+                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').trim().toLowerCase(),
+                    animali: (params.get('animali') || '').trim().toLowerCase()
+                };
+                
+                const preFilteredProperties = allProperties.filter(p => {
+                    const prezzoImmobile = parseInt(p.Prezzo);
+                    if (isNaN(prezzoImmobile)) return false;
+                    return (p.Stato || '').trim().toLowerCase() === 'disponibile' &&
+                        (userProfile.tipo === '' || (p.Tipo || '').trim().toLowerCase() === userProfile.tipo) &&
+                        (userProfile.zona === '' || (p.Zona || '').trim().toLowerCase() === userProfile.zona) &&
+                        (prezzoImmobile <= userProfile.prezzo);
+                });
+
+                const finalProperties = preFilteredProperties.filter(p => {
+                    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
+                    if (propertyRequirements.length === 0) return true;
+                    
+                    return propertyRequirements.every(req => {
+                        const requirementKey = (req.Requisito || '').trim().toLowerCase();
+                        const userValue = userProfile[requirementKey];
+                        const requiredValue = (req.Valore_Richiesto || '').trim().toLowerCase();
+                        
+                        if (userValue === undefined) {
+                            console.warn(`Il requisito '${req.Requisito}' del foglio Requisiti non corrisponde a nessun filtro del form. Verrà ignorato.`);
+                            return true;
+                        }
+                        
+                        return userValue === requiredValue;
+                    });
+                });
+
+                displayResults(finalProperties);
+
+            } catch (error) {
+                console.error("ERRORE CRITICO:", error);
+                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che i link ai database siano corretti e pubblicati come CSV.</p>`;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', main);
+    </script>
 </body>
 </html>
