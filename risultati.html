@@ -85,159 +85,162 @@
         </div>
     </div>
 
-    <script>
-        // --- CONFIGURAZIONE ---
-        // SOSTITUISCI CON I TUOI LINK CSV PUBBLICATI DAI FOGLI GOOGLE
-        const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv
+  <script>
+    // --- CONFIGURAZIONE ---
+    const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
+    const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv
 ';
-        const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
-        const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+    const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
-        // Variabili globali per memorizzare i dati caricati una sola volta
-        let allProperties = [];
-        let allRequirements = [];
-        let allCandidates = [];
+    let allProperties = [];
+    let allRequirements = [];
+    let allCandidates = [];
 
-        // --- FUNZIONI ---
-        function csvToObjects(csv) {
-            const lines = csv.trim().split('\n');
-            if (lines.length < 2) return [];
-
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-            const objects = [];
-
-            for (let i = 1; i < lines.length; i++) {
-                if (lines[i]) {
-                    const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    const obj = {};
-                    for (let j = 0; j < headers.length; j++) {
-                        // Pulisce ogni valore da virgolette e spazi extra
-                        obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
-                    }
-                    objects.push(obj);
+    // --- FUNZIONI ---
+    function csvToObjects(csv) {
+        const lines = csv.trim().split('\n');
+        if (lines.length < 2) return [];
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').replace(/\r/g, ''));
+        const objects = [];
+        for (let i = 1; i < lines.length; i++) {
+            if (lines[i]) {
+                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                const obj = {};
+                for (let j = 0; j < headers.length; j++) {
+                    obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim().replace(/\r/g, '') : '';
                 }
+                objects.push(obj);
             }
-            return objects;
+        }
+        return objects;
+    }
+
+    function displayResults(properties) {
+        const resultsContainer = document.getElementById('results-container');
+        resultsContainer.innerHTML = '';
+        if (properties.length === 0) {
+            resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile con il tuo profilo e le tue preferenze.<br>Prova a modificare la ricerca!</p>';
+            return;
         }
 
-        function displayResults(properties) {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '';
-
-            if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile con il tuo profilo e le tue preferenze.<br>Prova a modificare la ricerca!</p>';
+        properties.forEach(p => {
+            if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) {
+                console.warn(`Immobile con ID ${p.ID} scartato per dati mancanti nel foglio Proprietà.`);
                 return;
             }
 
-            properties.forEach(p => {
-                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) {
-                    console.warn(`Immobile con ID ${p.ID} scartato per dati mancanti.`);
-                    return;
-                }
-
-                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-                const postiTotali = parseInt(p.MaxPartecipanti);
-                const postiRimasti = postiTotali - prenotati;
-                
-                let buttonHtml;
-                if (postiRimasti > 0) {
-                    buttonHtml = `<button class="cta-button" onclick="openPaymentModal('${p.StripeLink}')">Acquista il Tuo Ticket (${postiRimasti} rimasti)</button>`;
-                } else {
-                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
-                }
-
-                const card = `
-                    <div class="property-card">
-                        <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
-                        <div class="property-card-info">
-                            <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                            <h3>${p.Titolo}</h3>
-                            <div class="price">${p.Prezzo} €/mese</div>
-                            <p>${p.Descrizione || 'Nessuna descrizione per questo immobile.'}</p>
-                            ${buttonHtml}
-                        </div>
-                    </div>`;
-                resultsContainer.innerHTML += card;
-            });
-        }
-
-        function openPaymentModal(stripeLink) {
-            const modal = document.getElementById('payment-modal');
-            const paymentButton = document.getElementById('payment-button');
-            paymentButton.href = stripeLink;
-            modal.classList.add('visible');
-
-            document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
-            modal.onclick = (e) => {
-                if (e.target === modal) modal.classList.remove('visible');
-            };
-        }
-
-        async function main() {
-            const resultsContainer = document.getElementById('results-container');
-            try {
-                // 1. Carica tutti e 3 i database contemporaneamente
-                const [propsRes, reqsRes, candsRes] = await Promise.all([
-                    fetch(PROPERTIES_URL),
-                    fetch(REQUIREMENTS_URL),
-                    fetch(CANDIDATES_URL)
-                ]);
-
-                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) {
-                    throw new Error('Errore di rete nel caricamento di uno o più database.');
-                }
-
-                const propsCsv = await propsRes.text();
-                const reqsCsv = await reqsRes.text();
-                const candsCsv = await candsRes.text();
-                
-                allProperties = csvToObjects(propsCsv);
-                allRequirements = csvToObjects(reqsCsv);
-                allCandidates = csvToObjects(candsCsv);
-
-                // 2. Leggi i filtri e le qualifiche dell'utente dall'URL
-                const params = new URLSearchParams(window.location.search);
-                const userProfile = {
-                    tipo: (params.get('tipo') || '').trim().toLowerCase(),
-                    zona: (params.get('zona') || '').trim().toLowerCase(),
-                    prezzo: parseInt(params.get('prezzo')) || Infinity,
-                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').trim().toLowerCase(),
-                    animali: (params.get('animali') || '').trim().toLowerCase()
-                    // Aggiungi qui altri campi se hai più filtri
-                };
-
-                // 3. Primo filtro: basato sulle preferenze dell'utente (tipo, zona, prezzo)
-                const preFilteredProperties = allProperties.filter(p => {
-                    const prezzoImmobile = parseInt(p.Prezzo);
-                    return (p.Stato || '').trim().toLowerCase() === 'disponibile' &&
-                           (userProfile.tipo === '' || (p.Tipo || '').trim().toLowerCase() === userProfile.tipo) &&
-                           (userProfile.zona === '' || (p.Zona || '').trim().toLowerCase() === userProfile.zona) &&
-                           !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
-                });
-
-                // 4. Secondo filtro, il più importante: il matching con i requisiti del proprietario
-                const finalProperties = preFilteredProperties.filter(p => {
-                    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
-                    if (propertyRequirements.length === 0) {
-                        return true; // Se un immobile non ha requisiti specifici, passa il filtro
-                    }
-                    // 'every' si assicura che l'utente soddisfi TUTTI i requisiti per questo immobile
-                    return propertyRequirements.every(req => {
-                        const userValue = userProfile[req.Requisito.toLowerCase()];
-                        const requiredValue = (req.Valore_Richiesto || '').trim().toLowerCase();
-                        return userValue === requiredValue;
-                    });
-                });
-
-                displayResults(finalProperties);
-
-            } catch (error) {
-                console.error("ERRORE CRITICO:", error);
-                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore nel caricamento dei dati. Assicurati che i link ai database siano corretti e pubblicati come CSV.</p>`;
+            const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+            const postiTotali = parseInt(p.MaxPartecipanti);
+            const postiRimasti = postiTotali - prenotati;
+            
+            let buttonHtml;
+            if (postiRimasti > 0) {
+                // Abbiamo reso la chiamata onclick più sicura
+                buttonHtml = `<button class="cta-button" data-id="${p.ID}" data-link="${p.StripeLink}">Acquista il Tuo Ticket (${postiRimasti} rimasti)</button>`;
+            } else {
+                buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
             }
+
+            // --- CORREZIONE PRINCIPALE: Ho riscritto la creazione della card in modo più pulito ---
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'property-card';
+            cardDiv.innerHTML = `
+                <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
+                <div class="property-card-info">
+                    <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                    <h3>${p.Titolo}</h3>
+                    <div class="price">${p.Prezzo} €/mese</div>
+                    <p>${p.Descrizione || 'Nessuna descrizione per questo immobile.'}</p>
+                    ${buttonHtml}
+                </div>`;
+            
+            resultsContainer.appendChild(cardDiv);
+        });
+
+        // Aggiungiamo gli event listener ai pulsanti DOPO averli creati
+        document.querySelectorAll('.cta-button[data-id]').forEach(button => {
+            button.addEventListener('click', function() {
+                openPaymentModal(this.dataset.link);
+            });
+        });
+    }
+
+    function openPaymentModal(stripeLink) {
+        const modal = document.getElementById('payment-modal');
+        const paymentButton = document.getElementById('payment-button');
+        paymentButton.href = stripeLink;
+        modal.classList.add('visible');
+
+        document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('visible');
+        }, { once: true });
+    }
+
+    async function main() {
+        const resultsContainer = document.getElementById('results-container');
+        try {
+            const [propsRes, reqsRes, candsRes] = await Promise.all([
+                fetch(PROPERTIES_URL),
+                fetch(REQUIREMENTS_URL),
+                fetch(CANDIDATES_URL)
+            ]);
+
+            if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Errore di rete.');
+
+            const propsCsv = await propsRes.text();
+            const reqsCsv = await reqsRes.text();
+            const candsCsv = await candsRes.text();
+            
+            allProperties = csvToObjects(propsCsv);
+            allRequirements = csvToObjects(reqsCsv);
+            allCandidates = csvToObjects(candsCsv);
+            
+            const params = new URLSearchParams(window.location.search);
+            const userProfile = {
+                tipo: (params.get('tipo') || '').trim().toLowerCase(),
+                zona: (params.get('zona') || '').trim().toLowerCase(),
+                prezzo: parseInt(params.get('prezzo')) || Infinity,
+                situazione_lavorativa: (params.get('situazione_lavorativa') || '').trim().toLowerCase(),
+                animali: (params.get('animali') || '').trim().toLowerCase()
+            };
+            
+            const preFilteredProperties = allProperties.filter(p => {
+                const prezzoImmobile = parseInt(p.Prezzo);
+                return (p.Stato || '').trim().toLowerCase() === 'disponibile' &&
+                       (userProfile.tipo === '' || (p.Tipo || '').trim().toLowerCase() === userProfile.tipo) &&
+                       (userProfile.zona === '' || (p.Zona || '').trim().toLowerCase() === userProfile.zona) &&
+                       !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
+            });
+
+            const finalProperties = preFilteredProperties.filter(p => {
+                const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === p.ID);
+                if (propertyRequirements.length === 0) return true;
+                
+                return propertyRequirements.every(req => {
+                    // Normalizza il nome del requisito per farlo corrispondere alle chiavi di userProfile
+                    const requirementKey = (req.Requisito || '').trim().toLowerCase();
+                    const userValue = userProfile[requirementKey];
+                    const requiredValue = (req.Valore_Richiesto || '').trim().toLowerCase();
+                    
+                    if (userValue === undefined) {
+                        console.warn(`Il requisito '${req.Requisito}' non corrisponde a nessun filtro utente.`);
+                        return true; // Ignora la regola se non trova corrispondenza
+                    }
+                    
+                    return userValue === requiredValue;
+                });
+            });
+
+            displayResults(finalProperties);
+
+        } catch (error) {
+            console.error("ERRORE CRITICO:", error);
+            resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che i link ai database siano corretti e pubblicati come CSV.</p>`;
         }
-        
-        document.addEventListener('DOMContentLoaded', main);
-    </script>
+    }
+    
+    document.addEventListener('DOMContentLoaded', main);
+</script>
 </body>
 </html>
