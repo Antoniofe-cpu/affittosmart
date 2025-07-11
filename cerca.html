@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trova la Tua Casa a Bologna - Affitto Smart</title>
+    <!-- Stessi stili delle altre pagine -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .search-container {
+            background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 500px; width: 100%; text-align: center;
+        }
+        h1 { font-size: 2.5em; color: var(--colore-primario); margin-top: 0; }
+        p { color: var(--colore-testo-chiaro); font-size: 1.1em; }
+        .filter-form { display: flex; flex-direction: column; gap: 20px; margin-top: 30px; }
+        .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; text-align: left; }
+        .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
+        #search-button {
+            height: 55px; border-radius: 8px; border: none; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo); font-size: 1.2em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+        }
+        #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,179,0,0.2); }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <h1>Trova la tua casa ideale a Bologna</h1>
+        <p>Dicci cosa cerchi. Al resto pensiamo noi.</p>
+        
+        <form id="filter-form" class="filter-form">
+            <div class="filter-group">
+                <label for="filter-tipo">Tipo di Immobile</label>
+                <select id="filter-tipo" name="tipo">
+                    <option value="">Qualsiasi</option>
+                    <option value="Stanza Singola">Stanza Singola</option>
+                    <option value="Monolocale">Monolocale</option>
+                    <option value="Bilocale">Bilocale</option>
+                    <option value="Trilocale">Trilocale</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-zona">Zona di Interesse</label>
+                <select id="filter-zona" name="zona">
+                    <option value="">Qualsiasi</option>
+                    <option value="Centro Storico">Centro Storico</option>
+                    <option value="Murri">Murri</option>
+                    <option value="Savena">Savena</option>
+                    <option value="Saragozza">Saragozza</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-prezzo">Il tuo budget massimo (€)</label>
+                <input type="number" id="filter-prezzo" name="prezzo" placeholder="Es. 900">
+            </div>
+            <button type="submit" id="search-button">Mostra Risultati</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('filter-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Impedisce l'invio tradizionale del form
+
+            const tipo = document.getElementById('filter-tipo').value;
+            const zona = document.getElementById('filter-zona').value;
+            const prezzo = document.getElementById('filter-prezzo').value;
+
+            // Costruiamo un URL con i parametri di ricerca
+            const queryString = `?tipo=${encodeURIComponent(tipo)}&zona=${encodeURIComponent(zona)}&prezzo=${encodeURIComponent(prezzo)}`;
+            
+            // Reindirizziamo l'utente alla pagina dei risultati con i filtri nell'URL
+            window.location.href = 'risultati.html' + queryString;
+        });
+    </script>
+</body>
+</html>

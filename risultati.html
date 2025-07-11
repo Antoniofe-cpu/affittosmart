@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risultati della tua Ricerca - Affitto Smart</title>
+    <!-- Stessi stili -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 0; }
+        .header h1 { font-size: 2.8em; }
+        .back-link { display: inline-block; margin-top: 20px; font-weight: 600; color: var(--colore-primario); text-decoration: none; }
+        .property-card {
+            background: white; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 30px;
+            display: flex; flex-wrap: wrap;
+        }
+        .property-card-img { flex: 1; min-width: 300px; max-height: 250px; }
+        .property-card-img img { width: 100%; height: 100%; object-fit: cover; }
+        .property-card-info { flex: 2; padding: 25px; }
+        .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); }
+        .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); }
+        .property-card-info h3 { margin: 10px 0; font-size: 1.5em; }
+        .property-card-info .address { margin-bottom: 15px; }
+        .property-card .cta-button {
+            display: inline-block; padding: 12px 25px; font-size: 0.9em; text-decoration: none;
+            border-radius: 50px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo); font-weight: 700; transition: all 0.3s ease;
+        }
+        .message { text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Ecco le proposte per te</h1>
+        </header>
+
+        <div id="results-container">
+            <p class="message">Caricamento degli immobili in corso...</p>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="cerca.html" class="back-link">Modifica la tua ricerca</a>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SHEET_URL = 'INCOLLA_QUI_IL_TUO_LINK_CSV_PUBBLICATO';
+
+        // Funzione per convertire CSV in un array di oggetti
+        function csvToObjects(csv) {
+            const lines = csv.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            const objects = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i]) {
+                    const values = lines[i].split(',');
+                    const obj = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        obj[headers[j]] = values[j] ? values[j].trim() : '';
+                    }
+                    objects.push(obj);
+                }
+            }
+            return objects;
+        }
+
+        async function loadAndFilterProperties() {
+            const resultsContainer = document.getElementById('results-container');
+            try {
+                // Leggi i parametri dall'URL
+                const params = new URLSearchParams(window.location.search);
+                const tipo = params.get('tipo') || '';
+                const zona = params.get('zona') || '';
+                const prezzo = parseInt(params.get('prezzo')) || Infinity;
+
+                // Carica i dati dal Google Sheet
+                const response = await fetch(GOOGLE_SHEET_URL);
+                const csvData = await response.text();
+                const properties = csvToObjects(csvData);
+
+                // Filtra le proprietà
+                const filteredProperties = properties.filter(p => {
+                    return p.Stato === 'Disponibile' &&
+                           (tipo === '' || p.Tipo === tipo) &&
+                           (zona === '' || p.Zona === zona)
+                });
+                
+                let finalProperties = filteredProperties.filter(p => parseInt(p.Prezzo) <= prezzo)
+                
+
+                // Mostra i risultati
+                displayResults(finalProperties);
+            } catch (error) {
+                console.error('Errore:', error);
+                resultsContainer.innerHTML = '<p class="message">Si è verificato un errore nel caricamento dei dati.</p>';
+            }
+        }
+        
+        function displayResults(properties) {
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '';
+
+            if (properties.length === 0) {
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile corrisponde alla tua ricerca. Prova a modificare i filtri!</p>';
+                return;
+            }
+
+            properties.forEach(p => {
+                // Per ora, il bottone porta direttamente a Calendly. Non c'è bisogno di un form intermedio.
+                const card = `
+                    <div class="property-card">
+                        <div class="property-card-img">
+                            <img src="${p.FotoURL}" alt="${p.Titolo}">
+                        </div>
+                        <div class="property-card-info">
+                            <div class="type-zone">${p.Tipo} - ${p.Zona}</div>
+                            <h3>${p.Titolo}</h3>
+                            <div class="price">${p.Prezzo} €/mese</div>
+                            <p>${p.Descrizione}</p>
+                            <a href="${p.CalendlyURL}" class="cta-button" target="_blank">Prenota Open Day</a>
+                        </div>
+                    </div>
+                `;
+                resultsContainer.innerHTML += card;
+            });
+        }
+        
+        // Esegui la funzione quando la pagina si carica
+        window.onload = loadAndFilterProperties;
+    </script>
+</body>
+</html>
