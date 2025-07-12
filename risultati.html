@@ -162,7 +162,7 @@
             allRequirements = csvToObjects(await reqsRes.text());
             allCandidates = csvToObjects(await candsRes.text());
             
-            // --- Lettura Profilo Utente (AGGIORNATO CON NUOVI CAMPI) ---
+             // --- Lettura Profilo Utente (AGGIORNATO) ---
             const params = new URLSearchParams(window.location.search);
             const userProfile = {
                 tipo: (params.get('tipo') || '').toLowerCase().trim(),
@@ -170,10 +170,9 @@
                 prezzo: parseInt(params.get('prezzo')) || Infinity,
                 situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
                 animali: (params.get('animali') || '').toLowerCase().trim(),
-                // NUOVI CAMPI
                 tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
-                sesso: (params.get('sesso') || 'indifferente').toLowerCase().trim(),
-                fumatore: (params.get('fumatore') || 'no').toLowerCase().trim()
+                sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(), // Nuovo campo
+                fumatore: (params.get('fumatore') || '').toLowerCase().trim()
             };
 
             // Filtro 1: Preferenze Utente
@@ -185,22 +184,36 @@
                        !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
             });
 
-            // Filtro 2: Requisiti Proprietario (con logica aggiornata)
+           // Filtro 2: Requisiti Proprietario (LOGICA COMPLETAMENTE RISCRITTA)
             const finalProperties = preFilteredProperties.filter(property => {
                 const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
-                if (propertyRequirements.length === 0) return true;
+                if (propertyRequirements.length === 0) return true; // Se non ha requisiti, passa
                 
+                // Controlla se l'utente soddisfa TUTTI i requisiti
                 return propertyRequirements.every(req => {
-                    const requirementKey = (req.Requisito || '').trim(); // es. 'sesso'
+                    const requirementKey = (req.Requisito || '').trim(); // es. 'sesso_accettato'
                     const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim(); // es. 'f'
-                    const userValue = userProfile[requirementKey]; // es. 'm'
-                    
-                    // Se il requisito è "indifferente", passa sempre
-                    if (requiredValue === 'indifferente') {
-                        return true;
+
+                    // --- NUOVA LOGICA DI CONFRONTO INTELLIGENTE ---
+
+                    // Caso speciale per il sesso
+                    if (requirementKey === 'sesso_accettato') {
+                        // Se il proprietario accetta chiunque, il requisito è superato
+                        if (requiredValue === 'indifferente') {
+                            return true;
+                        }
+                        // Altrimenti, il sesso dell'utente deve corrispondere
+                        return userProfile.sesso_utente === requiredValue;
+                    }
+
+                    // Per tutti gli altri requisiti, usa il confronto standard
+                    const userValue = userProfile[requirementKey];
+                    if (userValue === undefined) {
+                        // Se il requisito non è tra i filtri dell'utente, lo ignoriamo per ora
+                        // Potresti voler cambiare questo comportamento in futuro
+                        return true; 
                     }
                     
-                    // Altrimenti, il valore dell'utente deve corrispondere
                     return userValue === requiredValue;
                 });
             });
