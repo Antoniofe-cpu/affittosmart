@@ -151,80 +151,89 @@
         }
 
         async function main() {
-        try {
-            // --- Caricamento Dati ---
-            const [propsRes, reqsRes, candsRes] = await Promise.all([
-                fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
-            ]);
-            if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
+    try {
+        // --- Caricamento Dati (invariato) ---
+        const [propsRes, reqsRes, candsRes] = await Promise.all([
+            fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
+        ]);
+        if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
+        
+        allProperties = csvToObjects(await propsRes.text());
+        allRequirements = csvToObjects(await reqsRes.text());
+        allCandidates = csvToObjects(await candsRes.text());
+        
+        // --- Lettura Profilo Utente (AGGIORNATO CON TUTTI I CAMPI) ---
+        const params = new URLSearchParams(window.location.search);
+        const userProfile = {
+            tipo: (params.get('tipo') || '').toLowerCase().trim(),
+            zona: (params.get('zona') || '').toLowerCase().trim(),
+            prezzo: parseInt(params.get('prezzo')) || Infinity,
+            data_disponibile: params.get('data_disponibile') || null, // Legge la data
+            periodo_affitto: (params.get('periodo_affitto') || '').toLowerCase().trim(), // Legge il periodo
+            situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+            animali: (params.get('animali') || '').toLowerCase().trim(),
+            tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
+            sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
+            fumatore: (params.get('fumatore') || '').toLowerCase().trim()
+        };
+
+        // --- Filtro 1: Preferenze Utente (AGGIORNATO) ---
+        const preFilteredProperties = allProperties.filter(p => {
+            const prezzoImmobile = parseInt(p.Prezzo);
+            const pStato = (p.Stato || '').toLowerCase().trim();
+            const pTipo = (p.Tipo || '').toLowerCase().trim();
+            const pZona = (p.Zona || '').toLowerCase().trim();
+            const pDataDisponibile = p.DataDisponibile ? new Date(p.DataDisponibile) : null;
+            const userDataDisponibile = userProfile.data_disponibile ? new Date(userProfile.data_disponibile) : null;
             
-            allProperties = csvToObjects(await propsRes.text());
-            allRequirements = csvToObjects(await reqsRes.text());
-            allCandidates = csvToObjects(await candsRes.text());
+            // Controllo sulla data: l'immobile deve essere disponibile PRIMA o alla data richiesta dall'utente
+            const dateCheck = !userDataDisponibile || !pDataDisponibile || pDataDisponibile <= userDataDisponibile;
+
+            return pStato === 'disponibile' &&
+                   (userProfile.tipo === '' || pTipo === userProfile.tipo) &&
+                   (userProfile.zona === '' || pZona === userProfile.zona) &&
+                   !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo) &&
+                   dateCheck;
+        });
+
+        // --- Filtro 2: Requisiti Proprietario e Periodo (AGGIORNATO) ---
+        const finalProperties = preFilteredProperties.filter(property => {
+            // Controlla il periodo di affitto (logica speciale)
+            const pPeriodo = (property.PeriodoAffitto || '').toLowerCase().trim();
+            if (userProfile.periodo_affitto !== '' && pPeriodo !== '' && pPeriodo !== userProfile.periodo_affitto) {
+                return false; // Se l'utente ha una preferenza di periodo e l'immobile non la soddisfa, scarta
+            }
+
+            // Controlla tutti gli altri requisiti dal foglio
+            const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
+            if (propertyRequirements.length === 0) return true; // Se non ha requisiti, passa
             
-             // --- Lettura Profilo Utente (AGGIORNATO) ---
-            const params = new URLSearchParams(window.location.search);
-            const userProfile = {
-                tipo: (params.get('tipo') || '').toLowerCase().trim(),
-                zona: (params.get('zona') || '').toLowerCase().trim(),
-                prezzo: parseInt(params.get('prezzo')) || Infinity,
-                situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
-                animali: (params.get('animali') || '').toLowerCase().trim(),
-                tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
-                sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(), // Nuovo campo
-                fumatore: (params.get('fumatore') || '').toLowerCase().trim()
-            };
+            return propertyRequirements.every(req => {
+                const requirementKey = (req.Requisito || '').trim();
+                const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
+                const userValue = userProfile[requirementKey];
 
-            // Filtro 1: Preferenze Utente
-            const preFilteredProperties = allProperties.filter(p => {
-                const prezzoImmobile = parseInt(p.Prezzo);
-                return (p.Stato || '').toLowerCase().trim() === 'disponibile' &&
-                       (userProfile.tipo === '' || (p.Tipo || '').toLowerCase().trim() === userProfile.tipo) &&
-                       (userProfile.zona === '' || (p.Zona || '').toLowerCase().trim() === userProfile.zona) &&
-                       !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
+                if (requiredValue === 'indifferente') return true;
+
+                return userValue === requiredValue;
             });
+        });
+        
+        // Calcolo punteggio solo sui risultati finali
+        const propertiesWithScore = finalProperties.map(p => {
+            let matchScore = 100;
+            // Puoi aggiungere qui una logica per abbassare il punteggio se alcune preferenze non matchano,
+            // ma per ora, se un immobile è in `finalProperties`, ha un match del 100% dei requisiti.
+            return { property: p, matchScore: matchScore };
+        });
 
-           // Filtro 2: Requisiti Proprietario (LOGICA COMPLETAMENTE RISCRITTA)
-            const finalProperties = preFilteredProperties.filter(property => {
-                const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
-                if (propertyRequirements.length === 0) return true; // Se non ha requisiti, passa
-                
-                // Controlla se l'utente soddisfa TUTTI i requisiti
-                return propertyRequirements.every(req => {
-                    const requirementKey = (req.Requisito || '').trim(); // es. 'sesso_accettato'
-                    const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim(); // es. 'f'
+        displayResults(propertiesWithScore);
 
-                    // --- NUOVA LOGICA DI CONFRONTO INTELLIGENTE ---
-
-                    // Caso speciale per il sesso
-                    if (requirementKey === 'sesso_accettato') {
-                        // Se il proprietario accetta chiunque, il requisito è superato
-                        if (requiredValue === 'indifferente') {
-                            return true;
-                        }
-                        // Altrimenti, il sesso dell'utente deve corrispondere
-                        return userProfile.sesso_utente === requiredValue;
-                    }
-
-                    // Per tutti gli altri requisiti, usa il confronto standard
-                    const userValue = userProfile[requirementKey];
-                    if (userValue === undefined) {
-                        // Se il requisito non è tra i filtri dell'utente, lo ignoriamo per ora
-                        // Potresti voler cambiare questo comportamento in futuro
-                        return true; 
-                    }
-                    
-                    return userValue === requiredValue;
-                });
-            });
-
-            displayResults(finalProperties);
-
-        } catch (error) {
-            console.error("ERRORE CRITICO:", error);
-            document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore.</p>`;
-        }
+    } catch (error) {
+        console.error("ERRORE CRITICO:", error);
+        document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore.</p>`;
     }
+}
     
     document.addEventListener('DOMContentLoaded', main);
 </script>
