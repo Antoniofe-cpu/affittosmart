@@ -151,65 +151,69 @@
         }
 
         async function main() {
-            const resultsContainer = document.getElementById('results-container');
-            try {
-                const [propsRes, reqsRes, candsRes] = await Promise.all([
-                    fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
-                ]);
-                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
-                
-                allProperties = csvToObjects(await propsRes.text());
-                allRequirements = csvToObjects(await reqsRes.text());
-                allCandidates = csvToObjects(await candsRes.text());
-                
-                const params = new URLSearchParams(window.location.search);
-                const userProfile = {
-                    tipo: (params.get('tipo') || '').toLowerCase().trim(),
-                    zona: (params.get('zona') || '').toLowerCase().trim(),
-                    prezzo: parseInt(params.get('prezzo')) || Infinity,
-                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
-                    animali: (params.get('animali') || '').toLowerCase().trim()
-                };
+        try {
+            // --- Caricamento Dati ---
+            const [propsRes, reqsRes, candsRes] = await Promise.all([
+                fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
+            ]);
+            if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
+            
+            allProperties = csvToObjects(await propsRes.text());
+            allRequirements = csvToObjects(await reqsRes.text());
+            allCandidates = csvToObjects(await candsRes.text());
+            
+            // --- Lettura Profilo Utente (AGGIORNATO CON NUOVI CAMPI) ---
+            const params = new URLSearchParams(window.location.search);
+            const userProfile = {
+                tipo: (params.get('tipo') || '').toLowerCase().trim(),
+                zona: (params.get('zona') || '').toLowerCase().trim(),
+                prezzo: parseInt(params.get('prezzo')) || Infinity,
+                situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+                animali: (params.get('animali') || '').toLowerCase().trim(),
+                // NUOVI CAMPI
+                tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
+                sesso: (params.get('sesso') || 'indifferente').toLowerCase().trim(),
+                fumatore: (params.get('fumatore') || 'no').toLowerCase().trim()
+            };
 
-                const preFilteredProperties = allProperties.filter(p => {
-                    const prezzoImmobile = parseInt(p.Prezzo);
-                    const pStato = (p.Stato || '').toLowerCase().trim();
-                    const pTipo = (p.Tipo || '').toLowerCase().trim();
-                    const pZona = (p.Zona || '').toLowerCase().trim();
+            // Filtro 1: Preferenze Utente
+            const preFilteredProperties = allProperties.filter(p => {
+                const prezzoImmobile = parseInt(p.Prezzo);
+                return (p.Stato || '').toLowerCase().trim() === 'disponibile' &&
+                       (userProfile.tipo === '' || (p.Tipo || '').toLowerCase().trim() === userProfile.tipo) &&
+                       (userProfile.zona === '' || (p.Zona || '').toLowerCase().trim() === userProfile.zona) &&
+                       !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
+            });
+
+            // Filtro 2: Requisiti Proprietario (con logica aggiornata)
+            const finalProperties = preFilteredProperties.filter(property => {
+                const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
+                if (propertyRequirements.length === 0) return true;
+                
+                return propertyRequirements.every(req => {
+                    const requirementKey = (req.Requisito || '').trim(); // es. 'sesso'
+                    const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim(); // es. 'f'
+                    const userValue = userProfile[requirementKey]; // es. 'm'
                     
-                    return pStato === 'disponibile' &&
-                        (userProfile.tipo === '' || pTipo === userProfile.tipo) &&
-                        (userProfile.zona === '' || pZona === userProfile.zona) &&
-                        !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo);
-                });
-
-                const finalProperties = preFilteredProperties.filter(property => {
-                    const propertyRequirements = allRequirements.filter(req => req.ID_Immobile === property.ID);
-                    if (propertyRequirements.length === 0) {
+                    // Se il requisito è "indifferente", passa sempre
+                    if (requiredValue === 'indifferente') {
                         return true;
                     }
-                    let isMatch = true;
-                    for (const req of propertyRequirements) {
-                        const requirementKey = (req.Requisito || '').trim();
-                        const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
-                        const userValue = userProfile[requirementKey];
-                        if (userValue !== requiredValue) {
-                            isMatch = false;
-                            break;
-                        }
-                    }
-                    return isMatch;
+                    
+                    // Altrimenti, il valore dell'utente deve corrispondere
+                    return userValue === requiredValue;
                 });
-                
-                displayResults(finalProperties);
+            });
 
-            } catch (error) {
-                console.error("ERRORE CRITICO:", error);
-                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore. Assicurati che i link ai database siano corretti e riprova.</p>`;
-            }
+            displayResults(finalProperties);
+
+        } catch (error) {
+            console.error("ERRORE CRITICO:", error);
+            document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore.</p>`;
         }
-        
-        document.addEventListener('DOMContentLoaded', main);
-    </script>
+    }
+    
+    document.addEventListener('DOMContentLoaded', main);
+</script>
 </body>
 </html>
