@@ -150,6 +150,50 @@
 
         .footer { background-color: #1c2833; color: #bdc3c7; padding: 40px 0; text-align: center; font-size: 0.9em; }
         .footer a { color: white; }
+        .guarantee-section {
+            padding: 100px 0;
+            background-color: var(--colore-bianco);
+        }
+        .guarantee-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 50px;
+            align-items: center;
+        }
+        .guarantee-image img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+        .guarantee-text h2 {
+            font-size: 2.5em;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .guarantee-text p {
+            font-size: 1.1em;
+            color: var(--colore-testo-chiaro);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .guarantee-points .point {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .guarantee-points .icon {
+            font-size: 1.5em;
+            color: var(--colore-successo);
+        }
+        
+        /* Media Query per la nuova sezione */
+        @media (max-width: 768px) {
+            .guarantee-content {
+                grid-template-columns: 1fr;
+            }
+        }
 
         @media (max-width: 900px) { 
             .process-grid, .faq-grid { grid-template-columns: 1fr; }
@@ -157,6 +201,7 @@
         @media (max-width: 768px) { 
             .visual-process { grid-template-columns: 1fr; }
         }
+        
     </style>
 </head>
 <body>
@@ -196,6 +241,37 @@
                     </div>
                     <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                 </form>
+            </div>
+        </section>
+              <!-- ============================================= -->
+        <!-- ===== NUOVA SEZIONE GARANZIA E FIDUCIA ===== -->
+        <!-- ============================================= -->
+        <section class="guarantee-section">
+            <div class="container">
+                <div class="guarantee-content">
+                    <div class="guarantee-image">
+                        <!-- Immagine che trasmette professionalità e interazione umana -->
+                        <img src="https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Il nostro team verifica ogni immobile">
+                    </div>
+                    <div class="guarantee-text">
+                        <h2>Annunci Verificati, Opportunità Reali.</h2>
+                        <p>Sappiamo quanto sia frustrante il mercato degli affitti. Annunci che spariscono, foto ingannevoli, appuntamenti a vuoto. Noi abbiamo eliminato tutto questo. Il nostro impegno è la tua tranquillità.</p>
+                        <div class="guarantee-points">
+                            <div class="point">
+                                <i class="fa-solid fa-house-circle-check icon"></i>
+                                <span>Ogni immobile è verificato di persona dal nostro team.</span>
+                            </div>
+                            <div class="point">
+                                <i class="fa-solid fa-calendar-check icon"></i>
+                                <span>Gli Open Day sono eventi reali e confermati.</span>
+                            </div>
+                            <div class="point">
+                                <i class="fa-solid fa-shield-halved icon"></i>
+                                <span>La piccola fee è la tua assicurazione contro i perditempo.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -238,6 +314,7 @@
                 </div>
             </div>
         </section>
+            
 
         <section id="faq" class="section-dark">
             <div class="container">
