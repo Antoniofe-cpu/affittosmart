@@ -91,7 +91,7 @@
         function csvToObjects(csv) {
             const lines = csv.trim().split('\n');
             if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').replace(/\r/g, ''));
+            const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
             const objects = [];
             for (let i = 1; i < lines.length; i++) {
                 if (lines[i]) {
@@ -110,7 +110,7 @@
             const resultsContainer = document.getElementById('results-container');
             resultsContainer.innerHTML = '';
             if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile con il tuo profilo e le tue preferenze.<br>Prova a modificare la ricerca!</p>';
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile con il tuo profilo.<br>Prova a modificare la ricerca!</p>';
                 return;
             }
             properties.forEach(p => {
@@ -120,9 +120,9 @@
                 const postiRimasti = postiTotali - prenotati;
                 let buttonHtml;
                 if (postiRimasti > 0) {
-                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista il Tuo Ticket (${postiRimasti}/${postiTotali} rimasti)</button>`;
+                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista il Tuo Ticket (${postiRimasti}/${postiTotali})</button>`;
                 } else {
-                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti (${postiTotali}/${postiTotali})</button>`;
                 }
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'property-card';
@@ -150,94 +150,80 @@
             modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
         }
 
-       // NUOVA E COMPLETA FUNZIONE main() PER risultati.html
+        async function main() {
+            try {
+                // --- Caricamento Dati ---
+                const [propsRes, reqsRes, candsRes] = await Promise.all([
+                    fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
+                ]);
+                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
+                
+                allProperties = csvToObjects(await propsRes.text());
+                allRequirements = csvToObjects(await reqsRes.text());
+                allCandidates = csvToObjects(await candsRes.text());
+                
+                // --- Lettura Profilo Utente Completo ---
+                const params = new URLSearchParams(window.location.search);
+                const userProfile = {
+                    tipo: (params.get('tipo') || '').toLowerCase().trim(),
+                    zona: (params.get('zona') || '').toLowerCase().trim(),
+                    prezzo: parseInt(params.get('prezzo')) || Infinity,
+                    data_disponibile: params.get('data_disponibile') || null,
+                    periodo_affitto: (params.get('periodo_affitto') || '').toLowerCase().trim(),
+                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+                    reddito_utente: parseInt(params.get('reddito_utente')) || 0,
+                    tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
+                    sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
+                    fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
+                    animali: (params.get('animali') || '').toLowerCase().trim()
+                };
 
-async function main() {
-    try {
-        // --- Caricamento Dati ---
-        const [propsRes, reqsRes, candsRes] = await Promise.all([
-            fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
-        ]);
-        if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
-        
-        allProperties = csvToObjects(await propsRes.text());
-        allRequirements = csvToObjects(await reqsRes.text());
-        allCandidates = csvToObjects(await candsRes.text());
-        
-        // --- Lettura Profilo Utente (AGGIORNATO) ---
-        const params = new URLSearchParams(window.location.search);
-        const userProfile = {
-            tipo: (params.get('tipo') || '').toLowerCase().trim(),
-            zona: (params.get('zona') || '').toLowerCase().trim(),
-            prezzo: parseInt(params.get('prezzo')) || Infinity,
-            situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
-            animali: (params.get('animali') || '').toLowerCase().trim(),
-            // NUOVI CAMPI
-            reddito_utente: parseInt(params.get('reddito_utente')) || 0, // Legge il reddito dell'utente
-            tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
-            sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
-            fumatore: (params.get('fumatore') || '').toLowerCase().trim()
-        };
+                // --- FILTRAGGIO A CASCATA ---
+                const finalProperties = allProperties.filter(property => {
+                    // 1. Filtro base: Disponibilità
+                    if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
 
-        const availableProperties = allProperties.filter(p => (p.Stato || '').toLowerCase().trim() === 'disponibile');
-        
-        const propertiesWithScore = [];
+                    // 2. Filtro preferenze utente (Tipo, Zona, Prezzo, Data)
+                    if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) return false;
+                    if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) return false;
+                    if (parseInt(property.Prezzo) > userProfile.prezzo) return false;
+                    
+                    const userDataDisponibile = userProfile.data_disponibile ? new Date(userProfile.data_disponibile) : null;
+                    const pDataDisponibile = property.DataDisponibile ? new Date(property.DataDisponibile) : null;
+                    if (userDataDisponibile && pDataDisponibile && pDataDisponibile > userDataDisponibile) return false;
+                    
+                    const pPeriodo = (property.PeriodoAffitto || '').toLowerCase().trim();
+                    if (userProfile.periodo_affitto && pPeriodo && pPeriodo !== userProfile.periodo_affitto) return false;
 
-        availableProperties.forEach(property => {
-            let isCompatible = true;
-            
-            // --- FASE 1: CONTROLLO DEI REQUISITI BLOCCANTI DEL PROPRIETARIO ---
-            const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
-            
-            for (const req of propertyRequirements) {
-                const requirementKey = (req.Requisito || '').trim();
-                const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
-                let userValue;
+                    // 3. Filtro requisiti proprietario (bloccanti)
+                    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
+                    for (const req of propertyRequirements) {
+                        const reqKey = (req.Requisito || '').trim();
+                        const reqValue = (req.Valore_Richiesto || '').toLowerCase().trim();
+                        
+                        if (reqValue === '' || reqValue === 'indifferente') continue;
 
-                // Logica speciale per il reddito
-                if (requirementKey === 'reddito_minimo') {
-                    if (userProfile.reddito_utente < parseInt(requiredValue)) {
-                        isCompatible = false;
-                        break;
+                        const userValue = userProfile[reqKey];
+
+                        if (!userValue || userValue !== reqValue) {
+                            return false; // Se anche un solo requisito non è soddisfatto, scarta l'immobile
+                        }
                     }
-                    continue; // Passa al prossimo requisito
-                }
+                    
+                    // Se l'immobile ha superato tutti i filtri, viene tenuto
+                    return true;
+                });
 
-                // Logica per tutti gli altri requisiti testuali
-                userValue = userProfile[requirementKey];
-                if (requiredValue !== 'indifferente' && userValue !== requiredValue) {
-                    isCompatible = false;
-                    break; 
-                }
+                // Ora non calcoliamo più un punteggio, mostriamo semplicemente i risultati filtrati
+                displayResults(finalProperties);
+
+            } catch (error) {
+                console.error("ERRORE CRITICO:", error);
+                document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore.</p>`;
             }
-            
-            if (!isCompatible) return;
-
-            // --- FASE 2: CALCOLO PUNTEGGIO IN BASE ALLE PREFERENZE ---
-            let matchScore = 100;
-            const prezzoImmobile = parseInt(property.Prezzo);
-            
-            if (!isNaN(prezzoImmobile) && prezzoImmobile > userProfile.prezzo) {
-                matchScore = 0;
-            } else {
-                if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) matchScore -= 30;
-                if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) matchScore -= 30;
-            }
-
-            if (matchScore >= 40) {
-                propertiesWithScore.push({ property, matchScore });
-            }
-        });
-
-        displayResults(propertiesWithScore);
-
-    } catch (error) {
-        console.error("ERRORE CRITICO:", error);
-        document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore.</p>`;
-    }
-}
-    
-    document.addEventListener('DOMContentLoaded', main);
-</script>
+        }
+        
+        document.addEventListener('DOMContentLoaded', main);
+    </script>
 </body>
 </html>
