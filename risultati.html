@@ -106,7 +106,7 @@
             <p class="message">Analizzando la compatibilità tra te e le nostre proposte...</p>
         </div>
         <div class="back-link-container">
-            <a href="cerca.html" class="back-link">Modifica la tua Ricerca</a>
+            <a href="index.html" class="back-link">Modifica la tua Ricerca</a>
         </div>
     </div>
     <!-- Struttura del Modal di Pagamento (nascosto) -->
@@ -177,9 +177,9 @@
                 const postiRimasti = postiTotali - prenotati;
                 let buttonHtml;
                 if (postiRimasti > 0) {
-                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></button>`;
+                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimasti)</span></button>`;
                 } else {
-                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti <span class="spots-counter">(0/${postiTotali})</span></button>`;
+                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti <span class="spots-counter">(0/${postiTotali} rimasti)</span></button>`;
                 }
 
                 const cardDiv = document.createElement('div');
