@@ -4,24 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trova la Tua Casa a Bologna - Affitto Smart</title>
-    <!-- Stili e Font... -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { 
-            --colore-primario: #0D47A1; --colore-secondario: #1976D2; --colore-accento: #FFA000; 
-            --colore-testo: #212121; --colore-testo-chiaro: #616161; --colore-sfondo-pagina: #f4f6f9; 
+            --colore-primario: #0D47A1; 
+            --colore-accento: #FFA000; 
+            --colore-testo: #212121; 
+            --colore-testo-chiaro: #616161; 
+            --colore-sfondo-pagina: #f4f6f9; 
             --colore-bianco: #ffffff;
         }
-        html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
         .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
         
         .header { padding: 25px 0; text-align: center; border-bottom: 1px solid #eee;}
         .logo { font-size: 2.5em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
-        .logo span { font-weight: 400; color: var(--colore-secondario); }
+        .logo span { font-weight: 400; color: #1565C0; }
 
         .hero-search { padding: 60px 0 80px 0; text-align: center; }
         .hero-search h1 { font-size: 3.2em; color: var(--colore-primario); line-height: 1.2; }
@@ -32,32 +33,34 @@
         }
         .form-section { margin-bottom: 30px; padding-bottom: 30px; }
         .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 25px;}
+        .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 30px;}
         .form-section .icon { color: var(--colore-accento); }
         
-        .filter-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 25px 40px; }
-        .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; text-align: left;}
+        .filter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px 30px; }
+        .filter-group { text-align: left; }
+        .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
         
-        /* Stile originale per filtri preferenze */
-        #preferences-section select, #preferences-section input {
+        /* Stili per input e select standard */
+        .filter-group select, .filter-group input[type="number"], .filter-group input[type="date"] { 
             width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; 
             font-size: 1em; box-sizing: border-box; background-color: white;
         }
-
-        /* Stile "Pillole" per filtri profilo */
-        #profile-section .pill-options { display: flex; gap: 10px; }
-        #profile-section .pill-options input { display: none; }
-        #profile-section .pill-options label {
-            flex: 1; text-align: center; padding: 12px; border: 1px solid #ccc;
+        
+        /* Stile "Pillole" per scelte binarie - ORA APPLICATO CORRETTAMENTE */
+        .pill-options { display: flex; gap: 10px; height: 51px; }
+        .pill-options input { display: none; }
+        .pill-options label {
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            text-align: center; padding: 12px; border: 1px solid #ccc;
             border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600;
+            background-color: white;
         }
-        #profile-section .pill-options input:checked + label {
+        .pill-options input:checked + label {
             background-color: var(--colore-primario); color: white; border-color: var(--colore-primario);
         }
 
         #profile-section {
-            max-height: 0; overflow: hidden; opacity: 0;
-            transition: all 0.6s ease-in-out;
+            max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out;
         }
         #profile-section.visible {
             max-height: 1000px; opacity: 1;
@@ -69,8 +72,9 @@
             background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
             color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer;
         }
-        
-        @media (max-width: 768px) { .filter-columns { grid-template-columns: 1fr; } }
+
+        @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .filter-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -88,34 +92,24 @@
                     <!-- Sezione 1: Le Tue Preferenze -->
                     <div class="form-section" id="preferences-section">
                         <h2><i class="fa-solid fa-map-location-dot icon"></i>Cosa cerchi?</h2>
-                        <div class="filter-columns">
-                            <!-- Colonna Sinistra -->
-                            <div>
-                                <div class="filter-group"><label>Tipo di Immobile</label><select name="tipo"><option value="">Qualsiasi</option><option>Stanza Singola</option><option>Monolocale</option><option>Bilocale</option></select></div>
-                                <div class="filter-group"><label>Budget Massimo (€)</label><input type="number" name="prezzo" placeholder="Es. 900"></div>
-                                <div class="filter-group"><label>Disponibile dal</label><input type="date" name="data_disponibile"></div>
-                            </div>
-                            <!-- Colonna Destra -->
-                            <div>
-                                <div class="filter-group"><label>Zona</label><select name="zona"><option value="">Qualsiasi</option><option>Centro Storico</option><option>Murri</option></select></div>
-                                <div class="filter-group"><label>Periodo di Affitto</label><select name="periodo_affitto"><option value="">Qualsiasi</option><option>Breve (meno di 12 mesi)</option><option>Standard (1-3 anni)</option><option>Lungo (più di 3 anni)</option></select></div>
-                            </div>
+                        <div class="filter-grid">
+                            <div class="filter-group"><label>Tipo di Immobile</label><select name="tipo"><option value="">Qualsiasi</option><option>Stanza Singola</option><option>Monolocale</option><option>Bilocale</option></select></div>
+                            <div class="filter-group"><label>Zona</label><select name="zona"><option value="">Qualsiasi</option><option>Centro Storico</option><option>Murri</option></select></div>
+                            <div class="filter-group"><label>Budget Max (€)</label><input type="number" name="prezzo" placeholder="Es. 900"></div>
+                            <div class="filter-group"><label>Disponibile dal</label><input type="date" name="data_disponibile"></div>
+                            <div class="filter-group"><label>Periodo di Affitto</label><select name="periodo_affitto"><option value="">Qualsiasi</option><option>Breve (meno di 12 mesi)</option><option>Standard (1-3 anni)</option><option>Lungo (più di 3 anni)</option></select></div>
                         </div>
                     </div>
 
                     <!-- Sezione 2: Il Tuo Profilo (Nascosta) -->
                     <div class="form-section" id="profile-section">
                         <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
-                        <div class="filter-columns">
-                            <div>
-                                <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa"><option value="">Indifferente</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option></select></div>
-                                <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
-                                <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M"><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
-                            </div>
-                            <div>
-                                <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
-                                <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
-                            </div>
+                        <div class="filter-grid">
+                            <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa"><option value="">Indifferente</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option></select></div>
+                            <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
+                            <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
+                            <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
+                            <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
                         </div>
                     </div>
 
@@ -139,7 +133,6 @@
             function checkPreferences() {
                 let filledCount = 0;
                 preferenceInputs.forEach(input => {
-                    // Considera un filtro compilato se ha un valore (per select e date) o se è un numero > 0
                     if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
                         filledCount++;
                     }
@@ -161,10 +154,13 @@
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // Se la sezione profilo non è visibile, forzane la visualizzazione
+                // Forza la visualizzazione della sezione profilo se non è ancora visibile
                 if (!profileSection.classList.contains('visible')) {
                     profileSection.classList.add('visible');
-                    alert('Ottimo inizio! Per una ricerca più accurata, completa il tuo profilo qui sotto prima di cercare.');
+                    // Invece di un alert, facciamo scrollare l'utente alla nuova sezione
+                    profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Potremmo anche evidenziare il primo campo da compilare
+                    profileSection.querySelector('select').focus();
                     return; // Interrompe l'invio per dare tempo all'utente di compilare
                 }
                 
