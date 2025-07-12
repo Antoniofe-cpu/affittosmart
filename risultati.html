@@ -173,9 +173,9 @@
         const postiRimasti = postiTotali - prenotati;
         let buttonHtml;
         if (postiRimasti > 0) {
-            buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket (${postiRimasti}/${postiTotali})</button>`;
+            buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket (${postiRimasti}/${postiTotali} rimasti)</button>`;
         } else {
-            buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti (${postiTotali}/${postiTotali})</button>`;
+            buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti (${postiTotali}/${postiTotali} rimasti)</button>`;
         }
 
         const cardDiv = document.createElement('div');
