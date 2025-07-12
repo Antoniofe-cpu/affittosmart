@@ -211,9 +211,8 @@
         // NUOVA E CORRETTA FUNZIONE main()
 
 async function main() {
-    const resultsContainer = document.getElementById('results-container');
     try {
-        // --- 1. CARICAMENTO DATI ---
+        // --- Caricamento Dati ---
         const [propsRes, reqsRes, candsRes] = await Promise.all([
             fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
         ]);
@@ -223,77 +222,68 @@ async function main() {
         allRequirements = csvToObjects(await reqsRes.text());
         allCandidates = csvToObjects(await candsRes.text());
         
-        // --- 2. LETTURA PROFILO E PREFERENZE UTENTE DALL'URL ---
+        // --- Lettura Profilo Utente dall'URL ---
         const params = new URLSearchParams(window.location.search);
-        const userPrefs = { // Filtri "Cosa cerchi?"
-            tipo: (params.get('tipo') || '').toLowerCase().trim(),
-            zona: (params.get('zona') || '').toLowerCase().trim(),
-            prezzo: parseInt(params.get('prezzo')) || Infinity,
-            data_disponibile: params.get('data_disponibile') || null,
-            periodo_affitto: (params.get('periodo_affitto') || '').toLowerCase().trim()
-        };
-        const userProfile = { // Filtri "Chi sei?"
-            situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
-            reddito_utente: parseInt(params.get('reddito_utente')) || 0,
-            tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
-            sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
-            fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
-            animali: (params.get('animali') || '').toLowerCase().trim()
-        };
+        const userProfile = {};
+        // Legge dinamicamente tutti i parametri del form
+        for (const [key, value] of params.entries()) {
+            userProfile[key] = (value || '').toLowerCase().trim();
+        }
+        userProfile.prezzo = parseInt(userProfile.prezzo) || Infinity;
+        userProfile.reddito_utente = parseInt(userProfile.reddito_utente) || 0;
 
-        // --- 3. FILTRAGGIO A CASCATA ---
+        // --- FILTRAGGIO A CASCATA ---
         const finalProperties = allProperties.filter(property => {
-            // -- CONTROLLO #1: Filtri di Base --
+            // 1. Filtro base: Disponibilità
             if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
 
-            // -- CONTROLLO #2: Filtri sulle Preferenze dell'Utente (se impostate) --
-            if (userPrefs.tipo && (property.Tipo || '').toLowerCase().trim() !== userPrefs.tipo) return false;
-            if (userPrefs.zona && (property.Zona || '').toLowerCase().trim() !== userPrefs.zona) return false;
-            if (parseInt(property.Prezzo) > userPrefs.prezzo) return false;
+            // 2. Filtro preferenze utente (se l'utente ha impostato un valore)
+            if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) return false;
+            if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) return false;
+            if (parseInt(property.Prezzo) > userProfile.prezzo) return false;
             
-            const userDataDisponibile = userPrefs.data_disponibile ? new Date(userPrefs.data_disponibile) : null;
-            const pDataDisponibile = property.DataDisponibile ? new Date(property.DataDisponibile) : null;
-            if (userDataDisponibile && pDataDisponibile && pDataDisponibile > userDataDisponibile) return false;
-            
-            const pPeriodo = (property.PeriodoAffitto || '').toLowerCase().trim();
-            if (userPrefs.periodo_affitto && pPeriodo && pPeriodo !== userPrefs.periodo_affitto) return false;
+            // ... (Aggiungi qui altri filtri di preferenza come Data e Periodo se necessario)
 
-            // -- CONTROLLO #3: Filtri sui Requisiti del Proprietario (bloccanti) --
-            const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
-            
-            // Se l'immobile non ha requisiti, passa automaticamente questo controllo.
-            if (propertyRequirements.length === 0) {
-                return true; 
+            // --- 3. NUOVA LOGICA DI CONTROLLO REQUISITI ---
+            // Trova la riga di requisiti specifica per questo immobile
+            const propertyRequirement = allRequirements.find(r => r.ID_Immobile === property.ID);
+
+            // Se non c'è una riga di requisiti per questo immobile, è compatibile.
+            if (!propertyRequirement) {
+                return true;
+            }
+
+            // Altrimenti, controlla ogni requisito definito per quell'immobile
+            for (const reqKey in propertyRequirement) {
+                // Salta la colonna ID_Immobile
+                if (reqKey === 'ID_Immobile') continue;
+                
+                const requiredValue = (propertyRequirement[reqKey] || '').toLowerCase().trim();
+                const userValue = userProfile[reqKey];
+
+                // Se il proprietario ha impostato un requisito (non è vuoto o 'indifferente')
+                if (requiredValue && requiredValue !== 'indifferente') {
+                    
+                    // Caso speciale per il reddito
+                    if (reqKey === 'reddito_minimo') {
+                        if (userProfile.reddito_utente < parseInt(requiredValue)) {
+                            return false; // Reddito utente troppo basso
+                        }
+                    } else {
+                        // Confronto standard per tutti gli altri requisiti
+                        if (!userValue || userValue !== requiredValue) {
+                            return false; // Se l'utente non ha il profilo richiesto, SCARTA
+                        }
+                    }
+                }
             }
             
-            // Altrimenti, controlla se l'utente soddisfa TUTTI i requisiti esistenti.
-            return propertyRequirements.every(req => {
-                const reqKey = (req.Requisito || '').trim(); // es. 'animali'
-                const reqValue = (req.Valore_Richiesto || '').toLowerCase().trim(); // es. 'no'
-                
-                // Se il proprietario non ha una preferenza per questa regola, il requisito è superato.
-                if (reqValue === '' || reqValue === 'indifferente') {
-                    return true;
-                }
-                
-                const userValue = userProfile[reqKey]; // Il valore del profilo utente
-                
-                // Se l'utente non ha compilato il campo richiesto, non può essere compatibile.
-                if (!userValue) {
-                    return false;
-                }
-                
-                // Se il requisito è numerico (es. reddito), fai un confronto numerico
-                if (reqKey === 'reddito_minimo') {
-                    return userProfile.reddito_utente >= parseInt(reqValue);
-                }
-                
-                // Altrimenti, fai un confronto testuale
-                return userValue === reqValue;
-            });
+            // Se l'immobile ha superato tutti i cicli di controllo, viene tenuto
+            return true;
         });
         
-        displayResults(finalProperties); // Mostra i risultati finali
+        // La funzione displayResults rimane invariata, non calcoliamo più lo score
+        displayResults(finalProperties);
 
     } catch (error) {
         console.error("ERRORE CRITICO:", error);
