@@ -10,17 +10,33 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Per favore, copia e incolla qui il blocco <style> completo dalla risposta precedente per avere la grafica corretta */
-        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; --colore-successo: #2E7D32; }
+        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; --colore-successo: #2E7D32; --colore-bianco: #ffffff; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
         .header { text-align: center; padding: 40px 0; }
         .header h1 { font-size: 2.8em; }
         .back-link { display: inline-block; margin-top: 20px; font-weight: 600; color: var(--colore-primario); text-decoration: none; }
+        
+        /* CARD IMMOBILE CON BADGE */
         .property-card {
             background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 30px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 40px; /* Aumentato spazio */
             display: flex; flex-wrap: wrap;
+            position: relative; /* Necessario per posizionare l'etichetta */
+        }
+        .match-badge {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 3px solid white;
+            z-index: 10;
         }
         .property-card-img { flex: 1; min-width: 300px; max-height: 250px; background-color: #eee; }
         .property-card-img img { width: 100%; height: 100%; object-fit: cover; }
@@ -35,7 +51,7 @@
             color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; align-self: flex-start;
         }
         .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; }
-        .spots-left { font-size: 0.9em; font-weight: 600; color: var(--colore-successo); margin-top: 10px; }
+        .spots-info { font-size: 0.9em; font-weight: 600; color: var(--colore-testo-chiaro); margin-top: 10px; display: block; }
         .message { text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
 
         /* Stili per il Modal/Popup */
@@ -56,33 +72,6 @@
         .modal-content p { color: var(--colore-testo-chiaro); line-height: 1.6; }
         #payment-button { margin-top: 20px; background: var(--colore-successo); color: white; width: 100%; height: 55px; border-radius: 8px; border: none; font-size: 1.2em; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; }
         #close-modal { font-size: 0.9em; color: var(--colore-testo-chiaro); cursor: pointer; display: inline-block; margin-top: 15px; }
-        /* NUOVI STILI PER ETICHETTA MATCHING E POSTI */
-.property-card {
-    position: relative; /* Necessario per posizionare l'etichetta */
-    /* ... stili esistenti ... */
-}
-
-.match-badge {
-    position: absolute;
-    top: -10px;
-    left: 20px;
-    background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-    color: var(--colore-testo);
-    padding: 8px 15px;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 0.9em;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    border: 2px solid white;
-}
-
-.spots-info {
-    font-size: 0.9em;
-    font-weight: 600;
-    color: var(--colore-testo-chiaro);
-    margin-top: 10px;
-    display: block; /* Aggiunto per andare a capo */
-}
     </style>
 </head>
 <body>
@@ -94,7 +83,7 @@
             <p class="message">Analizzando la compatibilità tra te e le nostre proposte...</p>
         </div>
         <div style="text-align: center;">
-            <a href="index.html" class="back-link">Modifica la tua Ricerca</a>
+            <a href="cerca.html" class="back-link">Modifica la tua Ricerca</a>
         </div>
     </div>
 
@@ -110,128 +99,163 @@
         </div>
     </div>
 
-     <script>
-    // --- CONFIGURAZIONE ---
-        const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
-        const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
-        const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+    <script>
+        // --- CONFIGURAZIONE ---
+        const PROPERTIES_URL = 'INCOLLA_QUI_URL_CSV_PROPRIETÀ';
+        const REQUIREMENTS_URL = 'INCOLLA_QUI_URL_CSV_REQUISITI';
+        const CANDIDATES_URL = 'INCOLLA_QUI_URL_CSV_CANDIDATI';
 
-    let allProperties = [], allRequirements = [], allCandidates = [];
+        let allProperties = [], allRequirements = [], allCandidates = [];
 
-    function csvToObjects(csv) { /* ... funzione invariata, copia/incolla dalla versione precedente ... */ }
-    function openPaymentModal(stripeLink) { /* ... funzione invariata ... */ }
-
-    // --- NUOVA FUNZIONE DI VISUALIZZAZIONE ---
-    function displayResults(propertiesWithScore) {
-        const resultsContainer = document.getElementById('results-container');
-        resultsContainer.innerHTML = '';
-        if (propertiesWithScore.length === 0) {
-            resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato compatibile.<br>Prova a modificare i tuoi filtri!</p>';
-            return;
+        function csvToObjects(csv) {
+            const lines = csv.trim().split('\n');
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').replace(/\r/g, ''));
+            const objects = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i]) {
+                    const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    const obj = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
+                    }
+                    objects.push(obj);
+                }
+            }
+            return objects;
         }
 
-        // Ordina i risultati per punteggio di matching, dal più alto al più basso
-        propertiesWithScore.sort((a, b) => b.matchScore - a.matchScore);
-
-        propertiesWithScore.forEach(item => {
-            const p = item.property; // L'oggetto proprietà è ora dentro 'item'
-            const matchScore = item.matchScore; // Il punteggio di matching
-
-            if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
-
-            const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-            const postiTotali = parseInt(p.MaxPartecipanti);
-            const postiRimasti = postiTotali - prenotati;
-            
-            let buttonHtml;
-            if (postiRimasti > 0) {
-                buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista il Tuo Ticket</button>
-                              <span class="spots-info">${postiRimasti} / ${postiTotali} posti rimasti</span>`;
-            } else {
-                buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>
-                              <span class="spots-info">0 / ${postiTotali} posti rimasti</span>`;
+        function displayResults(propertiesWithScore) {
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '';
+            if (propertiesWithScore.length === 0) {
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato compatibile con il tuo profilo.<br>Prova a modificare i tuoi filtri!</p>';
+                return;
             }
 
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'property-card';
-            // Aggiungiamo l'etichetta del punteggio
-            cardDiv.innerHTML = `
-                <div class="match-badge">${matchScore}% Match</div>
-                <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
-                <div class="property-card-info">
-                    <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                    <h3>${p.Titolo}</h3>
-                    <div class="price">${p.Prezzo} €/mese</div>
-                    <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
-                    <div>${buttonHtml}</div>
-                </div>`;
-            resultsContainer.appendChild(cardDiv);
-        });
-        
-        document.querySelectorAll('.cta-button[data-link]').forEach(button => {
-            button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
-        });
-    }
+            // Ordina i risultati per punteggio, dal più alto al più basso
+            propertiesWithScore.sort((a, b) => b.matchScore - a.matchScore);
 
-    // --- NUOVA FUNZIONE main() CON LOGICA DI PUNTEGGIO ---
-    async function main() {
-        try {
-            // ... Caricamento dati invariato ...
-            const [propsRes, reqsRes, candsRes] = await Promise.all([ fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL) ]);
-            if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
-            allProperties = csvToObjects(await propsRes.text());
-            allRequirements = csvToObjects(await reqsRes.text());
-            allCandidates = csvToObjects(await candsRes.text());
-            
-            const params = new URLSearchParams(window.location.search);
-            const userProfile = { /* ... profilo utente invariato ... */ };
+            propertiesWithScore.forEach(item => {
+                const p = item.property;
+                const matchScore = item.matchScore;
 
-            // Filtra solo le proprietà disponibili
-            const availableProperties = allProperties.filter(p => (p.Stato || '').toLowerCase().trim() === 'disponibile');
-            
-            const propertiesWithScore = [];
-
-            availableProperties.forEach(property => {
-                let matchScore = 100; // Partiamo da 100%
-                let scoreDeductions = 0;
-                let isCompatible = true;
+                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
                 
-                // 1. Controlla le preferenze dell'utente (Tipo, Zona, Prezzo)
-                const prezzoImmobile = parseInt(property.Prezzo);
-                if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) scoreDeductions += 30;
-                if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) scoreDeductions += 30;
-                if (!isNaN(prezzoImmobile) && prezzoImmobile > userProfile.prezzo) scoreDeductions += 100; // Il prezzo è un deal-breaker
+                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+                const postiTotali = parseInt(p.MaxPartecipanti);
+                const postiRimasti = postiTotali - prenotati;
+                
+                let buttonHtml;
+                if (postiRimasti > 0) {
+                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista il Tuo Ticket</button>
+                                  <span class="spots-info">${postiRimasti} / ${postiTotali} posti rimasti</span>`;
+                } else {
+                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>
+                                  <span class="spots-info">0 / ${postiTotali} posti rimasti</span>`;
+                }
 
-                // 2. Controlla i requisiti del proprietario
-                const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
-                propertyRequirements.forEach(req => {
-                    const requirementKey = (req.Requisito || '').trim();
-                    const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
-                    const userValue = userProfile[requirementKey];
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'property-card';
+                cardDiv.innerHTML = `
+                    <div class="match-badge">${matchScore}% Match</div>
+                    <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
+                    <div class="property-card-info">
+                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                        <h3>${p.Titolo}</h3>
+                        <div class="price">${p.Prezzo} €/mese</div>
+                        <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+                        <div>${buttonHtml}</div>
+                    </div>`;
+                resultsContainer.appendChild(cardDiv);
+            });
+            
+            document.querySelectorAll('.cta-button[data-link]').forEach(button => {
+                button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
+            });
+        }
+
+        function openPaymentModal(stripeLink) {
+            const modal = document.getElementById('payment-modal');
+            document.getElementById('payment-button').href = stripeLink;
+            modal.classList.add('visible');
+            document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
+            modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
+        }
+
+        async function main() {
+            try {
+                const [propsRes, reqsRes, candsRes] = await Promise.all([ fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL) ]);
+                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
+                
+                allProperties = csvToObjects(await propsRes.text());
+                allRequirements = csvToObjects(await reqsRes.text());
+                allCandidates = csvToObjects(await candsRes.text());
+                
+                const params = new URLSearchParams(window.location.search);
+                const userProfile = {
+                    tipo: (params.get('tipo') || '').toLowerCase().trim(),
+                    zona: (params.get('zona') || '').toLowerCase().trim(),
+                    prezzo: parseInt(params.get('prezzo')) || Infinity,
+                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+                    animali: (params.get('animali') || '').toLowerCase().trim()
+                };
+
+                const availableProperties = allProperties.filter(p => (p.Stato || '').toLowerCase().trim() === 'disponibile');
+                
+                const propertiesWithScore = [];
+
+                availableProperties.forEach(property => {
+                    let matchScore = 100;
+                    let isCompatible = true;
                     
-                    if (userValue && userValue !== requiredValue) {
-                        isCompatible = false; // Se non rispetta un requisito, è incompatibile
+                    // 1. Controlla i requisiti del proprietario (fattori bloccanti)
+                    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
+                    for (const req of propertyRequirements) {
+                        const requirementKey = (req.Requisito || '').trim();
+                        const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
+                        const userValue = userProfile[requirementKey];
+                        if (userValue && userValue !== requiredValue) {
+                            isCompatible = false;
+                            break; 
+                        }
+                    }
+                    
+                    // Se non è compatibile, il punteggio è 0 e non procediamo
+                    if (!isCompatible) {
+                        matchScore = 0;
+                    } else {
+                        // 2. Se è compatibile, calcola il punteggio in base alle preferenze
+                        const prezzoImmobile = parseInt(property.Prezzo);
+                        // Il prezzo è un fattore quasi bloccante
+                        if (!isNaN(prezzoImmobile) && prezzoImmobile > userProfile.prezzo) {
+                            matchScore = 0;
+                        } else {
+                           // Penalità per preferenze non perfette
+                           if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) {
+                                matchScore -= 30;
+                           }
+                           if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) {
+                                matchScore -= 30;
+                           }
+                        }
+                    }
+
+                    // Aggiungiamo l'immobile alla lista dei risultati solo se ha un punteggio minimo
+                    if (matchScore > 40) {
+                        propertiesWithScore.push({ property, matchScore });
                     }
                 });
 
-                // Calcolo finale
-                matchScore -= scoreDeductions;
-                if (matchScore < 0 || !isCompatible) matchScore = 0;
+                displayResults(propertiesWithScore);
 
-                // Aggiungiamo l'immobile alla lista dei risultati solo se ha un punteggio minimo
-                if (matchScore > 40) { // SOGLIA MINIMA per mostrare un immobile
-                    propertiesWithScore.push({ property, matchScore });
-                }
-            });
-
-            displayResults(propertiesWithScore);
-
-        } catch (error) {
-            console.error("ERRORE CRITICO:", error);
+            } catch (error) {
+                console.error("ERRORE CRITICO:", error);
+                document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore. Riprova.</p>`;
+            }
         }
-    }
-    
-    document.addEventListener('DOMContentLoaded', main);
-</script>
+        
+        document.addEventListener('DOMContentLoaded', main);
+    </script>
 </body>
 </html>
