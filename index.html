@@ -232,52 +232,71 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('unified-search-form');
-            const preferencesSection = document.getElementById('preferences-section');
-            const profileSection = document.getElementById('profile-section');
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('unified-search-form');
+        const preferencesSection = document.getElementById('preferences-section');
+        const profileSection = document.getElementById('profile-section');
+        
+        // --- LOGICA DI VISUALIZZAZIONE AUTOMATICA ---
+        const preferenceInputs = preferencesSection.querySelectorAll('select, input');
+        
+        function checkPreferences() {
+            let filledCount = 0;
+            preferenceInputs.forEach(input => {
+                if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
+                    filledCount++;
+                }
+            });
             
-            // Logica di visualizzazione automatica
-            const preferenceInputs = preferencesSection.querySelectorAll('select, input');
-            function checkPreferences() {
-                let filledCount = 0;
-                preferenceInputs.forEach(input => {
-                    if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
-                        filledCount++;
+            // Se vengono compilati 3 o più filtri, mostra la sezione del profilo
+            if (filledCount >= 3) {
+                profileSection.classList.add('visible');
+            }
+            // NOTA: non la nascondiamo più automaticamente per non creare un effetto strano
+            // se l'utente cancella un filtro. Una volta apparsa, rimane.
+        }
+
+        preferenceInputs.forEach(input => {
+            input.addEventListener('change', checkPreferences);
+            input.addEventListener('keyup', checkPreferences);
+        });
+
+        // --- LOGICA DI INVIO AL CLICK DEL PULSANTE (NUOVA E CORRETTA) ---
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Blocca sempre l'invio di default
+            
+            // Controlla se la sezione del profilo è già visibile
+            const isProfileVisible = profileSection.classList.contains('visible');
+
+            if (isProfileVisible) {
+                // Se è visibile, controlla che i campi obbligatori siano compilati
+                let allRequiredFilled = true;
+                const requiredFields = profileSection.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    if (!field.value) {
+                        allRequiredFilled = false;
+                        field.style.border = '2px solid red'; // Evidenzia il campo mancante
+                    } else {
+                        field.style.border = '1px solid #ccc';
                     }
                 });
-                if (filledCount >= 3) {
-                    profileSection.classList.add('visible');
+
+                if (allRequiredFilled) {
+                    // Se tutto è compilato, procedi con la ricerca
+                    const formData = new FormData(form);
+                    const queryString = new URLSearchParams(formData).toString();
+                    window.location.href = 'risultati.html?' + queryString;
                 } else {
-                    profileSection.classList.remove('visible');
+                    // Se mancano dati obbligatori nel profilo, avvisa l'utente
+                    alert('Per favore, completa tutti i campi della sezione "Chi sei?" per continuare.');
                 }
+            } else {
+                // Se la sezione profilo NON è visibile, attivala e guida l'utente
+                profileSection.classList.add('visible');
+                profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-            preferenceInputs.forEach(input => {
-                input.addEventListener('change', checkPreferences);
-                input.addEventListener('keyup', checkPreferences);
-            });
-
-            // Logica di invio al click
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                if (!profileSection.classList.contains('visible')) {
-                    profileSection.classList.add('visible');
-                    profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // alert('Ottimo inizio! Per una ricerca più accurata, completa il tuo profilo qui sotto.');
-                    return;
-                }
-                const formData = new FormData(form);
-                const queryString = new URLSearchParams(formData).toString();
-                window.location.href = 'risultati.html?' + queryString;
-            });
-
-            // Logica per FAQ
-            document.querySelectorAll('.faq-question').forEach(button => {
-                button.addEventListener('click', () => {
-                    button.parentElement.classList.toggle('active');
-                });
-            });
         });
-    </script>
+    });
+</script>
 </body>
 </html>
