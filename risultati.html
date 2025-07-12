@@ -234,9 +234,10 @@ function csvToObjects(csv) {
         });
     }
 
-    // --- NUOVA E CORRETTA FUNZIONE main() CON FILTRO INFALLIBILE ---
+    // --- NUOVA E CORRETTA FUNZIONE main() ---
     async function main() {
         try {
+            // 1. Caricamento Dati
             const [propsRes, reqsRes, candsRes] = await Promise.all([
                 fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
             ]);
@@ -246,56 +247,65 @@ function csvToObjects(csv) {
             allRequirements = csvToObjects(await reqsRes.text());
             allCandidates = csvToObjects(await candsRes.text());
             
+            // 2. Lettura Profilo Utente dall'URL
             const params = new URLSearchParams(window.location.search);
-            const userProfile = {
+            const userFilter = {
+                // Preferenze
                 tipo: (params.get('tipo') || '').toLowerCase().trim(),
                 zona: (params.get('zona') || '').toLowerCase().trim(),
                 prezzo: parseInt(params.get('prezzo')) || Infinity,
-                data_disponibile: params.get('data_disponibile') || null,
-                periodo_affitto: (params.get('periodo_affitto') || '').toLowerCase().trim(),
+                
+                // Profilo
                 situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
-                reddito_utente: parseInt(params.get('reddito_utente')) || 0,
-                tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
-                sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
-                fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
-                animali: (params.get('animali') || '').toLowerCase().trim()
+                animali: (params.get('animali') || '').toLowerCase().trim(),
+                // Aggiungi qui gli altri campi del profilo...
             };
-
+            
+            // 3. FILTRAGGIO
             const finalProperties = allProperties.filter(property => {
-                // Filtro 1: Base (Stato, Prezzo, Data)
+                // --- CONTROLLO #1: REQUISITI DI BASE (bloccanti) ---
                 if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
-                if (parseInt(property.Prezzo) > userProfile.prezzo) return false;
-                // Aggiungi qui altri filtri base se necessario
+                if (parseInt(property.Prezzo) > userFilter.prezzo) return false;
 
-                // Filtro 2: Preferenze (se l'utente le ha impostate)
-                if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) return false;
-                if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) return false;
-                // Aggiungi qui altri filtri preferenze se necessario
+                // --- CONTROLLO #2: PREFERENZE UTENTE (se specificate) ---
+                // Se l'utente ha scelto un TIPO, l'immobile deve corrispondere.
+                if (userFilter.tipo && (property.Tipo || '').toLowerCase().trim() !== userFilter.tipo) {
+                    return false;
+                }
+                // Se l'utente ha scelto una ZONA, l'immobile deve corrispondere.
+                if (userFilter.zona && (property.Zona || '').toLowerCase().trim() !== userFilter.zona) {
+                    return false;
+                }
+                // Aggiungi qui altri controlli di PREFERENZA...
 
-                // Filtro 3: Requisiti Proprietario (confronto con il profilo utente)
+                // --- CONTROLLO #3: REQUISITI PROPRIETARIO (confronto con il profilo utente) ---
                 const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
-                for (const req of propertyRequirements) {
+                
+                // Se l'immobile non ha requisiti specifici, passa questo controllo.
+                if (propertyRequirements.length === 0) {
+                    return true;
+                }
+
+                // Altrimenti, controlla se il profilo utente soddisfa TUTTI i requisiti.
+                return propertyRequirements.every(req => {
                     const reqKey = (req.Requisito || '').trim();
                     const reqValue = (req.Valore_Richiesto || '').toLowerCase().trim();
                     
-                    if (reqValue === '' || reqValue === 'indifferente') continue;
-
-                    const userValue = userProfile[reqKey];
-
-                    if (reqKey === 'reddito_minimo') {
-                        if (!userValue || userValue < parseInt(reqValue)) {
-                            return false;
-                        }
-                    } else {
-                        if (!userValue || userValue !== reqValue) {
-                            return false;
-                        }
+                    if (reqValue === '' || reqValue === 'indifferente') {
+                        return true; // Se il proprietario è indifferente, il requisito è superato.
                     }
-                }
-                
-                return true;
-            });
 
+                    const userValue = userFilter[reqKey];
+
+                    // Se il proprietario ha un requisito, l'utente DEVE aver fornito il dato e DEVE corrispondere.
+                    if (!userValue || userValue !== reqValue) {
+                        return false;
+                    }
+                    
+                    return true;
+                });
+            });
+            
             displayResults(finalProperties);
 
         } catch (error) {
