@@ -11,22 +11,34 @@
     <style>
         :root { 
             --colore-primario: #0D47A1; 
+            --colore-secondario: #1565C0; 
             --colore-accento: #FFA000; 
             --colore-testo: #212121; 
             --colore-testo-chiaro: #616161; 
             --colore-sfondo-pagina: #f4f6f9; 
             --colore-bianco: #ffffff;
         }
+        html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
         .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        .text-center { text-align: center; }
+        
+        /* LAYOUT SEZIONI */
+        .section { padding: 100px 0; }
+        .section-white { background-color: var(--colore-bianco); }
+        .section-light { background-color: var(--colore-sfondo-pagina); }
+        .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); }
+        
+        .section-title { font-size: 2.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; }
+        .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; }
         
         .header { padding: 25px 0; text-align: center; border-bottom: 1px solid #eee;}
         .logo { font-size: 2.5em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
-        .logo span { font-weight: 400; color: #1565C0; }
+        .logo span { font-weight: 400; color: var(--colore-secondario); }
 
-        .hero-search { padding: 60px 0 80px 0; text-align: center; }
-        .hero-search h1 { font-size: 3.2em; color: var(--colore-primario); line-height: 1.2; }
-        .hero-search .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 15px auto 50px auto; }
+        /* HERO & SEARCH FORM */
+        .hero-search { padding: 60px 0 80px 0; }
+        .hero-search h1 { line-height: 1.2; }
         
         .unified-form {
             background: var(--colore-sfondo-pagina); padding: 40px; border-radius: 24px;
@@ -36,24 +48,21 @@
         .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 30px;}
         .form-section .icon { color: var(--colore-accento); }
         
-        .filter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px 30px; }
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px 30px; }
         .filter-group { text-align: left; }
         .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
         
-        /* Stili per input e select standard */
-        .filter-group select, .filter-group input[type="number"], .filter-group input[type="date"] { 
+        #preferences-section select, #preferences-section input {
             width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; 
             font-size: 1em; box-sizing: border-box; background-color: white;
         }
         
-        /* Stile "Pillole" per scelte binarie - ORA APPLICATO CORRETTAMENTE */
         .pill-options { display: flex; gap: 10px; height: 51px; }
         .pill-options input { display: none; }
         .pill-options label {
             flex: 1; display: flex; justify-content: center; align-items: center;
             text-align: center; padding: 12px; border: 1px solid #ccc;
-            border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600;
-            background-color: white;
+            border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; background-color: white;
         }
         .pill-options input:checked + label {
             background-color: var(--colore-primario); color: white; border-color: var(--colore-primario);
@@ -73,6 +82,30 @@
             color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer;
         }
 
+        /* WHY US / EXPLANATION SECTION */
+        .process-grid { display: flex; justify-content: center; text-align: center; margin-top: 60px; flex-wrap: wrap; gap: 30px;}
+        .process-step { 
+            flex-basis: 280px; padding: 30px; background: white; border-radius: 16px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+            border-bottom: 5px solid var(--colore-accento);
+            transition: transform 0.3s ease;
+        }
+        .process-step:hover { transform: translateY(-10px); }
+        .process-step .icon { font-size: 3.5em; color: var(--colore-primario); margin-bottom: 20px; line-height: 1; }
+        .process-step h3 { font-size: 1.4em; color: var(--colore-primario); }
+        
+        /* FAQ SECTION */
+        #faq .section-title { color: var(--colore-bianco); }
+        #faq .section-subtitle { color: rgba(255,255,255,0.8); }
+        .faq-item { margin-bottom: 15px; border-radius: 12px; background: rgba(255,255,255,0.1); overflow: hidden; }
+        .faq-question { width: 100%; background: transparent; border: none; padding: 20px; font-size: 1.2em; font-weight: 600; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--colore-bianco); }
+        .faq-answer { color: rgba(255,255,255,0.9); padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
+        .faq-item.active .faq-answer { max-height: 200px; padding: 0 20px 20px 20px; }
+
+        /* FOOTER */
+        .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 40px 0; text-align: center; font-size: 0.9em; }
+        .main-footer a { color: white; }
+
         @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 600px) { .filter-grid { grid-template-columns: 1fr; } }
     </style>
@@ -83,10 +116,10 @@
     </header>
 
     <main>
-        <section class="hero-search">
-            <div class="container text-center">
-                <h1>La casa giusta, senza compromessi.</h1>
-                <p class="subtitle">Dicci cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità per cui sei perfettamente compatibile.</p>
+        <section class="hero-search text-center">
+            <div class="container">
+                <h1 class="section-title">La casa giusta, senza compromessi.</h1>
+                <p class="section-subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
                 
                 <form id="unified-search-form" class="unified-form">
                     <!-- Sezione 1: Le Tue Preferenze -->
@@ -104,22 +137,65 @@
                     <!-- Sezione 2: Il Tuo Profilo (Nascosta) -->
                     <div class="form-section" id="profile-section">
                         <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
-                        <div class="filter-grid">
-                            <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa"><option value="">Indifferente</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option></select></div>
-                            <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
-                            <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
-                            <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
-                            <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
+                        <div class="filter-grid" style="grid-template-columns: 1fr 1fr;">
+                             <div>
+                                <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa"><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option></select></div>
+                                <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
+                                <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
+                            </div>
+                            <div>
+                                <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
+                                <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
+                            </div>
                         </div>
                     </div>
-
                     <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                 </form>
             </div>
         </section>
-        
-        <!-- Qui sotto puoi reinserire le altre sezioni (Why Us, FAQ, Footer...) -->
+
+        <section class="why-us section-light">
+            <div class="container text-center">
+                <h2 class="section-title">Il nostro non è un semplice annuncio.<br>È un invito a un evento esclusivo.</h2>
+                <p class="section-subtitle">Capire il nostro metodo significa capire perché avrai più chance di trovare la casa che desideri, senza stress.</p>
+                <div class="process-grid">
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <h3>Passo 1: Matching Intelligente</h3>
+                        <p>Il sistema incrocia i tuoi dati con le richieste dei proprietari e ti mostra solo gli immobili per cui sei 100% compatibile. Zero perdite di tempo.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div>
+                        <h3>Passo 2: Il Ticket Esclusivo</h3>
+                        <p>Per le case idonee, potrai acquistare un "ticket" di accesso all'Open Day a soli <strong>2,99€</strong>. Questo garantisce eventi a numero chiuso con solo persone realmente interessate.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
+                        <h3>Passo 3: L'Open Day Vincente</h3>
+                        <p>Parteciperai a una visita rilassata e professionale. Un'occasione unica per vedere la casa con calma e presentarti al meglio.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="section-dark">
+            <div class="container">
+                <h2 class="section-title text-center" style="color: var(--colore-bianco);">Ancora Dubbi? È normale.</h2>
+                <p class="section-subtitle text-center" style="color: rgba(255,255,255,0.8);">Ecco le risposte che cerchi. La nostra trasparenza è la tua prima garanzia.</p>
+                <div class="faq-container" style="max-width: 800px; margin: 0 auto;">
+                    <div class="faq-item">
+                        <button class="faq-question"><span>Perché devo pagare 2,99€?</span><i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="faq-answer"><p>La piccola fee non è un costo, ma un filtro di serietà. Ci permette di assicurarci che solo le persone veramente interessate partecipino, creando un ambiente di visita rispettoso e di alta qualità per tutti. È il tuo modo per dire "Io ci sono e faccio sul serio".</p></div>
+                    </div>
+                    <!-- Altre FAQ qui... -->
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer class="main-footer">
+        <p>© 2025 Affitto Smart | <a href="/index.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -127,9 +203,8 @@
             const preferencesSection = document.getElementById('preferences-section');
             const profileSection = document.getElementById('profile-section');
             
-            // --- LOGICA DI VISUALIZZAZIONE AUTOMATICA ---
+            // Logica di visualizzazione automatica
             const preferenceInputs = preferencesSection.querySelectorAll('select, input');
-            
             function checkPreferences() {
                 let filledCount = 0;
                 preferenceInputs.forEach(input => {
@@ -137,37 +212,36 @@
                         filledCount++;
                     }
                 });
-                
                 if (filledCount >= 3) {
                     profileSection.classList.add('visible');
                 } else {
                     profileSection.classList.remove('visible');
                 }
             }
-
             preferenceInputs.forEach(input => {
                 input.addEventListener('change', checkPreferences);
                 input.addEventListener('keyup', checkPreferences);
             });
 
-            // --- LOGICA DI INVIO AL CLICK DEL PULSANTE ---
+            // Logica di invio al click
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
-                // Forza la visualizzazione della sezione profilo se non è ancora visibile
                 if (!profileSection.classList.contains('visible')) {
                     profileSection.classList.add('visible');
-                    // Invece di un alert, facciamo scrollare l'utente alla nuova sezione
                     profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // Potremmo anche evidenziare il primo campo da compilare
-                    profileSection.querySelector('select').focus();
-                    return; // Interrompe l'invio per dare tempo all'utente di compilare
+                    // alert('Ottimo inizio! Per una ricerca più accurata, completa il tuo profilo qui sotto.');
+                    return;
                 }
-                
-                // Se la sezione è già visibile, procedi con la ricerca
                 const formData = new FormData(form);
                 const queryString = new URLSearchParams(formData).toString();
                 window.location.href = 'risultati.html?' + queryString;
+            });
+
+            // Logica per FAQ
+            document.querySelectorAll('.faq-question').forEach(button => {
+                button.addEventListener('click', () => {
+                    button.parentElement.classList.toggle('active');
+                });
             });
         });
     </script>
