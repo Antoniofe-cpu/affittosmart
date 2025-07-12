@@ -10,53 +10,43 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { 
-            --colore-primario: #0D47A1; 
-            --colore-secondario: #1565C0; 
-            --colore-accento: #FFA000; 
-            --colore-testo: #212121; 
-            --colore-testo-chiaro: #616161; 
-            --colore-sfondo-pagina: #f4f6f9; 
+            --colore-primario: #0D47A1; --colore-secondario: #1565C0; --colore-accento: #FFA000; 
+            --colore-testo: #212121; --colore-testo-chiaro: #616161; --colore-sfondo-pagina: #f4f6f9; 
             --colore-bianco: #ffffff;
         }
         html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
         .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        .text-center { text-align: center; }
         
-        /* LAYOUT SEZIONI */
+        /* Layout e Titoli */
         .section { padding: 100px 0; }
         .section-white { background-color: var(--colore-bianco); }
         .section-light { background-color: var(--colore-sfondo-pagina); }
         .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); }
-        
-        .section-title { font-size: 2.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; }
-        .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; }
+        .section-title { font-size: 2.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
+        .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
         
         .header { padding: 25px 0; text-align: center; border-bottom: 1px solid #eee;}
         .logo { font-size: 2.5em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
         .logo span { font-weight: 400; color: var(--colore-secondario); }
 
-        /* HERO & SEARCH FORM */
-        .hero-search { padding: 60px 0 80px 0; }
-        .hero-search h1 { line-height: 1.2; }
-        
-        .unified-form {
-            background: var(--colore-sfondo-pagina); padding: 40px; border-radius: 24px;
-        }
+        /* Form di Ricerca Unificato */
+        .unified-form-container { padding: 60px 0 80px 0; }
+        .unified-form { background: var(--colore-sfondo-pagina); padding: 40px; border-radius: 24px; }
         .form-section { margin-bottom: 30px; padding-bottom: 30px; }
         .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 30px;}
         .form-section .icon { color: var(--colore-accento); }
         
-        .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px 30px; }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px 30px; }
         .filter-group { text-align: left; }
         .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
         
-        #preferences-section select, #preferences-section input {
+        /* Stile Unico per tutti gli input */
+        .filter-group select, .filter-group input[type="number"], .filter-group input[type="date"] {
             width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; 
-            font-size: 1em; box-sizing: border-box; background-color: white;
+            font-size: 1em; box-sizing: border-box; background-color: white; font-family: 'Poppins', sans-serif;
         }
-        
         .pill-options { display: flex; gap: 10px; height: 51px; }
         .pill-options input { display: none; }
         .pill-options label {
@@ -72,8 +62,7 @@
             max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out;
         }
         #profile-section.visible {
-            max-height: 1000px; opacity: 1;
-            border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px;
+            max-height: 1000px; opacity: 1; border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px;
         }
         
         #search-button {
@@ -81,40 +70,30 @@
             background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
             color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer;
         }
-
-         /* WHY US / EXPLANATION SECTION */
+        
+        /* Sezioni Esplicative */
         .process-grid { display: flex; justify-content: center; text-align: center; margin-top: 60px; flex-wrap: wrap; gap: 30px;}
-        .process-step { 
-            flex-basis: 280px; padding: 30px; background: white; border-radius: 16px; 
-            box-shadow: 0 8px 30px rgba(0,0,0,0.07);
-            border-bottom: 5px solid var(--colore-accento);
-            transition: transform 0.3s ease;
-        }
+        .process-step { flex-basis: 280px; padding: 30px; background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.07); border-bottom: 5px solid var(--colore-accento); transition: transform 0.3s ease; }
         .process-step:hover { transform: translateY(-10px); }
         .process-step .icon { font-size: 3.5em; color: var(--colore-primario); margin-bottom: 20px; line-height: 1; }
         .process-step h3 { font-size: 1.4em; color: var(--colore-primario); }
-
-        /* SEZIONE VISUAL */
+        
         .visual-process { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
         .visual-process img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .visual-process h3 { font-size: 2em; }
         
-        /* FAQ SECTION */
-        #faq .section-title { color: var(--colore-bianco); }
-        #faq .section-subtitle { color: rgba(255,255,255,0.8); }
+        /* FAQ */
+        #faq .section-title, #faq .section-subtitle { color: var(--colore-bianco); }
         .faq-item { margin-bottom: 15px; border-radius: 12px; background: rgba(255,255,255,0.1); overflow: hidden; }
         .faq-question { width: 100%; background: transparent; border: none; padding: 20px; font-size: 1.2em; font-weight: 600; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--colore-bianco); }
         .faq-answer { color: rgba(255,255,255,0.9); padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
         .faq-item.active .faq-answer { max-height: 200px; padding: 0 20px 20px 20px; }
 
-        /* FOOTER */
-        .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 40px 0; text-align: center; font-size: 0.9em; }
-        .main-footer a { color: white; }
+        .footer { background-color: #1c2833; color: #bdc3c7; padding: 40px 0; text-align: center; font-size: 0.9em; }
+        .footer a { color: white; }
 
-        @media (max-width: 768px) { 
-            .hero-search h1 { font-size: 2.5em; }
-            .visual-process { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .filter-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -123,187 +102,164 @@
     </header>
 
     <main>
-        <section class="hero-search text-center">
-            <div class="container">
-                <h1 class="section-title">La casa giusta, senza compromessi.</h1>
-                <p class="section-subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
-                
-                <form id="unified-search-form" class="unified-form">
-                    <!-- Sezione 1: Le Tue Preferenze -->
-                    <div class="form-section" id="preferences-section">
-                        <h2><i class="fa-solid fa-map-location-dot icon"></i>Cosa cerchi?</h2>
-                        <div class="filter-grid">
-                            <div class="filter-group"><label>Tipo di Immobile</label><select name="tipo"><option value="">Qualsiasi</option><option>Stanza Singola</option><option>Monolocale</option><option>Bilocale</option></select></div>
-                            <div class="filter-group"><label>Zona</label><select name="zona"><option value="">Qualsiasi</option><option>Centro Storico</option><option>Murri</option></select></div>
-                            <div class="filter-group"><label>Budget Max (€)</label><input type="number" name="prezzo" placeholder="Es. 900"></div>
-                            <div class="filter-group"><label>Disponibile dal</label><input type="date" name="data_disponibile"></div>
-                            <div class="filter-group"><label>Periodo di Affitto</label><select name="periodo_affitto"><option value="">Qualsiasi</option><option>Breve (meno di 12 mesi)</option><option>Standard (1-3 anni)</option><option>Lungo (più di 3 anni)</option></select></div>
+        <form id="unified-search-form">
+            <section class="unified-form-container section-white text-center">
+                <div class="container">
+                    <h1 class="section-title">La casa giusta, senza compromessi.</h1>
+                    <p class="section-subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
+                    
+                    <div class="unified-form">
+                        <div class="form-section" id="preferences-section">
+                            <h2><i class="fa-solid fa-map-location-dot icon"></i>Cosa cerchi?</h2>
+                            <div class="filter-grid">
+                                <div class="filter-group"><label>Tipo di Immobile</label><select name="tipo"><option value="">Qualsiasi</option><option>Stanza Singola</option><option>Monolocale</option><option>Bilocale</option></select></div>
+                                <div class="filter-group"><label>Zona</label><select name="zona"><option value="">Qualsiasi</option><option>Centro Storico</option><option>Murri</option></select></div>
+                                <div class="filter-group"><label>Budget Max (€)</label><input type="number" name="prezzo" placeholder="Es. 900"></div>
+                                <div class="filter-group"><label>Disponibile dal</label><input type="date" name="data_disponibile"></div>
+                                <div class="filter-group"><label>Periodo di Affitto</label><select name="periodo_affitto"><option value="">Qualsiasi</option><option>Breve (meno di 12 mesi)</option><option>Standard (1-3 anni)</option><option>Lungo (più di 3 anni)</option></select></div>
+                            </div>
+                        </div>
+
+                        <div class="form-section" id="profile-section">
+                            <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
+                            <div class="filter-grid">
+                                <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa"><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option><option>Lavoratore Autonomo / P.IVA</option></select></div>
+                                <div class="filter-group"><label>Reddito Netto Mensile (familiare)</label><select name="reddito_utente"><option value="" disabled selected>Seleziona fascia...</option><option value="1500">Meno di 1.500 €</option><option value="2000">1.501-2.000 €</option><option value="2500">2.001-2.500 €</option><option value="3000">2.501-3.500 €</option><option value="4000">Oltre 3.500 €</option></select></div>
+                                <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
+                                <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
+                                <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
+                                <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
+                            </div>
+                        </div>
+                        <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="why-us section-light">
+                <div class="container text-center">
+                    <h2 class="section-title">Il nostro non è un semplice annuncio.<br>È un invito a un evento esclusivo.</h2>
+                    <p class="section-subtitle">Capire il nostro metodo significa capire perché avrai più chance di trovare la casa che desideri, senza stress.</p>
+                    <div class="process-grid">
+                        <div class="process-step">
+                            <div class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                            <h3>1. Matching Intelligente</h3>
+                            <p>Il sistema incrocia i tuoi dati con le richieste dei proprietari e ti mostra solo gli immobili per cui sei 100% compatibile.</p>
+                        </div>
+                        <div class="process-step">
+                            <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div>
+                            <h3>2. Il Ticket Esclusivo</h3>
+                            <p>Per le case idonee, potrai acquistare un "ticket" di accesso all'Open Day a soli <strong>2,99€</strong>, garantendo eventi a numero chiuso.</p>
+                        </div>
+                        <div class="process-step">
+                            <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
+                            <h3>3. L'Open Day Vincente</h3>
+                            <p>Parteciperai a una visita rilassata e professionale, un'occasione unica per presentarti al meglio.</p>
                         </div>
                     </div>
-
-                    <!-- Sezione 2: Il Tuo Profilo (Nascosta) -->
-                    <div class="form-section" id="profile-section">
-                        <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
-                        <div class="filter-grid" style="grid-template-columns: 1fr 1fr;">
-                             <div>
-                                 <div class="filter-group">
-                <label>Situazione Lavorativa</label>
-                <!-- Ho rimosso "Indifferente" da qui -->
-                <select name="situazione_lavorativa" required>
-                    <option value="" disabled selected>Seleziona...</option>
-                    <option>Dipendente a tempo indeterminato</option>
-                    <option>Studente/ssa con garante</option>
-                    <option>Lavoratore Autonomo / P.IVA</option>
-                </select>
-            </div>
-            <!-- NUOVO CAMPO: REDDITO MENSILE -->
-            <div class="filter-group">
-                <label>Reddito Netto Mensile (familiare)</label>
-                <select name="reddito_utente" required>
-                    <option value="" disabled selected>Seleziona fascia...</option>
-                    <option value="1500">Meno di 1.500 €</option>
-                    <option value="2000">Tra 1.501 e 2.000 €</option>
-                    <option value="2500">Tra 2.001 e 2.500 €</option>
-                    <option value="3000">Tra 2.501 e 3.500 €</option>
-                    <option value="4000">Oltre 3.500 €</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Il tuo sesso</label>
-                <div class="pill-options">
-                    <input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label>
-                    <input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label>
                 </div>
-            </div>
-        </div>
-        <!-- Colonna Destra -->
-        <div>
-            <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
-            <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
-            <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
-        </div>
-    </div>
-</div>
-                    <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
-                </form>
-            </div>
-        </section>
+            </section>
 
-        <section class="why-us section-dark">
-            <div class="container text-center">
-                <h2 class="section-title">Perché questo metodo funzionerà per te.</h2>
-                <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">Non sei solo un candidato, sei un ospite a un evento esclusivo. Ecco la differenza.</p>
-                <div class="method-cards-container">
-                    <div class="method-card">
-                        <div class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <section class="section-white">
+                <div class="container">
+                    <div class="visual-process">
                         <div>
-                            <h3>Matching Intelligente</h3>
-                            <p>Il nostro sistema è il tuo assistente personale: incrocia i tuoi desideri con le richieste dei proprietari, mostrandoti solo case dove la compatibilità è al 100%. Niente più "forse".</p>
+                            <h3>Il Controllo è nelle Tue Mani</h3>
+                            <p class="section-subtitle" style="text-align: left; margin: 20px 0; max-width: 100%;">Dopo aver acquistato il tuo ticket, verrai reindirizzato alla nostra agenda privata dove potrai scegliere, con un solo click, lo slot orario che preferisci per l'Open Day. Niente telefonate, niente attese.</p>
                         </div>
-                    </div>
-                    <div class="method-card">
-                        <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div>
                         <div>
-                            <h3>Il Valore del Ticket Esclusivo</h3>
-                            <p>La piccola fee di 2,99€ non è un costo, ma il tuo biglietto d'ingresso per un Open Day a numero chiuso. Garantisce che parteciperai solo con persone serie e motivate, in un ambiente tranquillo e professionale.</p>
+                            <img src="https://images.ctfassets.net/k0lk9kiimq0g/546a56653a4f6334585d515a0c1a85e4/Calendly-meeting-poll.png?w=1440&h=1118&q=50&fm=webp" alt="Esempio di prenotazione orario su Calendly">
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section class="section-white">
-            <div class="container">
-                <h2 class="section-title text-center">Ancora Dubbi?</h2>
-                <p class="section-subtitle text-center">Risposte chiare alle domande più comuni.</p>
-                <div class="faq-container" style="max-width: 800px; margin: 0 auto;">
-                    <div class="faq-item">
-                        <button class="faq-question"><span>Se pago la fee, ho il posto assicurato?</span><i class="fa-solid fa-chevron-down"></i></button>
-                        <div class="faq-answer"><p>Assolutamente sì. Il pagamento della fee ti garantisce l'accesso all'Open Day. A quel punto, l'unica cosa che conta è visitare la casa e fare la tua migliore impressione!</p></div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question"><span>Cosa succede dopo l'Open Day?</span><i class="fa-solid fa-chevron-down"></i></button>
-                        <div class="faq-answer"><p>Dopo la visita, potrai formalizzare il tuo interesse. Raccoglieremo le manifestazioni di interesse e le presenteremo al proprietario, che farà la sua scelta finale. Sarai sempre aggiornato sull'esito in tempi rapidi.</p></div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question"><span>Perché questo metodo è meglio di contattare direttamente un'agenzia?</span><i class="fa-solid fa-chevron-down"></i></button>
-                        <div class="faq-answer"><p>Perché rispetta il tuo tempo. Invece di farti visitare 10 case non adatte, ti diamo accesso a 1-2 opportunità dove sai di avere già le carte in regola. È un processo più efficiente, trasparente e focalizzato sulla qualità piuttosto che sulla quantità.</p></div>
+            <section id="faq" class="section-dark">
+                <div class="container">
+                    <h2 class="section-title text-center" style="color: var(--colore-bianco);">Ancora Dubbi? È normale.</h2>
+                    <p class="section-subtitle text-center" style="color: rgba(255,255,255,0.8);">Risposte chiare per darti la massima tranquillità.</p>
+                    <div class="faq-container" style="max-width: 800px; margin: 0 auto;">
+                        <div class="faq-item">
+                            <button class="faq-question"><span>Perché devo pagare 2,99€?</span><i class="fa-solid fa-chevron-down"></i></button>
+                            <div class="faq-answer"><p>La piccola fee è un filtro di serietà. Ci permette di garantire che solo persone realmente interessate partecipino, creando un'esperienza di visita rispettosa e di alta qualità per tutti. È il tuo modo per dire "Io ci sono e faccio sul serio".</p></div>
+                        </div>
+                         <div class="faq-item">
+                            <button class="faq-question"><span>Cosa succede dopo l'Open Day?</span><i class="fa-solid fa-chevron-down"></i></button>
+                            <div class="faq-answer"><p>Dopo la visita, potrai formalizzare il tuo interesse. Raccoglieremo le proposte e le presenteremo al proprietario, che farà la sua scelta finale. Ti garantiamo un feedback rapido, qualunque sia l'esito.</p></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </form>
     </main>
 
-    <footer class="main-footer">
-        <p>© 2025 Affitto Smart | <a href="/index.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
+    <footer class="footer">
+        <p>© 2024 Affitto Smart | <a href="/index.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
     </footer>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('unified-search-form');
-        const preferencesSection = document.getElementById('preferences-section');
-        const profileSection = document.getElementById('profile-section');
-        
-        // --- LOGICA DI VISUALIZZAZIONE AUTOMATICA ---
-        const preferenceInputs = preferencesSection.querySelectorAll('select, input');
-        
-        function checkPreferences() {
-            let filledCount = 0;
-            preferenceInputs.forEach(input => {
-                if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
-                    filledCount++;
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('unified-search-form');
+            const preferencesSection = document.getElementById('preferences-section');
+            const profileSection = document.getElementById('profile-section');
+            
+            const preferenceInputs = preferencesSection.querySelectorAll('select, input');
+            
+            function checkPreferences() {
+                let filledCount = 0;
+                preferenceInputs.forEach(input => {
+                    if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
+                        filledCount++;
+                    }
+                });
+                
+                if (filledCount >= 3) {
+                    profileSection.classList.add('visible');
+                } else {
+                    profileSection.classList.remove('visible');
                 }
-            });
-            
-            // Se vengono compilati 3 o più filtri, mostra la sezione del profilo
-            if (filledCount >= 3) {
-                profileSection.classList.add('visible');
             }
-            // NOTA: non la nascondiamo più automaticamente per non creare un effetto strano
-            // se l'utente cancella un filtro. Una volta apparsa, rimane.
-        }
 
-        preferenceInputs.forEach(input => {
-            input.addEventListener('change', checkPreferences);
-            input.addEventListener('keyup', checkPreferences);
-        });
+            preferenceInputs.forEach(input => {
+                input.addEventListener('change', checkPreferences);
+                input.addEventListener('keyup', checkPreferences);
+            });
 
-        // --- LOGICA DI INVIO AL CLICK DEL PULSANTE (NUOVA E CORRETTA) ---
-        form.addEventListener('submit', function(e) {
-            e.preventDefault(); // Blocca sempre l'invio di default
-            
-            // Controlla se la sezione del profilo è già visibile
-            const isProfileVisible = profileSection.classList.contains('visible');
-
-            if (isProfileVisible) {
-                // Se è visibile, controlla che i campi obbligatori siano compilati
-                let allRequiredFilled = true;
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!profileSection.classList.contains('visible')) {
+                    profileSection.classList.add('visible');
+                    profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+                
                 const requiredFields = profileSection.querySelectorAll('[required]');
+                let allRequiredFilled = true;
                 requiredFields.forEach(field => {
                     if (!field.value) {
                         allRequiredFilled = false;
-                        field.style.border = '2px solid red'; // Evidenzia il campo mancante
+                        field.style.border = '2px solid red';
                     } else {
                         field.style.border = '1px solid #ccc';
                     }
                 });
 
                 if (allRequiredFilled) {
-                    // Se tutto è compilato, procedi con la ricerca
                     const formData = new FormData(form);
                     const queryString = new URLSearchParams(formData).toString();
                     window.location.href = 'risultati.html?' + queryString;
                 } else {
-                    // Se mancano dati obbligatori nel profilo, avvisa l'utente
-                    alert('Per favore, completa tutti i campi della sezione "Chi sei?" per continuare.');
+                    alert('Per favore, completa tutti i campi della sezione "Il Tuo Profilo".');
                 }
-            } else {
-                // Se la sezione profilo NON è visibile, attivala e guida l'utente
-                profileSection.classList.add('visible');
-                profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            });
+
+            document.querySelectorAll('.faq-question').forEach(button => {
+                button.addEventListener('click', () => {
+                    button.parentElement.classList.toggle('active');
+                });
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>
