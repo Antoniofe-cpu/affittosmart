@@ -179,7 +179,7 @@
                                 <div class="filter-group"><label>Zona</label><select name="zona"><option value="">Qualsiasi</option><option>Centro Storico</option><option>Murri</option></select></div>
                                 <div class="filter-group"><label>Budget Max (€)</label><input type="number" name="prezzo" placeholder="Es. 900"></div>
                                 <div class="filter-group"><label>Disponibile dal</label><input type="date" name="data_disponibile"></div>
-                                <div class="filter-group"><label>Periodo di Affitto</label><select name="periodo_affitto"><option value="">Qualsiasi</option><option>Breve (meno di 12 mesi)</option><option>Standard (1-3 anni)</option><option>Lungo (più di 3 anni)</option></select></div>
+                                <div class="filter-group"><label>Periodo di Affitto</label><select name="periodo_affitto"><option value="">Qualsiasi</option><option>Breve (meno di 6 mesi)</option><option>Standard (1-3 anni)</option><option>Lungo (più di 3 anni)</option></select></div>
                             </div>
                         </div>
 
@@ -241,7 +241,7 @@
 
         <section id="faq" class="section-dark">
             <div class="container">
-                <h2 class="section-title text-center">Le Tue Domande, le Nostre Risposte</h2>
+                <h2 class="section-title text-center">Hai Ancora Dubbi? È Normale!</h2>
                 <p class="section-subtitle text-center">La nostra trasparenza è la tua prima garanzia.</p>
                 <!-- MODIFICA: FAQ espanse e in griglia a 2 colonne -->
                 <div class="faq-grid">
@@ -278,68 +278,83 @@
         <p>© 2025 Affitto Smart | <a href="/propietario.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
     </footer>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('unified-search-form');
-            const preferencesSection = document.getElementById('preferences-section');
-            const profileSection = document.getElementById('profile-section');
-            
-            const preferenceInputs = preferencesSection.querySelectorAll('select, input');
-            
-            function checkPreferences() {
-                let filledCount = 0;
-                preferenceInputs.forEach(input => {
-                    if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
-                        filledCount++;
-                    }
-                });
-                
-                if (filledCount >= 3) {
-                    profileSection.classList.add('visible');
-                } else {
-                    profileSection.classList.remove('visible');
-                }
-            }
-
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('unified-search-form');
+        const preferencesSection = document.getElementById('preferences-section');
+        const profileSection = document.getElementById('profile-section');
+        
+        // --- Logica di visualizzazione automatica (invariata) ---
+        const preferenceInputs = preferencesSection.querySelectorAll('select, input');
+        
+        function checkPreferences() {
+            let filledCount = 0;
             preferenceInputs.forEach(input => {
-                input.addEventListener('change', checkPreferences);
-                input.addEventListener('keyup', checkPreferences);
-            });
-
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                if (!profileSection.classList.contains('visible')) {
-                    profileSection.classList.add('visible');
-                    profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    return;
+                if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
+                    filledCount++;
                 }
-                
-                const requiredFields = profileSection.querySelectorAll('[required]');
+            });
+            if (filledCount >= 3) {
+                profileSection.classList.add('visible');
+            } else {
+                profileSection.classList.remove('visible');
+            }
+        }
+        preferenceInputs.forEach(input => {
+            input.addEventListener('change', checkPreferences);
+            input.addEventListener('keyup', checkPreferences);
+        });
+
+        // --- NUOVA E CORRETTA LOGICA DI INVIO AL CLICK ---
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Blocca sempre l'invio di default
+            
+            // Controlla se la sezione del profilo è già visibile
+            if (profileSection.classList.contains('visible')) {
+                // Se è visibile, ESEGUI IL CONTROLLO DEI CAMPI OBBLIGATORI
                 let allRequiredFilled = true;
+                const requiredFields = profileSection.querySelectorAll('[required]');
+                
                 requiredFields.forEach(field => {
                     if (!field.value) {
                         allRequiredFilled = false;
-                        field.style.border = '2px solid red';
+                        field.style.border = '2px solid red'; // Evidenzia il campo mancante
                     } else {
-                        field.style.border = '1px solid #ccc';
+                        field.style.border = '1px solid #ccc'; // Ripristina lo stile se compilato
                     }
                 });
 
                 if (allRequiredFilled) {
+                    // Se tutto è compilato, procedi con la ricerca
                     const formData = new FormData(form);
                     const queryString = new URLSearchParams(formData).toString();
                     window.location.href = 'risultati.html?' + queryString;
                 } else {
-                    alert('Per favore, completa tutti i campi della sezione "Il Tuo Profilo".');
+                    // Se mancano dati obbligatori nel profilo, avvisa l'utente
+                    alert('Per una ricerca accurata, per favore compila tutti i campi della sezione "Il Tuo Profilo".');
+                }
+            } else {
+                // Se la sezione profilo NON è visibile, attivala e guida l'utente, SENZA CONTROLLI
+                profileSection.classList.add('visible');
+                profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Non facciamo nient'altro, aspettiamo il prossimo click dell'utente
+            }
+        });
+
+        // --- Logica per FAQ a fisarmonica (invariata) ---
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(clickedItem => {
+            const questionButton = clickedItem.querySelector('.faq-question');
+            questionButton.addEventListener('click', () => {
+                const isAlreadyActive = clickedItem.classList.contains('active');
+                faqItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+                if (!isAlreadyActive) {
+                    clickedItem.classList.add('active');
                 }
             });
-
-            document.querySelectorAll('.faq-question').forEach(button => {
-                button.addEventListener('click', () => {
-                    button.parentElement.classList.toggle('active');
-                });
-            });
         });
-    </script>
+    });
+</script>
 </body>
 </html>
