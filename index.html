@@ -160,56 +160,41 @@
 
      <main>
         <section class="hero-search">
-            <div class="container">
-                <div class="hero-text">
-                    <h1>La casa giusta, senza compromessi.</h1>
-                    <p class="subtitle">Dicci cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
-                </div>
+            <div class="container text-center">
+                <h1>La casa giusta, senza compromessi.</h1>
+                <p class="subtitle">Dicci cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità per cui sei perfettamente compatibile.</p>
                 
                 <form id="unified-search-form" class="unified-form">
-                    <!-- Sezione 1: Le Tue Preferenze -->
-                    <div class="form-section" id="preferences-section">
+                    <!-- Sezione 1: Le Tue Preferenze (Sempre visibile) -->
+                    <div class="form-section">
                         <h2><i class="fa-solid fa-map-location-dot icon"></i>Cosa cerchi?</h2>
                         <div class="filter-columns">
-                            <!-- Colonna Sinistra -->
                             <div>
                                 <div class="filter-group"><label>Tipo di Immobile</label><select name="tipo"><option value="">Qualsiasi</option><option>Stanza Singola</option><option>Monolocale</option><option>Bilocale</option></select></div>
                                 <div class="filter-group"><label>Budget Massimo (€)</label><input type="number" name="prezzo" placeholder="Es. 900"></div>
-                                <div class="filter-group"><label>Disponibile dal</label><input type="date" name="data_disponibile"></div>
                             </div>
-                            <!-- Colonna Destra -->
                             <div>
                                 <div class="filter-group"><label>Zona</label><select name="zona"><option value="">Qualsiasi</option><option>Centro Storico</option><option>Murri</option></select></div>
-                                <div class="filter-group"><label>Periodo di Affitto</label><select name="periodo_affitto"><option value="">Qualsiasi</option><option>Breve (meno di 6 mesi)</option><option>Standard (1-3 anni)</option></select></div>
+                                <div class="filter-group"><label>Periodo di Affitto</label><select name="periodo_affitto"><option value="">Qualsiasi</option><option>Breve</option><option>Standard</option><option>Lungo</option></select></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Sezione 2: Il Tuo Profilo (Nascosto) -->
+                    <!-- Sezione 2: Il Tuo Profilo (Nascosta) -->
                     <div class="form-section" id="profile-section">
-                        <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Ora dicci chi sei.</h2>
+                        <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
+                        <p style="color: var(--colore-testo-chiaro); margin-top: -20px; margin-bottom: 25px;">Questi dettagli sono fondamentali per trovare un match con le richieste dei proprietari.</p>
                         <div class="filter-columns">
-                            <!-- Colonna Sinistra -->
-                            <div>
-                                <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa" required><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option></select></div>
-                                <div class="filter-group"><label>Stai cercando casa...</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
+                             <div>
+                                <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa"><option value="">Indifferente</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option></select></div>
+                                <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M"><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
                             </div>
-                            <!-- Colonna Destra -->
                             <div>
-                                <div class="filter-group"><label>Sei un fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
-                                <div class="filter-group"><label>Possiedi animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
+                                <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
+                                <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
                             </div>
                         </div>
                     </div>
-                     <!-- NUOVO BLOCCO PER IL SESSO -->
-        <div class="filter-group" style="margin-top: 20px;">
-            <label>Il tuo sesso (richiesto per stanze singole o appartamenti condivisi)</label>
-            <div class="pill-options">
-                <input type="radio" id="sesso_m" name="sesso_utente" value="M"><label for="sesso_m">Maschio</label>
-                <input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">Femmina</label>
-            </div>
-        </div>
-    </div>
 
                     <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                 </form>
@@ -297,36 +282,30 @@
      <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('unified-search-form');
-            const preferencesSection = document.getElementById('preferences-section');
             const profileSection = document.getElementById('profile-section');
             
-            // --- LOGICA PER MOSTRARE LA SEZIONE PROFILO ---
-            const preferenceInputs = preferencesSection.querySelectorAll('select, input');
-            
-            function checkPreferences() {
-                let filledCount = 0;
-                preferenceInputs.forEach(input => {
-                    if (input.value) {
-                        filledCount++;
-                    }
-                });
-                
-                if (filledCount >= 4) {
-                    profileSection.classList.add('visible');
-                } else {
-                    profileSection.classList.remove('visible');
-                }
-            }
-
-            preferenceInputs.forEach(input => {
-                input.addEventListener('change', checkPreferences);
-                input.addEventListener('keyup', checkPreferences);
-            });
-
-            // --- GESTIONE INVIO FINALE ---
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
+                
                 const formData = new FormData(form);
+                let filledCount = 0;
+                // Contiamo tutti i campi che hanno un valore
+                for (let value of formData.values()) {
+                    if (value) {
+                        filledCount++;
+                    }
+                }
+
+                // Se la sezione del profilo non è ancora visibile E i filtri compilati sono meno di 4,
+                // allora mostra la sezione del profilo e interrompi l'invio.
+                if (!profileSection.classList.contains('visible') && filledCount > 3) {
+                    profileSection.classList.add('visible');
+                    alert('Ottimo inizio! Per una ricerca più accurata, completa il tuo profilo qui sotto prima di cercare.');
+                    return; // Interrompe l'azione di submit
+                }
+
+                // Se siamo qui, o la sezione profilo era già visibile, o sono stati compilati abbastanza filtri.
+                // Procedi con la ricerca.
                 const queryString = new URLSearchParams(formData).toString();
                 window.location.href = 'risultati.html?' + queryString;
             });
