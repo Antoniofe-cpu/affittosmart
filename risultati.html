@@ -150,8 +150,11 @@
             modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
         }
 
-       async function main() {
+       // NUOVA E COMPLETA FUNZIONE main() PER risultati.html
+
+async function main() {
     try {
+        // --- Caricamento Dati ---
         const [propsRes, reqsRes, candsRes] = await Promise.all([
             fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
         ]);
@@ -161,6 +164,7 @@
         allRequirements = csvToObjects(await reqsRes.text());
         allCandidates = csvToObjects(await candsRes.text());
         
+        // --- Lettura Profilo Utente (AGGIORNATO) ---
         const params = new URLSearchParams(window.location.search);
         const userProfile = {
             tipo: (params.get('tipo') || '').toLowerCase().trim(),
@@ -168,6 +172,8 @@
             prezzo: parseInt(params.get('prezzo')) || Infinity,
             situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
             animali: (params.get('animali') || '').toLowerCase().trim(),
+            // NUOVI CAMPI
+            reddito_utente: parseInt(params.get('reddito_utente')) || 0, // Legge il reddito dell'utente
             tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
             sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
             fumatore: (params.get('fumatore') || '').toLowerCase().trim()
@@ -177,51 +183,48 @@
         
         const propertiesWithScore = [];
 
-        // --- NUOVA LOGICA DI FILTRAGGIO E PUNTEGGIO, SEMPLIFICATA ---
         availableProperties.forEach(property => {
             let isCompatible = true;
             
-            // 1. Controlla i requisiti bloccanti
+            // --- FASE 1: CONTROLLO DEI REQUISITI BLOCCANTI DEL PROPRIETARIO ---
             const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
             
             for (const req of propertyRequirements) {
                 const requirementKey = (req.Requisito || '').trim();
                 const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
-                const userValue = userProfile[requirementKey];
-                
-                // Se il proprietario ha un requisito specifico (non è "indifferente")
-                // e il profilo dell'utente non corrisponde, allora non è compatibile.
+                let userValue;
+
+                // Logica speciale per il reddito
+                if (requirementKey === 'reddito_minimo') {
+                    if (userProfile.reddito_utente < parseInt(requiredValue)) {
+                        isCompatible = false;
+                        break;
+                    }
+                    continue; // Passa al prossimo requisito
+                }
+
+                // Logica per tutti gli altri requisiti testuali
+                userValue = userProfile[requirementKey];
                 if (requiredValue !== 'indifferente' && userValue !== requiredValue) {
                     isCompatible = false;
                     break; 
                 }
             }
             
-            // Se non è compatibile con i requisiti base, non lo mostriamo.
-            if (!isCompatible) {
-                return; // Salta al prossimo immobile
-            }
+            if (!isCompatible) return;
 
-            // 2. Se è compatibile, calcoliamo il punteggio in base alle preferenze
+            // --- FASE 2: CALCOLO PUNTEGGIO IN BASE ALLE PREFERENZE ---
             let matchScore = 100;
-
             const prezzoImmobile = parseInt(property.Prezzo);
             
-            // Il budget è bloccante
             if (!isNaN(prezzoImmobile) && prezzoImmobile > userProfile.prezzo) {
-                matchScore = 0; // Se è fuori budget, il match è zero.
+                matchScore = 0;
             } else {
-                // Penalità per le preferenze non perfette
-                if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) {
-                    matchScore -= 30;
-                }
-                if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) {
-                    matchScore -= 30;
-                }
+                if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) matchScore -= 30;
+                if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) matchScore -= 30;
             }
 
-            // Aggiungiamo l'immobile alla lista solo se ha un punteggio minimo
-            if (matchScore > 0) {
+            if (matchScore >= 40) {
                 propertiesWithScore.push({ property, matchScore });
             }
         });
