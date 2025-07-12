@@ -186,7 +186,7 @@
                         <div class="form-section" id="profile-section">
                         <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
                         <div class="filter-grid">
-                            <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa" required><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option><option>Lavoratore Autonomo / P.IVA</option></select></div>
+                            <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa"><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option><option>Lavoratore Autonomo / P.IVA</option></select></div>
                             <div class="filter-group"><label>Reddito Netto Mensile</label><select name="reddito_utente" required><option value="" disabled selected>Seleziona fascia...</option><option value="1500">Meno di 1.500 €</option><option value="2000">1.501-2.000 €</option><option value="2500">2.001-2.500 €</option><option value="3000">Oltre 2.500 €</option></select></div>
                             <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
                             <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
@@ -277,84 +277,73 @@
     <footer class="footer">
         <p>© 2025 Affitto Smart | <a href="/propietario.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
     </footer>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('unified-search-form');
-        const preferencesSection = document.getElementById('preferences-section');
-        const profileSection = document.getElementById('profile-section');
-        
-        // --- Logica di visualizzazione automatica (invariata) ---
-        const preferenceInputs = preferencesSection.querySelectorAll('select, input');
-        
-        function checkPreferences() {
-            let filledCount = 0;
-            preferenceInputs.forEach(input => {
-                if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
-                    filledCount++;
-                }
-            });
-            if (filledCount >= 3) {
-                profileSection.classList.add('visible');
-            } else {
-                profileSection.classList.remove('visible');
-            }
-        }
-        preferenceInputs.forEach(input => {
-            input.addEventListener('change', checkPreferences);
-            input.addEventListener('keyup', checkPreferences);
-        });
-
-        // --- NUOVA E CORRETTA LOGICA DI INVIO AL CLICK ---
-        form.addEventListener('submit', function(e) {
-            e.preventDefault(); // Blocca sempre l'invio di default
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('unified-search-form');
+            const preferencesSection = document.getElementById('preferences-section');
+            const profileSection = document.getElementById('profile-section');
             
-            // Controlla se la sezione del profilo è già visibile
-            if (profileSection.classList.contains('visible')) {
-                // Se è visibile, ESEGUI IL CONTROLLO DEI CAMPI OBBLIGATORI
-                let allRequiredFilled = true;
-                const requiredFields = profileSection.querySelectorAll('[required]');
+            const preferenceInputs = preferencesSection.querySelectorAll('select, input');
+            
+            function checkPreferences() {
+                let filledCount = 0;
+                preferenceInputs.forEach(input => {
+                    if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
+                        filledCount++;
+                    }
+                });
                 
+                if (filledCount >= 3) {
+                    profileSection.classList.add('visible');
+                }
+            }
+
+            preferenceInputs.forEach(input => {
+                input.addEventListener('change', checkPreferences);
+                input.addEventListener('keyup', checkPreferences);
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!profileSection.classList.contains('visible')) {
+                    profileSection.classList.add('visible');
+                    profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    alert('Ottimo inizio! Per una ricerca più accurata, completa il tuo profilo qui sotto.');
+                    return;
+                }
+                
+                const requiredFields = profileSection.querySelectorAll('[required]');
+                let allRequiredFilled = true;
                 requiredFields.forEach(field => {
                     if (!field.value) {
                         allRequiredFilled = false;
-                        field.style.border = '2px solid red'; // Evidenzia il campo mancante
+                        field.style.border = '2px solid red';
                     } else {
-                        field.style.border = '1px solid #ccc'; // Ripristina lo stile se compilato
+                        field.style.border = '1px solid #ccc';
                     }
                 });
 
                 if (allRequiredFilled) {
-                    // Se tutto è compilato, procedi con la ricerca
                     const formData = new FormData(form);
                     const queryString = new URLSearchParams(formData).toString();
                     window.location.href = 'risultati.html?' + queryString;
                 } else {
-                    // Se mancano dati obbligatori nel profilo, avvisa l'utente
-                    alert('Per una ricerca accurata, per favore compila tutti i campi della sezione "Il Tuo Profilo".');
-                }
-            } else {
-                // Se la sezione profilo NON è visibile, attivala e guida l'utente, SENZA CONTROLLI
-                profileSection.classList.add('visible');
-                profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                // Non facciamo nient'altro, aspettiamo il prossimo click dell'utente
-            }
-        });
-
-        // --- Logica per FAQ a fisarmonica (invariata) ---
-        const faqItems = document.querySelectorAll('.faq-item');
-        faqItems.forEach(clickedItem => {
-            const questionButton = clickedItem.querySelector('.faq-question');
-            questionButton.addEventListener('click', () => {
-                const isAlreadyActive = clickedItem.classList.contains('active');
-                faqItems.forEach(item => {
-                    item.classList.remove('active');
-                });
-                if (!isAlreadyActive) {
-                    clickedItem.classList.add('active');
+                    alert('Per favore, completa tutti i campi della sezione "Il Tuo Profilo".');
                 }
             });
+
+            document.querySelectorAll('.faq-question').forEach(button => {
+                const faqItem = button.parentElement;
+                button.addEventListener('click', () => {
+                    const wasActive = faqItem.classList.contains('active');
+                    document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+                    if (!wasActive) {
+                        faqItem.classList.add('active');
+                    }
+                });
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>
