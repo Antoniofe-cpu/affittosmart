@@ -82,7 +82,7 @@
             color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer;
         }
 
-        /* WHY US / EXPLANATION SECTION */
+         /* WHY US / EXPLANATION SECTION */
         .process-grid { display: flex; justify-content: center; text-align: center; margin-top: 60px; flex-wrap: wrap; gap: 30px;}
         .process-step { 
             flex-basis: 280px; padding: 30px; background: white; border-radius: 16px; 
@@ -93,6 +93,11 @@
         .process-step:hover { transform: translateY(-10px); }
         .process-step .icon { font-size: 3.5em; color: var(--colore-primario); margin-bottom: 20px; line-height: 1; }
         .process-step h3 { font-size: 1.4em; color: var(--colore-primario); }
+
+        /* SEZIONE VISUAL */
+        .visual-process { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+        .visual-process img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .visual-process h3 { font-size: 2em; }
         
         /* FAQ SECTION */
         #faq .section-title { color: var(--colore-bianco); }
@@ -106,8 +111,10 @@
         .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 40px 0; text-align: center; font-size: 0.9em; }
         .main-footer a { color: white; }
 
-        @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 600px) { .filter-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { 
+            .hero-search h1 { font-size: 2.5em; }
+            .visual-process { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
