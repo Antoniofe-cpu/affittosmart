@@ -11,80 +11,84 @@
     
     <style>
         :root { 
-            --colore-primario: #0D47A1; 
-            --colore-accento: #FFA000; 
-            --colore-testo: #212121; 
-            --colore-testo-chiaro: #5f6368; 
-            --colore-sfondo-pagina: #f4f6f9; 
-            --colore-successo: #2E7D32; 
+            --colore-primario: #0D47A1; --colore-accento: #FFA000; --colore-testo: #212121; 
+            --colore-testo-chiaro: #5f6368; --colore-sfondo-pagina: #f4f6f9; --colore-successo: #2E7D32; 
             --colore-bianco: #ffffff;
         }
-        
-        /* NUOVO: Sfondo testurizzato per la pagina */
         body { 
-            font-family: 'Poppins', sans-serif; 
-            margin: 0; 
+            font-family: 'Poppins', sans-serif; margin: 0; 
             background-color: var(--colore-sfondo-pagina);
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23d0d4db' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        /* NUOVO: Header più d'impatto */
         .header { 
-            text-align: center; 
-            padding: 60px 20px;
-            background-color: var(--colore-primario);
-            color: var(--colore-bianco);
-            border-radius: 0 0 24px 24px;
-            margin-bottom: 40px;
+            text-align: center; padding: 60px 20px;
+            background-color: var(--colore-primario); color: var(--colore-bianco);
+            border-radius: 0 0 24px 24px; margin-bottom: 40px;
         }
-        .header h1 { 
-            font-size: 3em; 
-            color: var(--colore-bianco);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .header p {
-            font-size: 1.2em;
-            color: rgba(255,255,255,0.85);
-            margin-top: -10px;
-        }
-
-        /* NUOVO: Layout a griglia per i risultati */
-        #results-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        .property-card {
-            background: white; border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            display: flex; 
-            flex-direction: column; /* Imposta le card in verticale */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .property-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
-        }
-        .property-card-img { width: 100%; height: 220px; background-color: #eee; border-radius: 16px 16px 0 0;}
-        .property-card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .property-card-info { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
-        .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); }
-        .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); }
-        .property-card-info h3 { margin: 10px 0; font-size: 1.4em; }
-        .property-card-info p { flex-grow: 1; font-size: 0.95em; }
-        
-        .booking-action { margin-top: 20px; }
-        .property-card .cta-button { /* ...stili invariati... */ }
-        .property-card .cta-button.disabled { /* ...stili invariati... */ }
-
-        .message { grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
+        .header h1 { font-size: 3em; color: var(--colore-bianco); text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .header p { font-size: 1.2em; color: rgba(255,255,255,0.85); margin-top: -10px; }
         .back-link-container { text-align: center; padding: 40px 0; }
         .back-link { font-weight: 600; color: var(--colore-primario); text-decoration: none; font-size: 1.1em; }
         
-        /* Modal Stili (invariati) */
-        .modal-overlay { /* ... */ }
+        #results-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .property-card {
+            background: white; border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            display: flex; flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .property-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+        .property-card-img { width: 100%; height: 220px; background-color: #eee; border-radius: 16px 16px 0 0;}
+        .property-card-img img { width: 100%; height: 100%; object-fit: cover; }
+        .property-card-info { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
+        
+        .compatibility-icons {
+            display: flex; flex-wrap: wrap; gap: 15px;
+            padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0;
+        }
+        .icon-tag {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.9em; font-weight: 600; color: var(--colore-testo-chiaro);
+        }
+        .icon-tag .fa-solid { color: var(--colore-successo); }
+        
+        .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); }
+        .property-card-info h3 { margin: 0 0 10px 0; font-size: 1.4em; }
+        .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 15px; }
+        .property-card-info p { flex-grow: 1; font-size: 0.95em; margin-top: 0; }
+        .open-day-info { font-weight: 700; color: var(--colore-primario); margin-bottom: 20px; }
+        
+        .booking-action { margin-top: auto; } /* Spinge il bottone in fondo */
+        .property-card .cta-button {
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            width: 100%; padding: 14px; font-size: 1em; text-decoration: none;
+            border-radius: 8px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none;
+        }
+        .property-card .cta-button .spots-counter { font-weight: 400; opacity: 0.8; }
+        .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; }
+        
+        .message { grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
+        
+        /* Stili per il Modal/Popup */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.visible { display: flex; opacity: 1; }
+        .modal-content {
+            background: white; padding: 40px; border-radius: 16px;
+            max-width: 500px; width: 90%; text-align: center;
+            transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
+        .modal-content .icon { font-size: 3em; color: var(--colore-accento); }
+        .modal-content h3 { font-size: 2em; color: var(--colore-primario); margin: 15px 0; }
+        .modal-content p { color: var(--colore-testo-chiaro); line-height: 1.6; }
+        #payment-button { margin-top: 20px; background: var(--colore-successo); color: white; width: 100%; height: 55px; border-radius: 8px; border: none; font-size: 1.2em; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; }
+        #close-modal { font-size: 0.9em; color: var(--colore-testo-chiaro); cursor: pointer; display: inline-block; margin-top: 15px; }
 
         /* Media Queries per la griglia */
         @media (max-width: 900px) {
@@ -102,10 +106,9 @@
             <p class="message">Analizzando la compatibilità tra te e le nostre proposte...</p>
         </div>
         <div class="back-link-container">
-            <a href="cerca.html" class="back-link">Modifica la tua Ricerca o Filtra di Nuovo</a>
+            <a href="cerca.html" class="back-link">Modifica la tua Ricerca</a>
         </div>
     </div>
-
     <!-- Struttura del Modal di Pagamento (nascosto) -->
     <div class="modal-overlay" id="payment-modal">
         <div class="modal-content">
@@ -144,67 +147,62 @@
         }
 
         function displayResults(properties) {
-    const resultsContainer = document.getElementById('results-container');
-    resultsContainer.innerHTML = '';
-    if (properties.length === 0) {
-        resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
-        return;
-    }
-    
-    const params = new URLSearchParams(window.location.search);
-    const userProfile = {
-        tipo: (params.get('tipo') || '').toLowerCase().trim(),
-        zona: (params.get('zona') || '').toLowerCase().trim(),
-        // Aggiungi altri profili utente se necessario per le icone
-    };
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '';
+            if (properties.length === 0) {
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
+                return;
+            }
 
-    properties.forEach(p => {
-        if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
-        
-        // --- LOGICA PER LE ICONE DI COMPATIBILITÀ ---
-        let compatibilityHtml = '<div class="compatibility-icons">';
-        // Icona per il TIPO di immobile
-        if (userProfile.tipo && (p.Tipo || '').toLowerCase().trim() === userProfile.tipo) {
-            compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-house-chimney"></i> ${p.Tipo}</div>`;
-        }
-        // Icona per la ZONA
-        if (userProfile.zona && (p.Zona || '').toLowerCase().trim() === userProfile.zona) {
-            compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-map-pin"></i> ${p.Zona}</div>`;
-        }
-        compatibilityHtml += '</div>';
+            const params = new URLSearchParams(window.location.search);
+            const userPrefs = {
+                tipo: (params.get('tipo') || '').toLowerCase().trim(),
+                zona: (params.get('zona') || '').toLowerCase().trim()
+            };
 
-        // --- LOGICA PER IL BOTTONE E I POSTI RIMASTI ---
-        const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-        const postiTotali = parseInt(p.MaxPartecipanti);
-        const postiRimasti = postiTotali - prenotati;
-        let buttonHtml;
-        if (postiRimasti > 0) {
-            buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket (${postiRimasti}/${postiTotali} rimasti)</button>`;
-        } else {
-            buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti (${postiTotali}/${postiTotali} rimasti)</button>`;
-        }
+            properties.forEach(p => {
+                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
 
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'property-card';
-        cardDiv.innerHTML = `
-            <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
-            <div class="property-card-info">
-                ${compatibilityHtml}
-                <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                <h3>${p.Titolo}</h3>
-                <div class="price">${p.Prezzo} €/mese</div>
-                <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
-                <div class="open-day-info">
-                    <i class="fa-solid fa-calendar-check"></i> Open Day Programmato il: ${p.DataOpenDay || 'Da Definire'}
-                </div>
-                ${buttonHtml}
-            </div>`;
-        resultsContainer.appendChild(cardDiv);
-    });
-    document.querySelectorAll('.cta-button[data-link]').forEach(button => {
-        button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
-    });
-}
+                let compatibilityHtml = '<div class="compatibility-icons">';
+                if (userPrefs.tipo && (p.Tipo || '').toLowerCase().trim() === userPrefs.tipo) {
+                    compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-house-chimney"></i> ${p.Tipo}</div>`;
+                }
+                if (userPrefs.zona && (p.Zona || '').toLowerCase().trim() === userPrefs.zona) {
+                    compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-map-pin"></i> ${p.Zona}</div>`;
+                }
+                compatibilityHtml += '</div>';
+
+                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+                const postiTotali = parseInt(p.MaxPartecipanti);
+                const postiRimasti = postiTotali - prenotati;
+                let buttonHtml;
+                if (postiRimasti > 0) {
+                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></button>`;
+                } else {
+                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti <span class="spots-counter">(0/${postiTotali})</span></button>`;
+                }
+
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'property-card';
+                cardDiv.innerHTML = `
+                    <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
+                    <div class="property-card-info">
+                        ${compatibilityHtml}
+                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                        <h3>${p.Titolo}</h3>
+                        <div class="price">${p.Prezzo} €/mese</div>
+                        <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+                        <div class="open-day-info">
+                            <i class="fa-solid fa-calendar-check"></i> Open Day: ${p.DataOpenDay || 'Da Definire'}
+                        </div>
+                        <div class="booking-action">${buttonHtml}</div>
+                    </div>`;
+                resultsContainer.appendChild(cardDiv);
+            });
+            document.querySelectorAll('.cta-button[data-link]').forEach(button => {
+                button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
+            });
+        }
 
         function openPaymentModal(stripeLink) {
             const modal = document.getElementById('payment-modal');
@@ -214,70 +212,66 @@
             modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
         }
 
-        // NUOVA E CORRETTA FUNZIONE main()
-
-async function main() {
-    try {
-        // --- Caricamento Dati (invariato) ---
-        const [propsRes, reqsRes, candsRes] = await Promise.all([
-            fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
-        ]);
-        if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
-        
-        allProperties = csvToObjects(await propsRes.text());
-        allRequirements = csvToObjects(await reqsRes.text());
-        allCandidates = csvToObjects(await candsRes.text());
-        
-        // --- Lettura Profilo Utente (invariato) ---
-        const params = new URLSearchParams(window.location.search);
-        const userProfile = { /* ... come prima ... */ };
-
-        // --- Filtraggio Preferenze (invariato) ---
-        const preFilteredProperties = allProperties.filter(p => { /* ... come prima ... */ });
-
-        // --- NUOVA LOGICA DI CONTROLLO REQUISITI CON OPZIONI MULTIPLE ---
-        const finalProperties = preFilteredProperties.filter(property => {
-            const propertyRequirement = allRequirements.find(r => r.ID_Immobile === property.ID);
-            if (!propertyRequirement) return true;
-
-            for (const reqKey in propertyRequirement) {
-                if (reqKey === 'ID_Immobile') continue;
+        async function main() {
+            try {
+                const [propsRes, reqsRes, candsRes] = await Promise.all([
+                    fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
+                ]);
+                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
                 
-                const requiredValueString = (propertyRequirement[reqKey] || '').toLowerCase().trim();
-                const userValue = userProfile[reqKey];
+                allProperties = csvToObjects(await propsRes.text());
+                allRequirements = csvToObjects(await reqsRes.text());
+                allCandidates = csvToObjects(await candsRes.text());
+                
+                const params = new URLSearchParams(window.location.search);
+                const userProfile = {
+                    tipo: (params.get('tipo') || '').toLowerCase().trim(),
+                    zona: (params.get('zona') || '').toLowerCase().trim(),
+                    prezzo: parseInt(params.get('prezzo')) || Infinity,
+                    data_disponibile: params.get('data_disponibile') || null,
+                    periodo_affitto: (params.get('periodo_affitto') || '').toLowerCase().trim(),
+                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+                    reddito_utente: parseInt(params.get('reddito_utente')) || 0,
+                    tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
+                    sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
+                    fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
+                    animali: (params.get('animali') || '').toLowerCase().trim()
+                };
 
-                if (requiredValueString && requiredValueString !== 'indifferente') {
-                    // Controlla se il requisito contiene una lista di opzioni (separate da virgola)
-                    if (requiredValueString.includes(',')) {
-                        const validOptions = requiredValueString.split(',').map(opt => opt.trim());
-                        // Se il valore dell'utente non è INCLUSO nella lista di opzioni valide, scarta.
-                        if (!validOptions.includes(userValue)) {
-                            return false;
-                        }
-                    } else {
-                        // Altrimenti, fa un confronto diretto (logica precedente)
+                const finalProperties = allProperties.filter(property => {
+                    if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
+                    if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) return false;
+                    if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) return false;
+                    if (parseInt(property.Prezzo) > userProfile.prezzo) return false;
+                    
+                    const userDataDisponibile = userProfile.data_disponibile ? new Date(userProfile.data_disponibile) : null;
+                    const pDataDisponibile = property.DataDisponibile ? new Date(property.DataDisponibile) : null;
+                    if (userDataDisponibile && pDataDisponibile && pDataDisponibile > userDataDisponibile) return false;
+                    
+                    const pPeriodo = (property.PeriodoAffitto || '').toLowerCase().trim();
+                    if (userProfile.periodo_affitto && pPeriodo && pPeriodo !== userProfile.periodo_affitto) return false;
+
+                    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
+                    for (const req of propertyRequirements) {
+                        const reqKey = (req.Requisito || '').trim();
+                        const reqValue = (req.Valore_Richiesto || '').toLowerCase().trim();
+                        if (reqValue === '' || reqValue === 'indifferente') continue;
+                        const userValue = userProfile[reqKey];
                         if (reqKey === 'reddito_minimo') {
-                            if (userProfile.reddito_utente < parseInt(requiredValueString)) {
-                                return false;
-                            }
+                            if (userProfile.reddito_utente < parseInt(reqValue)) return false;
                         } else {
-                            if (!userValue || userValue !== requiredValueString) {
-                                return false;
-                            }
+                            if (!userValue || userValue !== reqValue) return false;
                         }
                     }
-                }
-            }
-            
-            return true; // Se ha superato tutti i controlli, l'immobile è compatibile
-        });
-        
-        displayResults(finalProperties);
+                    return true;
+                });
 
-    } catch (error) {
-        console.error("ERRORE CRITICO:", error);
-    }
-}
+                displayResults(finalProperties);
+            } catch (error) {
+                console.error("ERRORE CRITICO:", error);
+                document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore.</p>`;
+            }
+        }
         
         document.addEventListener('DOMContentLoaded', main);
     </script>
