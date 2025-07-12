@@ -128,152 +128,144 @@
 
         let allProperties = [], allRequirements = [], allCandidates = [];
 
-    // NUOVA E ROBUSTA FUNZIONE csvToObjects
-
-function csvToObjects(csv) {
-    // Se il csv è vuoto o non è una stringa, ritorna subito un array vuoto per evitare errori
-    if (!csv || typeof csv !== 'string') {
-        return []; 
-    }
-
-    const lines = csv.trim().split('\n');
-    
-    // Se ci sono meno di 2 righe (solo intestazione o vuoto), ritorna un array vuoto
-    if (lines.length < 2) {
-        return [];
-    }
-
-    const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
-    const objects = [];
-
-    for (let i = 1; i < lines.length; i++) {
-        if (lines[i] && lines[i].trim() !== '') {
-            const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            const obj = {};
-            for (let j = 0; j < headers.length; j++) {
-                // Assicurati che l'header esista prima di assegnare
-                if (headers[j]) {
-                    obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
+        function csvToObjects(csv) {
+            if (!csv || typeof csv !== 'string') return [];
+            const lines = csv.trim().split('\n');
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
+            const objects = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i] && lines[i].trim() !== '') {
+                    const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    const obj = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        if (headers[j]) obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
+                    }
+                    if (Object.keys(obj).length > 0) objects.push(obj);
                 }
             }
-            // Aggiungi l'oggetto solo se non è vuoto
-            if (Object.keys(obj).length > 0) {
-                objects.push(obj);
-            }
+            return objects;
         }
-    }
-    return objects;
-}
-    
-    function openPaymentModal(stripeLink) {
-        const modal = document.getElementById('payment-modal');
-        document.getElementById('payment-button').href = stripeLink;
-        modal.classList.add('visible');
-        document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
-        modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
-    }
-        function displayResults(properties) {
-    const resultsContainer = document.getElementById('results-container');
-    resultsContainer.innerHTML = '';
-    if (properties.length === 0) {
-        resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
-        return;
-    }
-    
-    // Leggiamo il profilo dell'utente per sapere quali icone mostrare
-    const params = new URLSearchParams(window.location.search);
-    const userProfile = {
-        situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
-        animali: (params.get('animali') || '').toLowerCase().trim(),
-        fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
-        tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
-        sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
-    };
 
-    properties.forEach(p => {
-        if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
-        
-        // --- NUOVA LOGICA PER LE ICONE DI COMPATIBILITÀ DEL PROFILO ---
-        let compatibilityHtml = '<div class="compatibility-icons">';
-        
-        // Icona per la Situazione Lavorativa
-        if (userProfile.situazione_lavorativa) {
-            compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-briefcase"></i> Profilo Lavorativo OK</div>`;
-        }
-        // Icona per gli Animali
-        if (userProfile.animali) {
-             compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-paw"></i> Animali OK</div>`;
-        }
-        
-       if (userProfile.fumatore === 'no') {
-       compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-leaf"></i> Non Fumatore</div>`;
-         }
-    
-    // --- FUNZIONE PRINCIPALE (RISCRITTA DA CAPO) ---
-    async function main() {
-        try {
-            const [propsRes, reqsRes, candsRes] = await Promise.all([
-                fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
-            ]);
-            if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
-            
-            const allProperties = csvToObjects(await propsRes.text());
-            const allRequirements = csvToObjects(await reqsRes.text());
-            window.allCandidates = csvToObjects(await candsRes.text()); // Salva globalmente per displayResults
+        function displayResults(properties) {
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '';
+            if (properties.length === 0) {
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
+                return;
+            }
 
             const params = new URLSearchParams(window.location.search);
-            const userFilter = {};
-            for (const [key, value] of params.entries()) {
-                if (value) { // Considera solo i filtri che l'utente ha compilato
-                    userFilter[key] = value.toLowerCase().trim();
+            const userPrefs = {
+                tipo: (params.get('tipo') || '').toLowerCase().trim(),
+                zona: (params.get('zona') || '').toLowerCase().trim(),
+                situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+                animali: (params.get('animali') || '').toLowerCase().trim()
+            };
+
+            properties.forEach(p => {
+                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
+                
+                let compatibilityHtml = '<div class="compatibility-icons">';
+                if (userPrefs.situazione_lavorativa) compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-briefcase"></i> Profilo OK</div>`;
+                if (userPrefs.animali) compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-paw"></i> Animali OK</div>`;
+                // Aggiungi qui altre icone per altri filtri del profilo...
+                compatibilityHtml += '</div>';
+
+                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+                const postiTotali = parseInt(p.MaxPartecipanti);
+                const postiRimasti = postiTotali - prenotati;
+                let buttonHtml;
+                if (postiRimasti > 0) {
+                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket (${postiRimasti}/${postiTotali})</button>`;
+                } else {
+                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti (${postiTotali}/${postiTotali})</button>`;
                 }
-            }
 
-            const finalProperties = allProperties.filter(property => {
-                // Controllo base: Stato
-                if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') {
-                    return false;
-                }
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'property-card';
+                cardDiv.innerHTML = `
+                    <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
+                    <div class="property-card-info">
+                        ${compatibilityHtml}
+                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                        <h3>${p.Titolo}</h3>
+                        <div class="price">${p.Prezzo} €/mese</div>
+                        <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+                        <div class="open-day-info"><i class="fa-solid fa-calendar-check"></i> Open Day: ${p.DataOpenDay || 'Da Definire'}</div>
+                        <div class="booking-action">${buttonHtml}</div>
+                    </div>`;
+                resultsContainer.appendChild(cardDiv);
+            });
+            document.querySelectorAll('.cta-button[data-link]').forEach(button => {
+                button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
+            });
+        }
 
-                // Controllo preferenze utente (se specificate)
-                if (userFilter.tipo && (property.Tipo || '').toLowerCase().trim() !== userFilter.tipo) return false;
-                if (userFilter.zona && (property.Zona || '').toLowerCase().trim() !== userFilter.zona) return false;
-                if (userFilter.prezzo && parseInt(property.Prezzo) > parseInt(userFilter.prezzo)) return false;
-                // Aggiungi qui altri filtri di preferenza...
+        function openPaymentModal(stripeLink) {
+            const modal = document.getElementById('payment-modal');
+            document.getElementById('payment-button').href = stripeLink;
+            modal.classList.add('visible');
+            document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
+            modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
+        }
 
-                // Controllo requisiti del proprietario
-                const propertyRequirements = allRequirements.find(r => r.ID_Immobile === property.ID);
-                if (propertyRequirements) {
-                    for (const reqKey in propertyRequirements) {
-                        if (reqKey === 'ID_Immobile') continue;
-                        
-                        const requiredValue = (propertyRequirements[reqKey] || '').toLowerCase().trim();
-                        
-                        // Se c'è un requisito specifico (non vuoto o indifferente)
-                        if (requiredValue && requiredValue !== 'indifferente') {
-                            const userValue = userFilter[reqKey];
-                            
-                            // Se l'utente non ha fornito il dato o il dato non corrisponde, scarta.
-                            if (!userValue || userValue !== requiredValue) {
-                                return false;
-                            }
+        async function main() {
+            const resultsContainer = document.getElementById('results-container');
+            try {
+                const [propsRes, reqsRes, candsRes] = await Promise.all([
+                    fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
+                ]);
+                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
+                
+                allProperties = csvToObjects(await propsRes.text());
+                allRequirements = csvToObjects(await reqsRes.text());
+                allCandidates = csvToObjects(await candsRes.text());
+                
+                const params = new URLSearchParams(window.location.search);
+                const userProfile = {
+                    tipo: (params.get('tipo') || '').toLowerCase().trim(),
+                    zona: (params.get('zona') || '').toLowerCase().trim(),
+                    prezzo: parseInt(params.get('prezzo')) || Infinity,
+                    data_disponibile: params.get('data_disponibile') || null,
+                    periodo_affitto: (params.get('periodo_affitto') || '').toLowerCase().trim(),
+                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+                    reddito_utente: parseInt(params.get('reddito_utente')) || 0,
+                    tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
+                    sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
+                    fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
+                    animali: (params.get('animali') || '').toLowerCase().trim()
+                };
+
+                const finalProperties = allProperties.filter(property => {
+                    if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
+                    if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) return false;
+                    if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) return false;
+                    if (parseInt(property.Prezzo) > userProfile.prezzo) return false;
+
+                    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
+                    for (const req of propertyRequirements) {
+                        const reqKey = (req.Requisito || '').trim();
+                        const reqValue = (req.Valore_Richiesto || '').toLowerCase().trim();
+                        if (reqValue === '' || reqValue === 'indifferente') continue;
+                        const userValue = userProfile[reqKey];
+                        if (reqKey === 'reddito_minimo') {
+                            if (!userValue || userValue < parseInt(reqValue)) return false;
+                        } else {
+                            if (!userValue || userValue !== reqValue) return false;
                         }
                     }
-                }
+                    return true;
+                });
                 
-                // Se è passato attraverso tutti i controlli, è un match.
-                return true;
-            });
-
-            displayResults(finalProperties);
-
-        } catch (error) {
-            console.error("ERRORE CRITICO:", error);
-            document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore.</p>`;
+                displayResults(finalProperties);
+            } catch (error) {
+                console.error("ERRORE CRITICO:", error);
+                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore.</p>`;
+            }
         }
-    }
-    
-    document.addEventListener('DOMContentLoaded', main);
-</script>
+        
+        document.addEventListener('DOMContentLoaded', main);
+    </script>
 </body>
 </html>
