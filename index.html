@@ -9,80 +9,90 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-    :root { 
-        --colore-primario: #0D47A1; 
-        --colore-secondario: #1565C0; 
-        --colore-accento: #FFA000; 
-        --colore-testo: #212121; 
-        --colore-testo-chiaro: #616161; 
-        --colore-sfondo-pagina: #f4f6f9; 
-        --colore-bianco: #ffffff;
-    }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
-    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-    
-    .header { padding: 25px 0; text-align: center; border-bottom: 1px solid #eee;}
-    .logo { font-size: 2.5em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
-    .logo span { font-weight: 400; color: var(--colore-secondario); }
+        :root { 
+            --colore-primario: #0D47A1; 
+            --colore-secondario: #1565C0; 
+            --colore-accento: #FFA000; 
+            --colore-testo: #212121; 
+            --colore-testo-chiaro: #616161; 
+            --colore-sfondo-pagina: #f4f6f9; 
+            --colore-bianco: #ffffff;
+        }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            background-color: var(--colore-bianco);
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        
+        .header { padding: 25px 0; text-align: center; border-bottom: 1px solid #eee;}
+        .logo { font-size: 2.5em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
+        .logo span { font-weight: 400; color: var(--colore-secondario); }
 
-    .hero-search { padding: 80px 0; }
-    .hero-search h1 { font-size: 3.2em; color: var(--colore-primario); line-height: 1.2; text-align: center; }
-    .hero-search .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 15px auto 50px auto; text-align: center; }
-    
-    .unified-form {
-        background: var(--colore-sfondo-pagina); 
-        padding: 40px; 
-        border-radius: 24px;
-    }
-    .form-section { margin-bottom: 40px; }
-    .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 25px;}
-    .form-section .icon { color: var(--colore-accento); }
-    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-    .filter-group label { font-weight: 600; display: block; margin-bottom: 15px; }
-    .filter-group select, .filter-group input { display: none; /* Nascondiamo gli input originali */ }
+        .hero-search { padding: 60px 0 80px 0; text-align: center; }
+        .hero-search h1 { font-size: 3.2em; color: var(--colore-primario); line-height: 1.2; }
+        .hero-search .subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 15px auto 50px auto; }
+        
+        .unified-form {
+            background: var(--colore-sfondo-pagina); 
+            padding: 40px; 
+            border-radius: 24px;
+        }
+        .form-section { margin-bottom: 30px; padding-bottom: 30px; }
+        .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; }
+        .form-section .icon { color: var(--colore-accento); }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .filter-group label { font-weight: 600; display: block; margin-bottom: 8px; text-align: left;}
+        
+        /* STILE ORIGINALE PER I FILTRI PREFERENZE */
+        #preferences-section .filter-group select, 
+        #preferences-section .filter-group input { 
+            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; background-color: #f9f9f9;
+        }
 
-    /* --- NUOVO STILE "SMART" PER I FILTRI --- */
-    .smart-options {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .smart-option {
-        padding: 10px 20px;
-        border: 1px solid #ccc;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-weight: 600;
-        background-color: var(--colore-bianco);
-    }
-    .smart-option.selected {
-        background-color: var(--colore-primario);
-        color: white;
-        border-color: var(--colore-primario);
-    }
-    .filter-group input[type="number"] {
-        display: block; /* Mostriamo l'input per il budget */
-        width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box;
-    }
+        /* --- NUOVO STILE "SMART" SOLO PER I FILTRI PROFILO --- */
+        #profile-section .filter-group select { display: none; } /* Nascondiamo i select originali */
+        .smart-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .smart-option {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            background-color: var(--colore-bianco);
+        }
+        .smart-option.selected {
+            background-color: var(--colore-primario);
+            color: white;
+            border-color: var(--colore-primario);
+        }
 
-    #profile-section {
-        display: none; /* Nascosto di default */
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out;
-    }
-    #profile-section.visible {
-        display: block;
-        opacity: 1;
-    }
-    
-    #search-button {
-        width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 30px;
-        background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-        color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer;
-        transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255,160,0,0.4);
-    }
+        #profile-section {
+            display: none; /* Nascosto di default */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateY(20px);
+        }
+        #profile-section.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        #search-button {
+            width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 30px;
+            background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255,160,0,0.4);
+        }
+        #search-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,160,0,0.3); }
         /* NUOVA SEZIONE IMMAGINE DIVISORIA */
         #image-divider {
             padding: 120px 0;
@@ -172,48 +182,42 @@
         <a href="cerca.html" class="logo">Affitto <span>Smart</span></a>
     </header>
 
-    <main>
-    <form id="unified-search-form">
+     <main>
         <section class="hero-search">
-            <div class="container">
-                <div class="hero-text">
-                    <h1>La casa giusta, senza compromessi.</h1>
-                    <p class="subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
-                </div>
+            <div class="container text-center">
+                <h1>La casa giusta, senza compromessi.</h1>
+                <p class="subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
                 
-                <div class="unified-form">
-                    <!-- Sezione 1: Le Tue Preferenze -->
+                <form id="unified-search-form" class="unified-form">
+                    <!-- Sezione 1: Le Tue Preferenze (STILE ORIGINALE) -->
                     <div class="form-section" id="preferences-section">
                         <h2><i class="fa-solid fa-map-location-dot icon"></i>Cosa cerchi?</h2>
                         <div class="filter-grid">
                             <div class="filter-group">
-                                <label>Tipo di Immobile</label>
-                                <div class="smart-options" data-target-name="tipo">
-                                    <div class="smart-option" data-value="">Qualsiasi</div>
-                                    <div class="smart-option" data-value="Stanza Singola">Stanza Singola</div>
-                                    <div class="smart-option" data-value="Monolocale">Monolocale</div>
-                                    <div class="smart-option" data-value="Bilocale">Bilocale</div>
-                                </div>
-                                <select name="tipo"><option value=""></option><option>Stanza Singola</option><option>Monolocale</option><option>Bilocale</option></select>
+                                <label for="tipo">Tipo di Immobile</label>
+                                <select name="tipo">
+                                    <option value="">Qualsiasi</option>
+                                    <option>Stanza Singola</option>
+                                    <option>Monolocale</option>
+                                    <option>Bilocale</option>
+                                </select>
                             </div>
                             <div class="filter-group">
-                                <label>Zona</label>
-                                <div class="smart-options" data-target-name="zona">
-                                    <div class="smart-option" data-value="">Qualsiasi</div>
-                                    <div class="smart-option" data-value="Centro Storico">Centro Storico</div>
-                                    <div class="smart-option" data-value="Murri">Murri</div>
-                                    <div class="smart-option" data-value="Bolognina">Bolognina</div>
-                                </div>
-                                <select name="zona"><option value=""></option><option>Centro Storico</option><option>Murri</option><option>Bolognina</option></select>
+                                <label for="zona">Zona</label>
+                                <select name="zona">
+                                    <option value="">Qualsiasi</option>
+                                    <option>Centro Storico</option>
+                                    <option>Murri</option>
+                                </select>
                             </div>
                             <div class="filter-group">
-                                <label>Budget Massimo (€)</label>
+                                <label for="prezzo">Budget Massimo (€)</label>
                                 <input type="number" name="prezzo" placeholder="Es. 900">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Sezione 2: Il Tuo Profilo (Nascosta all'inizio) -->
+                    <!-- Sezione 2: Il Tuo Profilo (STILE NUOVO "SMART" e Nascosto) -->
                     <div class="form-section" id="profile-section">
                         <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Ora dicci chi sei.</h2>
                         <div class="filter-grid">
@@ -224,7 +228,7 @@
                                     <div class="smart-option" data-value="Studente/ssa con garante">Studente con Garante</div>
                                     <div class="smart-option" data-value="Lavoratore Autonomo / P.IVA">Autonomo / P.IVA</div>
                                 </div>
-                                <select name="situazione_lavorativa" required><option></option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option><option>Lavoratore Autonomo / P.IVA</option></select>
+                                <select name="situazione_lavorativa" required><option selected value=""></option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option><option>Lavoratore Autonomo / P.IVA</option></select>
                             </div>
                             <div class="filter-group">
                                 <label>Possiedi animali?</label>
@@ -232,13 +236,13 @@
                                     <div class="smart-option" data-value="Sì">Sì</div>
                                     <div class="smart-option" data-value="No">No</div>
                                 </div>
-                                <select name="animali" required><option></option><option>Sì</option><option>No</option></select>
+                                <select name="animali" required><option selected value=""></option><option>Sì</option><option>No</option></select>
                             </div>
                         </div>
                     </div>
 
                     <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
-                </div>
+                </form>
             </div>
         </section>
 
@@ -320,64 +324,58 @@
         <p>© 2025 Affitto Smart | <a href="/index.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
     </footer>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('unified-search-form');
-        const preferencesSection = document.getElementById('preferences-section');
-        const profileSection = document.getElementById('profile-section');
-        
-        // --- LOGICA PER I FILTRI "SMART" ---
-        const smartOptionContainers = document.querySelectorAll('.smart-options');
-        smartOptionContainers.forEach(container => {
-            const hiddenSelect = container.nextElementSibling;
-            const options = container.querySelectorAll('.smart-option');
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('unified-search-form');
+            const preferencesSection = document.getElementById('preferences-section');
+            const profileSection = document.getElementById('profile-section');
+            
+            // --- LOGICA PER I FILTRI "SMART" (SOLO PER LA SEZIONE PROFILO) ---
+            const smartOptionContainers = profileSection.querySelectorAll('.smart-options');
+            smartOptionContainers.forEach(container => {
+                const hiddenSelect = container.nextElementSibling;
+                const options = Array.from(container.querySelectorAll('.smart-option'));
 
-            options.forEach(option => {
-                option.addEventListener('click', () => {
-                    // Deseleziona gli altri nella stessa riga
-                    options.forEach(opt => opt.classList.remove('selected'));
-                    // Seleziona quello cliccato
-                    option.classList.add('selected');
-                    // Aggiorna il valore del select nascosto
-                    hiddenSelect.value = option.dataset.value;
-                    
-                    // Attiva l'evento 'change' per la logica di visualizzazione
-                    hiddenSelect.dispatchEvent(new Event('change'));
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => opt.classList.remove('selected'));
+                        option.classList.add('selected');
+                        hiddenSelect.value = option.dataset.value;
+                    });
                 });
             });
-        });
 
-        // --- LOGICA PER MOSTRARE LA SEZIONE PROFILO ---
-        const preferenceInputs = preferencesSection.querySelectorAll('select, input[type="number"]');
-        let filledPreferences = 0;
-
-        function checkPreferences() {
-            filledPreferences = 0;
-            preferenceInputs.forEach(input => {
-                if (input.value) {
-                    filledPreferences++;
+            // --- LOGICA PER MOSTRARE LA SEZIONE PROFILO ---
+            const preferenceInputs = preferencesSection.querySelectorAll('select, input[type="number"]');
+            
+            function checkPreferences() {
+                let filledCount = 0;
+                preferenceInputs.forEach(input => {
+                    if (input.value) {
+                        filledCount++;
+                    }
+                });
+                
+                if (filledCount >= 2) {
+                    profileSection.classList.add('visible');
+                } else {
+                    profileSection.classList.remove('visible');
                 }
-            });
-            if (filledPreferences >= 2) {
-                profileSection.classList.add('visible');
-            } else {
-                profileSection.classList.remove('visible');
             }
-        }
 
-        preferenceInputs.forEach(input => {
-            input.addEventListener('change', checkPreferences);
-            input.addEventListener('keyup', checkPreferences); // Per il campo budget
-        });
+            preferenceInputs.forEach(input => {
+                input.addEventListener('change', checkPreferences);
+                input.addEventListener('keyup', checkPreferences);
+            });
 
-        // --- GESTIONE INVIO FINALE ---
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            const queryString = new URLSearchParams(formData).toString();
-            window.location.href = 'risultati.html?' + queryString;
+            // --- GESTIONE INVIO FINALE ---
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const queryString = new URLSearchParams(formData).toString();
+                window.location.href = 'risultati.html?' + queryString;
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>
