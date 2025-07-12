@@ -187,6 +187,21 @@
             font-size: 1.5em;
             color: var(--colore-successo);
         }
+/* --- NUOVI STILI PER IMMAGINE RITAGLIATA --- */
+.guarantee-image {
+    width: 100%;
+    height: 300px; /* Impostiamo un'altezza fissa e più bassa */
+    border-radius: 16px;
+    overflow: hidden; /* Nasconde le parti dell'immagine che escono */
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+
+.guarantee-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* L'immagine copre l'area senza deformarsi */
+    object-position: center 70%; /* <-- LA MAGIA È QUI */
+}
         
         /* Media Query per la nuova sezione */
         @media (max-width: 768px) {
@@ -214,7 +229,7 @@
             <section class="hero-search-wrapper">
                 <div class="hero-search-content container">
                     <h1>La casa giusta, senza compromessi.</h1>
-                    <p class="subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
+                    <p class="subtitle">Dicci chi sei e cosa cerchi. <br>Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
                     
                     <div class="unified-form">
                         <div class="form-section" id="preferences-section">
@@ -259,7 +274,7 @@
                     <div class="process-step">
                         <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div>
                         <h3>2. Il Tuo Pass Esclusivo</h3>
-                        <p>Acquistando il pass da <strong>2,99€</strong> per un Open Day, ti garantisci un posto in un evento a numero chiuso, con solo persone realmente interessate.</p>
+                        <p>Acquistando il pass da <strong>2,99€</strong> per un Open Day,<br>Non è solo un biglietto: è un investimento. Se non vieni scelto, <strong>il tuo pass ti dà accesso prioritario ad altre 2 visite esclusive.</strong></p>
                     </div>
                     <div class="process-step">
                         <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
@@ -281,7 +296,7 @@
                     </div>
                     <div class="guarantee-text">
                         <h2>Annunci Verificati, Opportunità Reali.</h2>
-                        <p>Sappiamo quanto sia frustrante il mercato degli affitti. Annunci che spariscono, foto ingannevoli, appuntamenti a vuoto. Noi abbiamo eliminato tutto questo. Il nostro impegno è la tua tranquillità.</p>
+                        <p>Sappiamo quanto sia frustrante il mercato degli affitti. <br>Annunci che spariscono, foto ingannevoli, appuntamenti a vuoto.<br>Noi abbiamo eliminato tutto questo.<br>Il nostro impegno è la tua tranquillità.</p>
                         <div class="guarantee-points">
                             <div class="point">
                                 <i class="fa-solid fa-house-circle-check icon"></i>
@@ -306,7 +321,7 @@
                 <div class="visual-process">
                     <div>
                         <h3>Il Controllo è nelle Tue Mani.</h3>
-                        <p class="section-subtitle" style="text-align: left; margin: 20px 0; max-width: 100%;">Dopo aver acquistato il tuo ticket, il passo finale è semplice. Verrai reindirizzato alla nostra agenda privata dove potrai scegliere, con un solo click, lo slot orario che preferisci per l'Open Day. Niente telefonate, niente attese. Solo tu, il tuo calendario e la tua prossima casa.</p>
+                        <p class="section-subtitle" style="text-align: left; margin: 20px 0; max-width: 100%;">Dopo aver acquistato il tuo ticket, il passo finale è semplice. Verrai reindirizzato alla nostra agenda privata dove potrai scegliere, con un solo click, lo slot orario che preferisci per l'Open Day. <br>Niente telefonate, niente attese. <br>Solo tu, il tuo calendario e la tua prossima casa.</p>
                     </div>
                     <div>
                         <!-- MODIFICA: Link all'immagine nella cartella locale 'assets' -->
