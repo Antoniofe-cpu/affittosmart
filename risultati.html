@@ -10,49 +10,79 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --colore-primario: #0D47A1; --colore-accento: #FFB300; --colore-testo: #212121; --colore-testo-chiaro: #5f6368; --colore-sfondo-chiaro: #f5f7fa; --colore-successo: #2E7D32; --colore-bianco: #ffffff; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
-        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; padding: 40px 0; }
-        .header h1 { font-size: 2.8em; }
-        .back-link { display: inline-block; margin-top: 20px; font-weight: 600; color: var(--colore-primario); text-decoration: none; }
-        
-        /* CARD IMMOBILE CON BADGE */
-        .property-card {
-            background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 40px; /* Aumentato spazio */
-            display: flex; flex-wrap: wrap;
-            position: relative; /* Necessario per posizionare l'etichetta */
-        }
-        .match-badge {
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo);
-            padding: 8px 15px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.9em;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            border: 3px solid white;
-            z-index: 10;
-        }
-        .property-card-img { flex: 1; min-width: 300px; max-height: 250px; background-color: #eee; }
-        .property-card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .property-card-info { flex: 2; padding: 25px; display: flex; flex-direction: column; }
-        .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); }
-        .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); }
-        .property-card-info h3 { margin: 10px 0; font-size: 1.5em; }
-        .property-card-info p { flex-grow: 1; }
-        .property-card .cta-button {
-            display: inline-block; padding: 12px 25px; font-size: 0.9em; text-decoration: none;
-            border-radius: 50px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; align-self: flex-start;
-        }
-        .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; }
-        .spots-info { font-size: 0.9em; font-weight: 600; color: var(--colore-testo-chiaro); margin-top: 10px; display: block; }
-        .message { text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
+    :root { 
+        --colore-primario: #0D47A1; 
+        --colore-accento: #FFB300; 
+        --colore-testo: #212121; 
+        --colore-testo-chiaro: #5f6368; 
+        --colore-sfondo-chiaro: #f5f7fa; 
+        --colore-successo: #2E7D32; 
+        --colore-bianco: #ffffff; 
+    }
+    body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-chiaro); }
+    .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; padding: 40px 0; }
+    .header h1 { font-size: 2.8em; }
+    .back-link { display: inline-block; margin-top: 20px; font-weight: 600; color: var(--colore-primario); text-decoration: none; }
+    
+    .property-card {
+        background: white; border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08); 
+        margin-bottom: 40px;
+        display: flex; flex-wrap: wrap;
+        position: relative; /* Necessario per il nastro */
+        overflow: hidden; /* Nasconde le parti del nastro che escono */
+    }
+    
+    /* --- NUOVO STILE PER ETICHETTA MATCHING A NASTRO --- */
+    .match-ribbon {
+        width: 150px;
+        height: 150px;
+        overflow: hidden;
+        position: absolute;
+        top: -10px;
+        right: -10px;
+    }
+    .match-ribbon::before, .match-ribbon::after {
+        position: absolute;
+        z-index: -1;
+        content: '';
+        display: block;
+        border: 5px solid #c78100; /* Bordo più scuro per effetto 3D */
+    }
+    .match-ribbon span {
+        position: absolute;
+        display: block;
+        width: 225px;
+        padding: 10px 0;
+        background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        color: var(--colore-testo);
+        font: 700 1em/1 'Poppins', sans-serif;
+        text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        text-transform: uppercase;
+        text-align: center;
+        right: -25px;
+        top: 30px;
+        transform: rotate(45deg);
+    }
+    /* --- FINE NUOVO STILE --- */
+
+    .property-card-img { flex: 1; min-width: 300px; max-height: 250px; background-color: #eee; }
+    .property-card-img img { width: 100%; height: 100%; object-fit: cover; }
+    .property-card-info { flex: 2; padding: 25px; display: flex; flex-direction: column; }
+    .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); }
+    .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); }
+    .property-card-info h3 { margin: 10px 0; font-size: 1.5em; }
+    .property-card-info p { flex-grow: 1; }
+    .property-card .cta-button {
+        display: inline-block; padding: 12px 25px; font-size: 0.9em; text-decoration: none;
+        border-radius: 50px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+        color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; align-self: flex-start;
+    }
+    .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; }
+    .spots-info { font-size: 0.9em; font-weight: 600; color: var(--colore-testo-chiaro); margin-top: 10px; display: block; }
+    .message { text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
 
         /* Stili per il Modal/Popup */
         .modal-overlay {
@@ -83,7 +113,7 @@
             <p class="message">Analizzando la compatibilità tra te e le nostre proposte...</p>
         </div>
         <div style="text-align: center;">
-            <a href="cerca.html" class="back-link">Modifica la tua Ricerca</a>
+            <a href="index.html" class="back-link">Modifica la tua Ricerca</a>
         </div>
     </div>
 
@@ -125,55 +155,59 @@
             return objects;
         }
 
-        function displayResults(propertiesWithScore) {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '';
-            if (propertiesWithScore.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato compatibile con il tuo profilo.<br>Prova a modificare i tuoi filtri!</p>';
-                return;
-            }
+        // NUOVA E CORRETTA FUNZIONE DISPLAYRESULTS
 
-            // Ordina i risultati per punteggio, dal più alto al più basso
-            propertiesWithScore.sort((a, b) => b.matchScore - a.matchScore);
+function displayResults(propertiesWithScore) {
+    const resultsContainer = document.getElementById('results-container');
+    resultsContainer.innerHTML = '';
+    if (propertiesWithScore.length === 0) {
+        resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato compatibile con il tuo profilo.<br>Prova a modificare i tuoi filtri!</p>';
+        return;
+    }
 
-            propertiesWithScore.forEach(item => {
-                const p = item.property;
-                const matchScore = item.matchScore;
+    propertiesWithScore.sort((a, b) => b.matchScore - a.matchScore);
 
-                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
-                
-                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-                const postiTotali = parseInt(p.MaxPartecipanti);
-                const postiRimasti = postiTotali - prenotati;
-                
-                let buttonHtml;
-                if (postiRimasti > 0) {
-                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista il Tuo Ticket</button>
-                                  <span class="spots-info">${postiRimasti} / ${postiTotali} posti rimasti</span>`;
-                } else {
-                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>
-                                  <span class="spots-info">0 / ${postiTotali} posti rimasti</span>`;
-                }
+    propertiesWithScore.forEach(item => {
+        const p = item.property;
+        const matchScore = item.matchScore;
 
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'property-card';
-                cardDiv.innerHTML = `
-                    <div class="match-badge">${matchScore}% Match</div>
-                    <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
-                    <div class="property-card-info">
-                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                        <h3>${p.Titolo}</h3>
-                        <div class="price">${p.Prezzo} €/mese</div>
-                        <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
-                        <div>${buttonHtml}</div>
-                    </div>`;
-                resultsContainer.appendChild(cardDiv);
-            });
-            
-            document.querySelectorAll('.cta-button[data-link]').forEach(button => {
-                button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
-            });
+        if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
+        
+        const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+        const postiTotali = parseInt(p.MaxPartecipanti);
+        const postiRimasti = postiTotali - prenotati;
+        
+        let buttonHtml;
+        // MODIFICA: Testo del pulsante ora nel formato X / Y
+        if (postiRimasti > 0) {
+            buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista il Tuo Ticket</button>
+                          <span class="spots-info">${postiRimasti} / ${postiTotali} posti rimasti</span>`;
+        } else {
+            buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>
+                          <span class="spots-info">0 / ${postiTotali} posti rimasti</span>`;
         }
+
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'property-card';
+        
+        // MODIFICA: Creazione dell'etichetta "a nastro"
+        cardDiv.innerHTML = `
+            <div class="match-ribbon"><span>${matchScore}% Match</span></div>
+            <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
+            <div class="property-card-info">
+                <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                <h3>${p.Titolo}</h3>
+                <div class="price">${p.Prezzo} €/mese</div>
+                <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+                <div>${buttonHtml}</div>
+            </div>`;
+        resultsContainer.appendChild(cardDiv);
+    });
+    
+    document.querySelectorAll('.cta-button[data-link]').forEach(button => {
+        button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
+    });
+}
 
         function openPaymentModal(stripeLink) {
             const modal = document.getElementById('payment-modal');
