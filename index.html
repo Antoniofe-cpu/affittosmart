@@ -37,20 +37,62 @@
         .logo span { font-weight: 400; color: var(--colore-secondario); }
 
         /* HERO & SEARCH FORM */
-        .hero-search { padding: 60px 0 80px 0; }
-        .hero-search h1 { line-height: 1.2; }
+        .hero-search-wrapper {
+            position: relative;
+            padding: 80px 0;
+            color: var(--colore-bianco);
+            text-align: center;
+        }
+        .hero-search-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            /* Immagine di sfondo per inquilini, più accogliente */
+            background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200');
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+        .hero-search-content {
+            position: relative;
+            z-index: 2;
+        }
+        .hero-search-content h1 {
+            color: var(--colore-bianco);
+            font-size: 3.5em;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .hero-search-content .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.4em;
+            max-width: 700px;
+            margin: 15px auto 50px auto;
+        }
         
-        .unified-form { background: var(--colore-sfondo-pagina); padding: 40px; border-radius: 24px; }
+        .unified-form {
+            background: var(--colore-bianco); 
+            color: var(--colore-testo); /* Ripristina il colore del testo per il form */
+            padding: 40px; 
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: left;
+        }
         .form-section { margin-bottom: 30px; padding-bottom: 30px; }
         .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 30px;}
         .form-section .icon { color: var(--colore-accento); }
         
-        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px 30px; }
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px 30px; }
         .filter-group { text-align: left; }
         .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
         
-        #preferences-section select, #preferences-section input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; background-color: white; }
+        /* --- STILE UNICO PER TUTTI GLI INPUT DEL FORM --- */
+        .filter-group select, 
+        .filter-group input[type="number"], 
+        .filter-group input[type="date"] {
+            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; 
+            font-size: 1em; box-sizing: border-box; background-color: white; font-family: 'Poppins', sans-serif;
+        }
         
         .pill-options { display: flex; gap: 10px; height: 51px; }
         .pill-options input { display: none; }
@@ -59,16 +101,26 @@
             text-align: center; padding: 12px; border: 1px solid #ccc;
             border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; background-color: white;
         }
-        .pill-options input:checked + label { background-color: var(--colore-primario); color: white; border-color: var(--colore-primario); }
+        .pill-options input:checked + label {
+            background-color: var(--colore-primario); color: white; border-color: var(--colore-primario);
+        }
 
-        #profile-section { max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out; }
-        #profile-section.visible { max-height: 1000px; opacity: 1; border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px; }
+        #profile-section {
+            max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out;
+        }
+        #profile-section.visible {
+            max-height: 1000px; opacity: 1;
+            border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px;
+        }
         
         #search-button {
             width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 40px;
             background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
             color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer;
         }
+
+        @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .filter-grid { grid-template-columns: 1fr; } }
 
         /* WHY US / EXPLANATION SECTION (3 COLONNE) */
         .process-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 60px; }
@@ -114,10 +166,10 @@
 
     <main>
         <form id="unified-search-form">
-            <section class="unified-form-container section-white text-center">
-                <div class="container">
-                    <h1 class="section-title">La casa giusta, senza compromessi.</h1>
-                    <p class="section-subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
+            <section class="hero-search-wrapper">
+                <div class="hero-search-content container">
+                    <h1>La casa giusta, senza compromessi.</h1>
+                    <p class="subtitle">Dicci chi sei e cosa cerchi. Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
                     
                     <div class="unified-form">
                         <div class="form-section" id="preferences-section">
@@ -132,20 +184,20 @@
                         </div>
 
                         <div class="form-section" id="profile-section">
-                            <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
-                            <div class="filter-grid">
-                                <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa"><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option><option>Lavoratore Autonomo / P.IVA</option></select></div>
-                                <div class="filter-group"><label>Reddito Netto Mensile (familiare)</label><select name="reddito_utente"><option value="" disabled selected>Seleziona fascia...</option><option value="1500">Meno di 1.500 €</option><option value="2000">1.501-2.000 €</option><option value="2500">2.001-2.500 €</option><option value="3000">2.501-3.500 €</option><option value="4000">Oltre 3.500 €</option></select></div>
-                                <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
-                                <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
-                                <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
-                                <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
-                            </div>
+                        <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
+                        <div class="filter-grid">
+                            <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa" required><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option><option>Lavoratore Autonomo / P.IVA</option></select></div>
+                            <div class="filter-group"><label>Reddito Netto Mensile</label><select name="reddito_utente" required><option value="" disabled selected>Seleziona fascia...</option><option value="1500">Meno di 1.500 €</option><option value="2000">1.501-2.000 €</option><option value="2500">2.001-2.500 €</option><option value="3000">Oltre 2.500 €</option></select></div>
+                            <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
+                            <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
+                            <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
+                            <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
                         </div>
-                        <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                     </div>
-                </div>
-            </section>
+                    <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
+                </form>
+            </div>
+        </section>
 
              <section class="why-us section-light">
             <div class="container text-center">
