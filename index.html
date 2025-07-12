@@ -118,6 +118,33 @@
             .hero-search h1 { font-size: 2.5em; }
             .visual-process { grid-template-columns: 1fr; }
         }
+        /* Aggiungi questo al tuo CSS in cerca.html */
+.radio-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+.radio-group input[type="radio"] {
+    display: none; /* Nascondiamo il pallino di default */
+}
+.radio-group label {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+.radio-group input[type="radio"]:checked + label {
+    background-color: var(--colore-primario);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
     </style>
 </head>
 <body>
@@ -140,13 +167,56 @@
                             <div class="filter-group"><label for="prezzo">Budget Max (€)</label><input type="number" name="prezzo" placeholder="Es. 900"></div>
                         </div>
                     </div>
-                    <div class="form-section">
-                        <h2><i class="fa-solid fa-user-check icon"></i>Chi sei? (Priorità dei Proprietari)</h2>
-                        <div class="filter-grid">
-                            <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa" required><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option></select></div>
-                            <div class="filter-group"><label>Possiedi animali?</label><select name="animali" required><option value="" disabled selected>Seleziona...</option><option>Sì</option><option>No</option></select></div>
-                        </div>
-                    </div>
+                    <!-- SOSTITUISCI QUESTA SEZIONE IN cerca.html -->
+
+<div class="form-section">
+    <h2><i class="fa-solid fa-user-check icon"></i>Chi sei? (Priorità dei Proprietari)</h2>
+    <div class="filter-grid" style="grid-template-columns: 1fr 1fr;">
+        <!-- Colonna Sinistra -->
+        <div class="filter-group">
+            <label>Situazione Lavorativa</label>
+            <select name="situazione_lavorativa" required>
+                <option value="" disabled selected>Seleziona...</option>
+                <option>Dipendente a tempo indeterminato</option>
+                <option>Studente/ssa con garante</option>
+                <option>Lavoratore Autonomo / P.IVA</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Stai cercando casa...</label>
+            <select name="tipo_ricerca" required>
+                <option value="" disabled selected>Seleziona...</option>
+                <option>Da solo/a</option>
+                <option>In coppia</option>
+            </select>
+        </div>
+        <!-- Colonna Destra -->
+        <div class="filter-group">
+            <label>Sesso (per stanze singole)</label>
+            <div class="radio-group">
+                <input type="radio" id="sesso_m" name="sesso" value="M"><label for="sesso_m">M</label>
+                <input type="radio" id="sesso_f" name="sesso" value="F"><label for="sesso_f">F</label>
+                <input type="radio" id="sesso_ind" name="sesso" value="Indifferente" checked><label for="sesso_ind">Indifferente</label>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>Sei un fumatore/fumatrice?</label>
+            <div class="radio-group">
+                <input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label>
+                <input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>Possiedi animali?</label>
+             <div class="radio-group">
+                <input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label>
+                <input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Aggiungiamo anche i filtri di data e periodo nella sezione "Cosa cerchi?" -->
                     <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                 </form>
             </div>
