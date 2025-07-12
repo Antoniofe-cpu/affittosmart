@@ -150,9 +150,9 @@
             modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
         }
 
-        async function main() {
+       async function main() {
     try {
-        // --- Caricamento Dati (invariato) ---
+        // --- Caricamento Dati ---
         const [propsRes, reqsRes, candsRes] = await Promise.all([
             fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
         ]);
@@ -162,14 +162,14 @@
         allRequirements = csvToObjects(await reqsRes.text());
         allCandidates = csvToObjects(await candsRes.text());
         
-        // --- Lettura Profilo Utente (AGGIORNATO CON TUTTI I CAMPI) ---
+        // --- Lettura Profilo Utente Completo ---
         const params = new URLSearchParams(window.location.search);
         const userProfile = {
             tipo: (params.get('tipo') || '').toLowerCase().trim(),
             zona: (params.get('zona') || '').toLowerCase().trim(),
             prezzo: parseInt(params.get('prezzo')) || Infinity,
-            data_disponibile: params.get('data_disponibile') || null, // Legge la data
-            periodo_affitto: (params.get('periodo_affitto') || '').toLowerCase().trim(), // Legge il periodo
+            data_disponibile: params.get('data_disponibile') || null,
+            periodo_affitto: (params.get('periodo_affitto') || '').toLowerCase().trim(),
             situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
             animali: (params.get('animali') || '').toLowerCase().trim(),
             tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
@@ -177,54 +177,64 @@
             fumatore: (params.get('fumatore') || '').toLowerCase().trim()
         };
 
-        // --- Filtro 1: Preferenze Utente (AGGIORNATO) ---
-        const preFilteredProperties = allProperties.filter(p => {
-            const prezzoImmobile = parseInt(p.Prezzo);
-            const pStato = (p.Stato || '').toLowerCase().trim();
-            const pTipo = (p.Tipo || '').toLowerCase().trim();
-            const pZona = (p.Zona || '').toLowerCase().trim();
-            const pDataDisponibile = p.DataDisponibile ? new Date(p.DataDisponibile) : null;
-            const userDataDisponibile = userProfile.data_disponibile ? new Date(userProfile.data_disponibile) : null;
+        const availableProperties = allProperties.filter(p => (p.Stato || '').toLowerCase().trim() === 'disponibile');
+        
+        const propertiesWithScore = [];
+
+        availableProperties.forEach(property => {
+            let isCompatible = true;
             
-            // Controllo sulla data: l'immobile deve essere disponibile PRIMA o alla data richiesta dall'utente
-            const dateCheck = !userDataDisponibile || !pDataDisponibile || pDataDisponibile <= userDataDisponibile;
-
-            return pStato === 'disponibile' &&
-                   (userProfile.tipo === '' || pTipo === userProfile.tipo) &&
-                   (userProfile.zona === '' || pZona === userProfile.zona) &&
-                   !isNaN(prezzoImmobile) && (prezzoImmobile <= userProfile.prezzo) &&
-                   dateCheck;
-        });
-
-        // --- Filtro 2: Requisiti Proprietario e Periodo (AGGIORNATO) ---
-        const finalProperties = preFilteredProperties.filter(property => {
-            // Controlla il periodo di affitto (logica speciale)
-            const pPeriodo = (property.PeriodoAffitto || '').toLowerCase().trim();
-            if (userProfile.periodo_affitto !== '' && pPeriodo !== '' && pPeriodo !== userProfile.periodo_affitto) {
-                return false; // Se l'utente ha una preferenza di periodo e l'immobile non la soddisfa, scarta
-            }
-
-            // Controlla tutti gli altri requisiti dal foglio
+            // --- FASE 1: CONTROLLO DEI REQUISITI BLOCCANTI DEL PROPRIETARIO ---
             const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
-            if (propertyRequirements.length === 0) return true; // Se non ha requisiti, passa
             
-            return propertyRequirements.every(req => {
+            for (const req of propertyRequirements) {
                 const requirementKey = (req.Requisito || '').trim();
                 const requiredValue = (req.Valore_Richiesto || '').toLowerCase().trim();
                 const userValue = userProfile[requirementKey];
 
-                if (requiredValue === 'indifferente') return true;
+                // Logica speciale per il sesso
+                if (requirementKey === 'sesso_accettato' && requiredValue !== 'indifferente' && userValue !== requiredValue) {
+                    isCompatible = false;
+                    break;
+                }
+                
+                // Logica per gli altri requisiti
+                if (requirementKey !== 'sesso_accettato' && userValue !== requiredValue) {
+                    isCompatible = false;
+                    break;
+                }
+            }
+            
+            // Se non è compatibile, non procediamo oltre con questo immobile.
+            if (!isCompatible) {
+                return; // Equivalente a 'continue' in un forEach
+            }
 
-                return userValue === requiredValue;
-            });
-        });
-        
-        // Calcolo punteggio solo sui risultati finali
-        const propertiesWithScore = finalProperties.map(p => {
+            // --- FASE 2: CALCOLO DEL PUNTEGGIO IN BASE ALLE PREFERENZE DELL'UTENTE ---
             let matchScore = 100;
-            // Puoi aggiungere qui una logica per abbassare il punteggio se alcune preferenze non matchano,
-            // ma per ora, se un immobile è in `finalProperties`, ha un match del 100% dei requisiti.
-            return { property: p, matchScore: matchScore };
+
+            const prezzoImmobile = parseInt(property.Prezzo);
+            const pTipo = (property.Tipo || '').toLowerCase().trim();
+            const pZona = (property.Zona || '').toLowerCase().trim();
+            const pDataDisponibile = property.DataDisponibile ? new Date(property.DataDisponibile) : null;
+            const userDataDisponibile = userProfile.data_disponibile ? new Date(userProfile.data_disponibile) : null;
+            const pPeriodo = (property.PeriodoAffitto || '').toLowerCase().trim();
+            
+            // Il budget è bloccante
+            if (!isNaN(prezzoImmobile) && prezzoImmobile > userProfile.prezzo) {
+                matchScore = 0;
+            } else {
+                // Penalità per le preferenze non soddisfatte
+                if (userProfile.tipo && pTipo !== userProfile.tipo) matchScore -= 25;
+                if (userProfile.zona && pZona !== userProfile.zona) matchScore -= 25;
+                if (userDataDisponibile && pDataDisponibile && pDataDisponibile > userDataDisponibile) matchScore -= 20;
+                if (userProfile.periodo_affitto && pPeriodo && pPeriodo !== userProfile.periodo_affitto) matchScore -= 20;
+            }
+
+            // Aggiungiamo l'immobile alla lista solo se ha un punteggio minimo
+            if (matchScore >= 40) { // Soglia minima per mostrare un risultato
+                propertiesWithScore.push({ property, matchScore });
+            }
         });
 
         displayResults(propertiesWithScore);
