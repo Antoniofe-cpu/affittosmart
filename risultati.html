@@ -167,8 +167,8 @@
                 if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
                 
                 let compatibilityHtml = '<div class="compatibility-icons">';
-                if (userPrefs.situazione_lavorativa) compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-briefcase"></i> Profilo OK</div>`;
-                if (userPrefs.animali) compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-paw"></i> Animali OK</div>`;
+                if (userPrefs.situazione_lavorativa) compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-briefcase"></i></div>`;
+                if (userPrefs.animali) compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-paw"></i></div>`;
                 // Aggiungi qui altre icone per altri filtri del profilo...
                 compatibilityHtml += '</div>';
 
