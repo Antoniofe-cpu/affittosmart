@@ -490,14 +490,13 @@
                 }
             });
 
+            // --- LOGICA FAQ MODIFICATA ---
             document.querySelectorAll('.faq-question').forEach(button => {
-                const faqItem = button.parentElement;
                 button.addEventListener('click', () => {
-                    const wasActive = faqItem.classList.contains('active');
-                    document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
-                    if (!wasActive) {
-                        faqItem.classList.add('active');
-                    }
+                    const faqItem = button.parentElement;
+                    // Semplicemente attiva/disattiva la classe 'active' sull'elemento cliccato.
+                    // Non interagisce più con gli altri elementi della FAQ.
+                    faqItem.classList.toggle('active');
                 });
             });
         });
