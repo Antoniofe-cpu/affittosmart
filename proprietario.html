@@ -183,17 +183,18 @@
         .faq-item.active .faq-answer { max-height: 200px; padding: 0 20px 20px 20px; }
         .faq-item.active .faq-question .fa-chevron-down { transform: rotate(180deg); }
 
-        /* OFFERTA SPECIALE */
-        #offerta { background: linear-gradient(135deg, var(--colore-primario) 0%, #002c6b 100%); color: white; }
-        #offerta h2 { color: white; }
-        #offerta h2::after { background-color: var(--colore-accento); }
-        #offerta .offerta-testo { color: rgba(255,255,255,0.85); }
-        #offerta .promozione {
-            background: rgba(0,0,0,0.2); backdrop-filter: blur(5px);
-            padding: 25px; border-radius: 8px; margin: 20px auto 40px auto;
-            font-size: 1.4em; font-weight: 700;
-            color: var(--colore-accento); border: 2px dashed var(--colore-accento);
-        }
+        /* Stile per il box promozione */
+.promozione.light {
+    background-color: #fffbeb; /* Un giallo paglierino molto leggero */
+    color: var(--colore-testo);
+    border: 2px dashed var(--colore-accento);
+    font-size: 1.4em;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 8px;
+    padding: 25px;
+    margin-top: 60px;
+}
 
         /* --- DA AGGIUNGERE --- */
 .main-footer {
@@ -307,18 +308,18 @@
     margin: 0;
 }
 
+/* Allineamento testo nelle card di confronto */
 .confronto-colonna li {
     display: flex;
-    align-items: flex-start; /* Allinea all'inizio per testi lunghi */
+    align-items: center; /* <<< MODIFICA: da flex-start a center */
     gap: 15px;
     font-size: 1.1em;
     line-height: 1.6;
     margin-bottom: 20px;
 }
-
-.confronto-colonna li .fa-solid {
-    font-size: 1.5em;
-    margin-top: 5px; /* Allinea verticalmente l'icona */
+/* E CANCELLA questa regola, non serve più */
+.confronto-colonna li .fa-solid { 
+    /* margin-top: 5px; */ /* <<< CANCELLA QUESTA RIGA */
 }
 
 .confronto-colonna .fa-circle-xmark {
@@ -363,218 +364,135 @@
         </div>
     </header>
 
-    <main>
-        <section class="hero">
-            <div class="container">
-                <h2 class="pre-title">Basta agenzie e visite a vuoto.</h2>
-                <h1>Il tuo inquilino perfetto<br>è a un solo Open Day di distanza.</h1>
-                <p>Gestiamo noi tutta la pre-selezione.<br> Tu incontri solo candidati qualificati e realmente interessati,<br> risparmiando tempo e guadagnando tranquillità</p>
-                <!-- SOSTITUISCI CON IL LINK AL TUO FORM PROPRIETARI -->
-                <a href="#problema" class="cta-button">Inizia da Qui</a>
-            </div>
-        </section>
-        
-        <section class="counter-section">
-            <div class="counter-grid">
-                <div class="counter-item">
-                    <div class="counter-number">120+</div>
-                    <div class="counter-label">Ore Risparmiate dai Proprietari</div>
-                </div>
-                <div class="counter-item">
-                    <div class="counter-number">98%</div>
-                    <div class="counter-label">Candidati Qualificati</div>
-                </div>
-                <div class="counter-item">
-                    <div class="counter-number">0</div>
-                    <div class="counter-label">Costi a Sorpresa</div>
-                </div>
-            </div>
-        </section>
+    <!-- === INIZIO NUOVO <main> - SOSTITUISCI IL VECCHIO === -->
+<main>
+    <section class="hero">
+        <div class="container">
+            <h2 class="pre-title">Basta agenzie e visite a vuoto.</h2>
+            <h1>Il tuo inquilino perfetto<br>è a un solo Open Day di distanza.</h1>
+            <p>Gestiamo noi tutta la pre-selezione.<br> Tu incontri solo candidati qualificati e realmente interessati,<br> risparmiando tempo e guadagnando tranquillità.</p>
+            <a href="#processo" class="cta-button">Scopri Come Funziona</a>
+        </div>
+    </section>
+    
+    <section class="counter-section">
+        <div class="counter-grid">
+            <div class="counter-item"><div class="counter-number">120+</div><div class="counter-label">Ore Risparmiate dai Proprietari</div></div>
+            <div class="counter-item"><div class="counter-number">98%</div><div class="counter-label">Candidati Filtrati</div></div>
+            <div class="counter-item"><div class="counter-number">0</div><div class="counter-label">Costi a Sorpresa</div></div>
+        </div>
+    </section>
 
-        <section id="problema">
-            <div class="container">
-                <h2 class="hidden">La fine di un incubo chiamato "affitto".</h2>
-                <p class="sottotitolo-sezione hidden">Se queste situazioni vi suonano familiari, siete nel posto giusto. È ora di cambiare metodo.</p>
-                <ul class="dolori-list hidden">
-                    <li><i class="fa-solid fa-circle-xmark"></i> Passare i weekend a rispondere a decine di messaggi e telefonate inutili.</li>
-                    <li><i class="fa-solid fa-circle-xmark"></i> Far visitare casa a sconosciuti che non hanno i requisiti minimi.</li>
-                    <li><i class="fa-solid fa-circle-xmark"></i> L'ansia di aver scelto l'inquilino sbagliato, che non paga o crea problemi.</li>
-                    <li><i class="fa-solid fa-circle-xmark"></i> Pagare una commissione esagerata a un'agenzia per un servizio impersonale.</li>
-                </ul>
-                <p class="transizione hidden">Con Affitto Smart, la vostra unica preoccupazione sarà scegliere tra i migliori candidati.</p>
-            </div>
-        </section>
-
-        <section id="processo">
-            <div class="container">
-                <h2 class="hidden">Il Metodo Affitto Smart:<br> Semplice, Efficace, Rivoluzionario.</h2>
-                <div class="process-grid hidden">
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-bullseye"></i></div>
-                        <h3>1. Strategia Mirata</h3>
-                        <p>Insieme, definiamo il profilo dell'inquilino ideale e il canone di affitto ottimale per il vostro immobile.</p>
-                    </div>
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-camera-retro"></i></div>
-                        <h3>2. Annunci Professionali</h3>
-                        <p>Creiamo annunci accattivanti con foto di qualità e li pubblichiamo sui migliori portali per attrarre i candidati giusti.</p>
-                    </div>
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-clipboard-check"></i></div>
-                        <h3>3. Pre-Selezione Rigorosa</h3>
-                        <p>Filtriamo decine di candidature tramite il nostro questionario. Solo i profili idonei vengono considerati.</p>
-                    </div>
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
-                        <h3>4. Open Day Efficiente</h3>
-                        <p>Organizziamo un unico Open Day, invitando solo i migliori candidati per ottimizzare il vostro tempo.</p>
-                    </div>
-                    <div class="process-step">
-                        <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
-                        <h3>5. La Vostra Scelta Finale</h3>
-                        <p>Vi presentiamo una rosa di candidati eccellenti. A voi resta solo il piacere di scegliere, senza stress.</p>
-                    </div>
+    <section id="processo">
+        <div class="container">
+            <h2 class="hidden">Il Metodo Affitto Smart:<br> Semplice, Efficace, Rivoluzionario.</h2>
+            <p class="sottotitolo-sezione hidden">Trasformiamo un processo lungo e stressante in 5 semplici passi che ti portano dritto al risultato.</p>
+            <div class="process-grid hidden">
+                <div class="process-step">
+                    <div class="icon"><i class="fa-solid fa-bullseye"></i></div>
+                    <h3>1. Strategia Mirata</h3><p>Definiamo insieme il profilo dell'inquilino ideale e il canone di affitto ottimale.</p>
                 </div>
-            </div>
-        </section>
-
-        <section id="about-us">
-            <div class="container about-us">
-                <div class="about-us-img hidden">
-                    <!-- SOSTITUISCI CON UNA FOTO DEL TEAM REALE APPENA POSSIBILE -->
-                    <img src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Il Team di Affitto Smart">
+                <div class="process-step">
+                    <div class="icon"><i class="fa-solid fa-camera-retro"></i></div>
+                    <h3>2. Annunci Professionali</h3><p>Creiamo annunci efficaci e li pubblichiamo sui migliori portali per attrarre i candidati giusti.</p>
                 </div>
-                <div class="about-us-text hidden">
-                    <h3>Non un'agenzia,<br> ma i vostri partner per la tranquillità.</h3>
-                    <p class="sottotitolo-sezione" style="text-align: left; margin: 20px 0;">Sappiamo cosa significa avere un immobile a cuore. È un investimento, un progetto, a volte un ricordo. E sappiamo anche quanto tempo e quante energie possa rubare una gestione d'affitto stressante.<br><br>Per questo è nato Affitto Smart. Non siamo un'agenzia immobiliare tradizionale; siamo un team di specialisti dedicati a un solo obiettivo: restituirvi la serenità. Gestiamo ogni aspetto della ricerca dell'inquilino con un metodo rigoroso e un tocco umano, perché la vostra tranquillità è il nostro miglior risultato. Lasciate a noi le complessità, voi godetevi solo il meglio del vostro investimento.</p>
+                <div class="process-step">
+                    <div class="icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                    <h3>3. Pre-Selezione Rigorosa</h3><p>Filtriamo decine di candidature. Solo i profili idonei vengono considerati.</p>
                 </div>
-            </div>
-        </section>
-
-        <section id="vantaggi">
-            <div class="container">
-                <h2 class="hidden">Oltre l'Agenzia Tradizionale:<br> I Vostri Vantaggi Esclusivi</h2>
-                <p class="sottotitolo-sezione hidden">Ecco perché il nostro metodo è diverso e più efficace per garantire la vostra tranquillità.</p>
-                <div class="vantaggi-grid-mix hidden">
-                    <div class="vantaggio-card-mix">
-                        <div class="vantaggio-header">
-                            <i class="fa-solid fa-user-group"></i>
-                            <h3>Selezione Ultra-Mirata</h3>
-                        </div>
-                        <p>Le agenzie mostrano a tutti. Noi solo a chi è davvero in linea con le vostre richieste.</p>
-                    </div>
-                    <div class="vantaggio-card-mix">
-                        <div class="vantaggio-header">
-                            <i class="fa-solid fa-hourglass-half"></i>
-                            <h3>Massima Efficienza</h3>
-                        </div>
-                        <p>Niente visite a vuoto, zero perdite di tempo. Un processo snello e veloce che rispetta la vostra agenda.</p>
-                    </div>
-                    <div class="vantaggio-card-mix">
-                        <div class="vantaggio-header">
-                            <i class="fa-solid fa-shield-halved"></i>
-                            <h3>Sicurezza Garantita</h3>
-                        </div>
-                        <p>Il nostro filtro iniziale rigoroso è la migliore garanzia per la vostra tranquillità, riducendo i rischi al minimo.</p>
-                    </div>
-                    <div class="vantaggio-card-mix">
-                        <div class="vantaggio-header">
-                            <i class="fa-solid fa-file-invoice-dollar"></i>
-                            <h3>Costi Trasparenti</h3>
-                        </div>
-                        <p>Nessuna commissione a sorpresa. Con noi pagate un costo fisso e chiaro, senza percentuali nascoste.</p>
-                    </div>
-                    <div class="vantaggio-card-mix">
-                        <div class="vantaggio-header">
-                            <i class="fa-solid fa-hands-holding-child"></i>
-                            <h3>Servizio Dedicato</h3>
-                        </div>
-                        <p>Non siete un numero in un archivio. Il nostro team si dedica personally alla ricerca del vostro inquilino ideale.</p>
-                    </div>
-                    <div class="vantaggio-card-mix">
-                        <div class="vantaggio-header">
-                            <i class="fa-solid fa-star"></i>
-                            <h3>Open Day Professionale</h3>
-                        </div>
-                        <p>Gestito interamente da noi per offrirvi un'esperienza organizzata e di qualità superiore.</p>
-                    </div>
+                <div class="process-step">
+                    <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <h3>4. Open Day Efficiente</h3><p>Organizziamo un unico Open Day, invitando solo i candidati migliori per ottimizzare il tuo tempo.</p>
                 </div>
-            </div>
-        </section>
-        
-        <section id="faq">
-            <div class="container">
-                <h2 class="hidden">Domande Frequenti</h2>
-                <p class="sottotitolo-sezione hidden">Risposte chiare ai dubbi più comuni.<br> La trasparenza prima di tutto.</p>
-                <div class="faq-container hidden">
-                    <div class="faq-item">
-                        <button class="faq-question"> <span>Quanto costa il servizio?</span> <i class="fa-solid fa-chevron-down"></i> </button>
-                        <div class="faq-answer"> <p>A differenza delle agenzie, non chiediamo una percentuale sull'affitto annuale. Il nostro è un costo fisso, chiaro e trasparente. Per i nostri primi partner c'è un'offerta di lancio "Rischio Zero": pagate solo a contratto firmato!</p> </div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question"> <span>Chi sceglie l'inquilino alla fine?</span> <i class="fa-solid fa-chevron-down"></i> </button>
-                        <div class="faq-answer"> <p>La scelta finale è e sarà sempre e solo VOSTRA. Il nostro compito è presentarvi una rosa ristretta dei migliori candidati, tutti già verificati e qualificati. A voi resta solo il piacere di scegliere la persona con cui vi sentite più in sintonia.</p> </div>
-                    </div>
-                     <div class="faq-item">
-                        <button class="faq-question"> <span>Vi occupate anche del contratto di affitto?</span> <i class="fa-solid fa-chevron-down"></i> </button>
-                        <div class="faq-answer"> <p>Il nostro servizio si concentra sulla ricerca e selezione del candidato perfetto. Tuttavia, collaboriamo con professionisti del settore e possiamo mettervi in contatto con esperti di fiducia per la stesura e la registrazione del contratto, assicurandovi un servizio completo e senza pensieri dall'inizio alla fine.</p> </div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question"> <span>In quanto tempo trovate l'inquilino?</span> <i class="fa-solid fa-chevron-down"></i> </button>
-                        <div class="faq-answer"> <p>Il nostro metodo è progettato per essere estremamente rapido. Dal momento in cui iniziamo la promozione, l'intero processo di selezione e l'Open Day si concludono solitamente nell'arco di 10-15 giorni. L'obiettivo è minimizzare il tempo in cui l'immobile resta sfitto, massimizzando la vostra resa.</p> </div>
-                    </div>
+                <div class="process-step">
+                    <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
+                    <h3>5. La Tua Scelta Finale</h3><p>Ti presentiamo una rosa di candidati eccellenti. A te resta solo il piacere di scegliere.</p>
                 </div>
-            </div>
-        </section>
-
-        <!-- === INIZIO BLOCCO DA SOSTITUIRE === -->
-<!-- === INIZIO BLOCCO DA SOSTITUIRE === -->
-<section id="offerta" style="background: white; color: var(--colore-testo);">
-    <div class="container">
-        <h2 class="hidden" style="color: var(--colore-primario); margin-bottom: 20px;">Il Tuo Tempo Vale Più di un Annuncio Gratuito.</h2>
-        <p class="sottotitolo-sezione hidden" style="color: var(--colore-testo-chiaro);">Mettere un annuncio online sembra facile. Ma il costo nascosto in tempo e stress è enorme. Ecco la differenza tra il "fai da te" e affidarsi ad Affitto Smart.</p>
-
-        <div class="confronto-grid hidden">
-            <!-- Colonna Fai da Te -->
-            <div class="confronto-colonna">
-                <h3>Metodo Tradizionale<br>(Sui portali gratuiti)</h3>
-                <ul>
-                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Decine di telefonate</strong> e messaggi inutili da gestire.</li>
-                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Weekend persi</strong> in visite con persone non qualificate.</li>
-                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Ansia e incertezza</strong> nella scelta finale.</li>
-                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Nessun filtro:</strong> chiunque può contattarti e farti perdere tempo.</li>
-                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Rischio di scegliere</strong> l'inquilino sbagliato (morosità, problemi).</li>
-                </ul>
-            </div>
-            <!-- Colonna Affitto Smart -->
-            <div class="confronto-colonna smart">
-                <h3>Il Metodo Affitto Smart<br>(Il nostro servizio)</h3>
-                <ul>
-                    <li><i class="fa-solid fa-circle-check"></i> <strong>Zero chiamate a vuoto.</strong> Parli solo con noi.</li>
-                    <li><i class="fa-solid fa-circle-check"></i> <strong>Un solo Open Day</strong> con i migliori candidati già selezionati.</li>
-                    <li><i class="fa-solid fa-circle-check"></i> <strong>Tranquillità totale.</strong> Scegli tra profili verificati.</li>
-                    <li><i class="fa-solid fa-circle-check"></i> <strong>Filtro del 98%:</strong> solo candidati seri e idonei arrivano a te.</li>
-                    <li><i class="fa-solid fa-circle-check"></i> <strong>Massima sicurezza.</strong> Il nostro processo è la tua garanzia.</li>
-                </ul>
             </div>
         </div>
+    </section>
 
-        <div class="promozione hidden text-center" style="background: var(--colore-accento); color: var(--colore-testo); border-color: var(--colore-primario); margin-top: 60px;">
-            La nostra offerta di lancio "Rischio Zero": <br><strong>Paghi il nostro servizio SOLO a contratto firmato!</strong>
+    <!-- NUOVA SEZIONE CONFRONTO POTENZIATA - IL CUORE DELLA PAGINA -->
+    <section id="offerta" style="background: white; color: var(--colore-testo);">
+        <div class="container">
+            <h2 class="hidden" style="color: var(--colore-primario); margin-bottom: 20px;">Il Tuo Tempo Vale Più di un Annuncio Gratuito.</h2>
+            <p class="sottotitolo-sezione hidden" style="color: var(--colore-testo-chiaro);">Mettere un annuncio online sembra facile, ma il costo nascosto in tempo e stress è enorme. Ecco la differenza tra il "fai da te" e affidarsi ad Affitto Smart.</p>
+
+            <div class="confronto-grid hidden">
+                <!-- Colonna Fai da Te -->
+                <div class="confronto-colonna">
+                    <h3>Metodo Tradizionale<br>(Sui portali gratuiti)</h3>
+                    <ul>
+                        <li><i class="fa-solid fa-circle-xmark"></i> <strong>Decine di telefonate</strong> e messaggi inutili da gestire.</li>
+                        <li><i class="fa-solid fa-circle-xmark"></i> <strong>Weekend persi</strong> in visite con persone non qualificate.</li>
+                        <li><i class="fa-solid fa-circle-xmark"></i> <strong>Ansia e incertezza</strong> nella scelta finale.</li>
+                        <li><i class="fa-solid fa-circle-xmark"></i> <strong>Rischio di scegliere</strong> l'inquilino sbagliato (morosità, problemi).</li>
+                    </ul>
+                </div>
+                <!-- Colonna Affitto Smart -->
+                <div class="confronto-colonna smart">
+                    <h3>Il Metodo Affitto Smart<br>(Il nostro servizio)</h3>
+                    <ul>
+                        <li><i class="fa-solid fa-circle-check"></i> <strong>Zero chiamate a vuoto.</strong> Parli solo con noi.</li>
+                        <li><i class="fa-solid fa-circle-check"></i> <strong>Un solo Open Day</strong> con i migliori candidati già selezionati.</li>
+                        <li><i class="fa-solid fa-circle-check"></i> <strong>Tranquillità totale.</strong> Scegli tra profili verificati.</li>
+                        <li><i class="fa-solid fa-circle-check"></i> <strong>Massima sicurezza.</strong> Il nostro processo è la tua migliore garanzia.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="promozione light hidden">
+                La nostra offerta di lancio "Rischio Zero": <br><strong>Paghi il nostro servizio SOLO a contratto firmato!</strong>
+            </div>
+
+            <p class="hidden text-center" style="font-size: 1.2em; font-weight: 600; color: var(--colore-primario); max-width: 700px; margin: 40px auto 40px auto;">
+                Ci assumiamo tutto il rischio perché siamo certi del risultato. <br>Non hai nulla da perdere, solo la serenità da guadagnare.
+            </p>
+
+            <div class="hidden text-center"> 
+                <a href="contatto-proprietari.html" class="cta-button">Sì, Voglio Questa Garanzia!</a> 
+            </div>
         </div>
+    </section>
 
-        <p class="hidden text-center" style="font-size: 1.2em; font-weight: 600; color: var(--colore-primario); max-width: 700px; margin: 40px auto 40px auto;">
-            Ci assumiamo tutto il rischio perché siamo certi del risultato. <br>Non hai nulla da perdere, solo la serenità da guadagnare.
-        </p>
-
-        <div class="hidden text-center"> 
-            <a href="contatto-proprietari.html" class="cta-button">Sì, Voglio Questa Garanzia!</a> 
+    <section id="about-us" style="background-color: var(--colore-sfondo-chiaro);">
+        <div class="container about-us">
+            <div class="about-us-img hidden">
+                <img src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Il Team di Affitto Smart">
+            </div>
+            <div class="about-us-text hidden">
+                <h3>Non un'agenzia,<br> ma i vostri partner per la tranquillità.</h3>
+                <p class="sottotitolo-sezione" style="text-align: left; margin: 20px 0; max-width: none;">Sappiamo cosa significa avere un immobile a cuore. È un investimento, un progetto, a volte un ricordo. E sappiamo anche quanto tempo ed energie possa rubare una gestione d'affitto stressante.<br><br>Per questo è nato Affitto Smart. Non siamo un'agenzia immobiliare tradizionale; siamo un team di specialisti dedicati a un solo obiettivo: restituirvi la serenità. Gestiamo ogni aspetto della ricerca dell'inquilino con un metodo rigoroso e un tocco umano, perché la vostra tranquillità è il nostro miglior risultato.</p>
+            </div>
         </div>
-    </div>
-</section>
-<!-- === FINE BLOCCO DA SOSTITUIRE === -->
-<!-- === FINE BLOCCO DA SOSTITUIRE === -->
-    </main>
+    </section>
+
+    <section id="faq">
+        <div class="container">
+            <h2 class="hidden">Domande Frequenti</h2>
+            <p class="sottotitolo-sezione hidden">Risposte chiare ai dubbi più comuni.<br> La trasparenza prima di tutto.</p>
+            <div class="faq-container hidden">
+                <div class="faq-item">
+                    <button class="faq-question"> <span>Quanto costa il servizio?</span> <i class="fa-solid fa-chevron-down"></i> </button>
+                    <div class="faq-answer"> <p>A differenza delle agenzie, non chiediamo una percentuale sull'affitto annuale. Il nostro è un costo fisso, chiaro e trasparente. Con la nostra offerta "Rischio Zero", pagate solo a contratto firmato!</p> </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question"> <span>Chi sceglie l'inquilino alla fine?</span> <i class="fa-solid fa-chevron-down"></i> </button>
+                    <div class="faq-answer"> <p>La scelta finale è e sarà sempre e solo VOSTRA. Il nostro compito è presentarvi una rosa ristretta dei migliori candidati, tutti già verificati e qualificati. A voi resta solo il piacere di scegliere.</p> </div>
+                </div>
+                 <div class="faq-item">
+                    <button class="faq-question"> <span>Vi occupate anche del contratto di affitto?</span> <i class="fa-solid fa-chevron-down"></i> </button>
+                    <div class="faq-answer"> <p>Il nostro servizio si concentra sulla ricerca e selezione del candidato perfetto. Tuttavia, collaboriamo con professionisti del settore e possiamo mettervi in contatto con esperti di fiducia per la stesura e la registrazione del contratto.</p> </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question"> <span>In quanto tempo trovate l'inquilino?</span> <i class="fa-solid fa-chevron-down"></i> </button>
+                    <div class="faq-answer"> <p>Il nostro metodo è progettato per essere estremamente rapido. Solitamente, l'intero processo si conclude nell'arco di 10-15 giorni, minimizzando il tempo in cui l'immobile resta sfitto.</p> </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<!-- === FINE NUOVO <main> === -->
 
     <!-- CON QUESTO NUOVO BLOCCO -->
 <footer class="main-footer">
