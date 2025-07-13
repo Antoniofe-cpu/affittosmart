@@ -17,13 +17,13 @@
             --colore-testo-chiaro: #616161; 
             --colore-sfondo-pagina: #f4f6f9; 
             --colore-bianco: #ffffff;
-            --colore-errore: #D32F2F; /* Rosso per errori */
         }
         html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
         .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         .text-center { text-align: center; }
         
+        /* Layout e Titoli */
         .section { padding: 100px 0; }
         .section-white { background-color: var(--colore-bianco); }
         .section-light { background-color: var(--colore-sfondo-pagina); }
@@ -36,25 +36,46 @@
         .logo { font-size: 2.5em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
         .logo span { font-weight: 400; color: var(--colore-secondario); }
 
+        /* HERO & SEARCH FORM */
         .hero-search-wrapper {
-            position: relative; padding: 80px 0; color: var(--colore-bianco); text-align: center;
+            position: relative;
+            padding: 80px 0;
+            color: var(--colore-bianco);
+            text-align: center;
         }
         .hero-search-wrapper::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            /* Immagine di sfondo per inquilini, più accogliente */
             background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200');
-            background-size: cover; background-position: center; z-index: 1;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
         }
-        .hero-search-content { position: relative; z-index: 2; }
+        .hero-search-content {
+            position: relative;
+            z-index: 2;
+        }
         .hero-search-content h1 {
-            color: var(--colore-bianco); font-size: 3.5em; text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            color: var(--colore-bianco);
+            font-size: 3.5em;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         .hero-search-content .subtitle {
-            color: rgba(255,255,255,0.9); font-size: 1.4em; max-width: 700px; margin: 15px auto 50px auto;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.4em;
+            max-width: 700px;
+            margin: 15px auto 50px auto;
         }
         
         .unified-form {
-            background: var(--colore-bianco); color: var(--colore-testo); padding: 40px; 
-            border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: left;
+            background: var(--colore-bianco); 
+            color: var(--colore-testo); /* Ripristina il colore del testo per il form */
+            padding: 40px; 
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: left;
         }
         .form-section { margin-bottom: 30px; padding-bottom: 30px; }
         .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -62,9 +83,10 @@
         .form-section .icon { color: var(--colore-accento); }
         
         .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px 30px; }
-        .filter-group { text-align: left; position: relative; } /* Aggiunto position: relative per l'errore */
+        .filter-group { text-align: left; }
         .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
         
+        /* --- STILE UNICO PER TUTTI GLI INPUT DEL FORM --- */
         .filter-group select, 
         .filter-group input[type="number"], 
         .filter-group input[type="date"] {
@@ -84,6 +106,10 @@
         }
 
         #profile-section {
+            max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out;
+        }
+        #profile-section.visible {
+            max-height: 1000px; opacity: 1;
             border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px;
         }
         
@@ -92,24 +118,120 @@
             background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
             color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer;
         }
-        
-        /* Stili per i messaggi di errore */
-        .error-message {
-            color: var(--colore-errore);
-            font-size: 0.85em;
-            font-weight: 600;
-            display: block;
-            height: 15px;
-            margin-top: 5px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .error-message.visible {
-            opacity: 1;
-        }
 
         @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 600px) { .filter-grid { grid-template-columns: 1fr; } }
+
+        /* WHY US / EXPLANATION SECTION (3 COLONNE) */
+        .process-grid { 
+    display: grid; 
+    /* Crea 4 colonne su schermi grandi */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 25px; 
+    margin-top: 60px;
+}
+        .process-step { 
+            text-align: center; padding: 30px; background: white; border-radius: 16px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+            border-bottom: 5px solid var(--colore-accento);
+            transition: transform 0.3s ease;
+        }
+        .process-step:hover { transform: translateY(-10px); }
+        .process-step .icon { font-size: 3.5em; color: var(--colore-primario); margin-bottom: 20px; line-height: 1; }
+        .process-step h3 { font-size: 1.4em; color: var(--colore-primario); }
+
+        /* SEZIONE VISUAL */
+        .visual-process { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+        .visual-process img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .visual-process h3 { font-size: 2em; }
+        
+        /* FAQ SECTION */
+        #faq .section-title { color: var(--colore-bianco); }
+        #faq .section-subtitle { color: rgba(255,255,255,0.8); }
+        .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .faq-item { border-radius: 12px; background: rgba(255,255,255,0.1); overflow: hidden; }
+        .faq-question { width: 100%; background: transparent; border: none; padding: 20px; font-size: 1.1em; font-weight: 600; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--colore-bianco); }
+        .faq-answer { color: rgba(255,255,255,0.9); padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
+        .faq-item.active .faq-answer { max-height: 200px; padding: 0 20px 20px 20px; }
+
+        .footer { background-color: #1c2833; color: #bdc3c7; padding: 40px 0; text-align: center; font-size: 0.9em; }
+        .footer a { color: white; }
+        .guarantee-section {
+            padding: 100px 0;
+            background-color: var(--colore-bianco);
+        }
+        .guarantee-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 50px;
+            align-items: center;
+        }
+        .guarantee-image img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+        .guarantee-text h2 {
+            font-size: 2.5em;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .guarantee-text p {
+            font-size: 1.1em;
+            color: var(--colore-testo-chiaro);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .guarantee-points .point {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .guarantee-points .icon {
+            font-size: 1.5em;
+            color: var(--colore-successo);
+        }
+/* --- NUOVI STILI PER IMMAGINE RITAGLIATA --- */
+.guarantee-image {
+    width: 100%;
+    height: 300px; /* Impostiamo un'altezza fissa e più bassa */
+    border-radius: 16px;
+    overflow: hidden; /* Nasconde le parti dell'immagine che escono */
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+
+.guarantee-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* L'immagine copre l'area senza deformarsi */
+    object-position: center 25%; /* <-- LA MAGIA È QUI */
+}
+        
+        /* Media Query per la nuova sezione */
+        @media (max-width: 768px) {
+            .guarantee-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1100px) {
+    .process-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 colonne su tablet */
+    }
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 600px) {
+    .process-grid {
+        grid-template-columns: 1fr; /* 1 colonna su mobile */
+    }
+        @media (max-width: 768px) { 
+            .visual-process { grid-template-columns: 1fr; }
+        }
+        
         
     </style>
 </head>
@@ -119,12 +241,12 @@
     </header>
 
     <main>
-        <section class="hero-search-wrapper">
-            <div class="hero-search-content container">
-                <h1>La casa giusta, senza compromessi.</h1>
-                <p class="subtitle">Dicci chi sei e cosa cerchi. <br>Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
-                
-                <form id="search-form" action="risultati.html" method="GET">
+        <form id="unified-search-form">
+            <section class="hero-search-wrapper">
+                <div class="hero-search-content container">
+                    <h1>La casa giusta, senza compromessi.</h1>
+                    <p class="subtitle">Dicci chi sei e cosa cerchi. <br>Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
+                    
                     <div class="unified-form">
                         <div class="form-section" id="preferences-section">
                             <h2><i class="fa-solid fa-map-location-dot icon"></i>Cosa cerchi?</h2>
@@ -138,37 +260,17 @@
                         </div>
 
                         <div class="form-section" id="profile-section">
-                            <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
-                            <div class="filter-grid">
-                                <div class="filter-group">
-                                    <label for="situazione_lavorativa">Situazione Lavorativa</label>
-                                    <select id="situazione_lavorativa" name="situazione_lavorativa">
-                                        <option value="" disabled selected>Seleziona...</option>
-                                        <option>Dipendente a tempo indeterminato</option>
-                                        <option>Studente/ssa con garante</option>
-                                        <option>Lavoratore Autonomo / P.IVA</option>
-                                    </select>
-                                    <small class="error-message" id="error-situazione"></small>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="reddito_utente">Reddito Netto Mensile</label>
-                                    <select id="reddito_utente" name="reddito_utente">
-                                        <option value="" disabled selected>Seleziona fascia...</option>
-                                        <option value="1500">Meno di 1.500 €</option>
-                                        <option value="2000">1.501-2.000 €</option>
-                                        <option value="2500">2.001-2.500 €</option>
-                                        <option value="3000">Oltre 2.500 €</option>
-                                    </select>
-                                    <small class="error-message" id="error-reddito"></small>
-                                </div>
-                                <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
-                                <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
-                                <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
-                                <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
-                            </div>
+                        <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
+                        <div class="filter-grid">
+                            <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa"><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option><option>Lavoratore Autonomo / P.IVA</option></select></div>
+                            <div class="filter-group"><label>Reddito Netto Mensile</label><select name="reddito_utente"><option value="" disabled selected>Seleziona fascia...</option><option value="1500">Meno di 1.500 €</option><option value="2000">1.501-2.000 €</option><option value="2500">2.001-2.500 €</option><option value="3000">Oltre 2.500 €</option></select></div>
+                            <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
+                            <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
+                            <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
+                            <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
                         </div>
-                        <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                     </div>
+                    <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                 </form>
             </div>
         </section>
@@ -299,106 +401,72 @@
         <p>© 2025 Affitto Smart | <a href="/propietario.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
     </footer>
      <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Riferimenti agli elementi del DOM
-        const form = document.getElementById('search-form');
-        const searchButton = document.getElementById('search-button');
-        const preferencesSection = document.getElementById('preferences-section');
-        const profileSection = document.getElementById('profile-section');
-
-        // Campi del primo box per la logica di comparsa
-        const preferenceInputs = preferencesSection.querySelectorAll('select, input');
-        
-        // Elementi per i messaggi di errore
-        const errorSituazione = document.getElementById('error-situazione');
-        const errorReddito = document.getElementById('error-reddito');
-        
-        // Campi obbligatori da validare
-        const situazioneLavorativa = document.getElementById('situazione_lavorativa');
-        const redditoUtente = document.getElementById('reddito_utente');
-
-        // --- LOGICA 1: MOSTRA IL BOX DEL PROFILO DINAMICAMENTE (la tua logica originale) ---
-        function checkPreferences() {
-            let filledCount = 0;
-            preferenceInputs.forEach(input => {
-                // Considera un campo "compilato" se ha un valore
-                // e, se è un numero, è maggiore di zero.
-                if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
-                    filledCount++;
-                }
-            });
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('unified-search-form');
+            const preferencesSection = document.getElementById('preferences-section');
+            const profileSection = document.getElementById('profile-section');
             
-            // Se almeno 3 campi del primo box sono compilati, mostra il secondo box
-            if (filledCount >= 3) {
-                profileSection.style.maxHeight = profileSection.scrollHeight + "px";
-                profileSection.style.opacity = "1";
-                profileSection.style.paddingTop = "30px";
-                profileSection.style.marginTop = "30px";
-                profileSection.style.borderTop = "2px dashed #d0d0d0";
+            const preferenceInputs = preferencesSection.querySelectorAll('select, input');
+            
+            function checkPreferences() {
+                let filledCount = 0;
+                preferenceInputs.forEach(input => {
+                    if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
+                        filledCount++;
+                    }
+                });
+                
+                if (filledCount >= 3) {
+                    profileSection.classList.add('visible');
+                }
             }
-        }
 
-        // Aggiungi i listener per controllare la compilazione del primo box
-        preferenceInputs.forEach(input => {
-            input.addEventListener('change', checkPreferences);
-            // 'keyup' è utile per l'input numerico del prezzo
-            input.addEventListener('keyup', checkPreferences); 
-        });
+            preferenceInputs.forEach(input => {
+                input.addEventListener('change', checkPreferences);
+                input.addEventListener('keyup', checkPreferences);
+            });
 
-
-        // --- LOGICA 2: VALIDAZIONE AL CLICK DEL PULSANTE "SCOPRI" ---
-        if (form && searchButton) {
-            form.addEventListener('submit', function(event) {
-                // Preveniamo sempre l'invio per fare il nostro controllo
-                event.preventDefault();
-
-                // Reset dei messaggi di errore ad ogni click
-                errorSituazione.textContent = '';
-                errorSituazione.classList.remove('visible');
-                errorReddito.textContent = '';
-                errorReddito.classList.remove('visible');
-
-                let isValid = true;
-
-                // Validazione #1: Situazione Lavorativa
-                if (!situazioneLavorativa.value) {
-                    errorSituazione.textContent = 'Campo obbligatorio.';
-                    errorSituazione.classList.add('visible');
-                    isValid = false;
-                }
-
-                // Validazione #2: Reddito Netto Mensile
-                if (!redditoUtente.value) {
-                    errorReddito.textContent = 'Campo obbligatorio.';
-                    errorReddito.classList.add('visible');
-                    isValid = false;
-                }
-
-                // Se la validazione fallisce, focalizza l'attenzione sulla sezione del profilo
-                if (!isValid) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!profileSection.classList.contains('visible')) {
+                    profileSection.classList.add('visible');
                     profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    return; // Interrompi l'esecuzione qui
+                    
+                    return;
                 }
                 
-                // Se tutto è valido, procediamo con l'invio
-                const formData = new FormData(form);
-                const queryString = new URLSearchParams(formData).toString();
-                window.location.href = 'risultati.html?' + queryString;
-            });
-        }
-        
-        // Logica per le FAQ (invariata)
-        document.querySelectorAll('.faq-question').forEach(button => {
-            const faqItem = button.parentElement;
-            button.addEventListener('click', () => {
-                const wasActive = faqItem.classList.contains('active');
-                document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
-                if (!wasActive) {
-                    faqItem.classList.add('active');
+                const requiredFields = profileSection.querySelectorAll('[required]');
+                let allRequiredFilled = true;
+                requiredFields.forEach(field => {
+                    if (!field.value) {
+                        allRequiredFilled = false;
+                        field.style.border = '2px solid red';
+                    } else {
+                        field.style.border = '1px solid #ccc';
+                    }
+                });
+
+                if (allRequiredFilled) {
+                    const formData = new FormData(form);
+                    const queryString = new URLSearchParams(formData).toString();
+                    window.location.href = 'risultati.html?' + queryString;
+                } else {
+                    alert('Per favore, completa tutti i campi della sezione "Il Tuo Profilo".');
                 }
             });
+
+            document.querySelectorAll('.faq-question').forEach(button => {
+                const faqItem = button.parentElement;
+                button.addEventListener('click', () => {
+                    const wasActive = faqItem.classList.contains('active');
+                    document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+                    if (!wasActive) {
+                        faqItem.classList.add('active');
+                    }
+                });
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>
