@@ -175,8 +175,54 @@
         .faq-answer { color: rgba(255,255,255,0.9); padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
         .faq-item.active .faq-answer { max-height: 200px; padding: 0 20px 20px 20px; }
 
-        .footer { background-color: #1c2833; color: #bdc3c7; padding: 40px 0; text-align: center; font-size: 0.9em; }
-        .footer a { color: white; }
+        /* --- DA AGGIUNGERE --- */
+.main-footer {
+    background-color: #1c2833;
+    color: #bdc3c7;
+    padding: 50px 0;
+    text-align: center;
+}
+.main-footer .logo-container {
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+.main-footer .logo-main {
+    font-size: 1.8em;
+    font-weight: 800;
+    color: var(--colore-bianco);
+}
+.main-footer .logo-main span {
+    font-weight: 400;
+    color: #76aae9; /* Un blu più chiaro per il contrasto sul fondo scuro */
+}
+.main-footer .logo-tagline {
+    font-size: 0.9em;
+    color: #bdc3c7;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+.main-footer .contatti-completi p {
+    margin: 20px 0;
+    font-size: 1em;
+}
+.main-footer .legal-links {
+    margin-bottom: 20px;
+    font-size: 1em;
+}
+.main-footer .legal-links a:not(:last-child)::after {
+    content: ' | ';
+    color: #bdc3c7;
+    margin: 0 10px;
+}
+.main-footer a {
+    color: var(--colore-bianco);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: 600;
+}
+.main-footer a:hover {
+    color: var(--colore-accento);
+}
         .guarantee-section {
             padding: 100px 0;
             background-color: var(--colore-bianco);
@@ -419,9 +465,24 @@
     </section>
     </main>
 
-    <footer class="footer">
-        <p>© 2025 Affitto Smart | <a href="/propietario.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
-    </footer>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="logo-container">
+            <div class="logo-main">Affitto <span>Smart</span></div>
+            <div class="logo-tagline">Il tuo canale preferenziale per la casa.</div>
+        </div>
+        <div class="contatti-completi">
+            <!-- SOSTITUISCI CON I TUOI DATI REALI -->
+            <p><a href="tel:+393330000000">[Il Vostro Numero]</a> | <a href="mailto:info@affitto-smart.it">info@affitto-smart.it</a></p>
+        </div>
+        <div class="legal-links">
+             <!-- Link per i proprietari, ben visibile -->
+            <a href="proprietario.html">Sei un Proprietario? Clicca qui</a>
+            <a href="#">Privacy Policy</a>
+        </div>
+        <p>© 2025 Affitto Smart. Tutti i diritti riservati.</p>
+    </div>
+</footer>
 
      <script>
         document.addEventListener('DOMContentLoaded', function() {
