@@ -361,18 +361,20 @@
     margin: 0;
 }
 
-/* --- SOSTITUZIONE PER UN ALLINEAMENTO PERFETTO --- */
+/* === BLOCCO CSS CORRETTO PER L'ALLINEAMENTO PERFETTO === */
 .confronto-colonna li {
-    display: flex;
-    gap: 15px; /* Spazio tra icona e testo */
+    display: grid; /* <-- USARE GRID È LA SOLUZIONE PIÙ ROBUSTA */
+    grid-template-columns: auto 1fr; /* Colonna per icona (auto-size) e colonna per testo (restante) */
+    align-items: start; /* Allinea gli elementi all'inizio della riga */
+    gap: 15px;
     font-size: 1.1em;
     line-height: 1.6;
     margin-bottom: 20px;
 }
 .confronto-colonna li .fa-solid {
-    flex-shrink: 0; /* Impedisce all'icona di rimpicciolirsi */
-    margin-top: 0.25em; /* Sposta l'icona leggermente in basso per allinearla con la prima riga di testo */
-    font-size: 1.5em;
+    font-size: 1.3em; /* Leggermente ridotto per un miglior equilibrio visivo */
+    margin-top: 0.2em; /* Aggiustamento verticale per centrare l'icona con la prima riga di testo */
+    /* Nessun'altra proprietà necessaria */
 }
 
 .confronto-colonna .fa-circle-xmark {
