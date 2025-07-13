@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Risultati della tua Ricerca - Affitto Smart</title>
+    <title>Le Tue Opportunità Esclusive - Affitto Smart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -19,17 +19,21 @@
             font-family: 'Poppins', sans-serif; margin: 0; 
             background-color: var(--colore-sfondo-pagina);
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23d0d4db' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+            color: var(--colore-testo);
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .header { 
             text-align: center; padding: 60px 20px;
             background-color: var(--colore-primario); color: var(--colore-bianco);
             border-radius: 0 0 24px 24px; margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.2);
         }
-        .header h1 { font-size: 3em; color: var(--colore-bianco); text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .header p { font-size: 1.2em; color: rgba(255,255,255,0.85); margin-top: -10px; }
+        .header h1 { font-size: 3em; color: var(--colore-bianco); text-shadow: 0 2px 4px rgba(0,0,0,0.2); margin: 0; }
+        .header p { font-size: 1.2em; color: rgba(255,255,255,0.85); margin-top: 10px; }
+        
         .back-link-container { text-align: center; padding: 40px 0; }
-        .back-link { font-weight: 600; color: var(--colore-primario); text-decoration: none; font-size: 1.1em; }
+        .back-link { font-weight: 600; color: var(--colore-primario); text-decoration: none; font-size: 1.1em; transition: color 0.3s; }
+        .back-link:hover { color: var(--colore-accento); }
         
         #results-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .property-card {
@@ -39,8 +43,10 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .property-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
-        .property-card-img { width: 100%; height: 220px; background-color: #eee; border-radius: 16px 16px 0 0;}
-        .property-card-img img { width: 100%; height: 100%; object-fit: cover; }
+        .property-card-img { width: 100%; height: 220px; background-color: #eee; border-radius: 16px 16px 0 0; position: relative; overflow: hidden; }
+        .property-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .property-card:hover .property-card-img img { transform: scale(1.05); }
+        
         .property-card-info { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
         
         .compatibility-icons {
@@ -48,33 +54,34 @@
             padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0;
         }
         .icon-tag {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 0.9em; font-weight: 600; color: var(--colore-testo-chiaro);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2em; color: var(--colore-successo);
+            width: 30px; height: 30px;
         }
-        .icon-tag .fa-solid { color: var(--colore-successo); }
         
-        .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); }
-        .property-card-info h3 { margin: 0 0 10px 0; font-size: 1.4em; }
+        .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); text-transform: capitalize; }
+        .property-card-info h3 { margin: 5px 0 10px 0; font-size: 1.4em; }
         .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 15px; }
-        .property-card-info p { flex-grow: 1; font-size: 0.95em; margin-top: 0; }
+        .property-card-info p { flex-grow: 1; font-size: 0.95em; margin-top: 0; color: #444; }
         .open-day-info { font-weight: 700; color: var(--colore-primario); margin-bottom: 20px; }
         
-        .booking-action { margin-top: auto; } /* Spinge il bottone in fondo */
+        .booking-action { margin-top: auto; }
         .property-card .cta-button {
             display: flex; justify-content: center; align-items: center; gap: 10px;
             width: 100%; padding: 14px; font-size: 1em; text-decoration: none;
             border-radius: 8px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
             color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .property-card .cta-button .spots-counter { font-weight: 400; opacity: 0.8; }
-        .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; }
+        .property-card .cta-button:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(255, 160, 0, 0.4); }
+        .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; transform: none; }
         
         .message { grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
         
-        /* Stili per il Modal/Popup */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center;
             z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
         }
         .modal-overlay.visible { display: flex; opacity: 1; }
@@ -90,10 +97,7 @@
         #payment-button { margin-top: 20px; background: var(--colore-successo); color: white; width: 100%; height: 55px; border-radius: 8px; border: none; font-size: 1.2em; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; }
         #close-modal { font-size: 0.9em; color: var(--colore-testo-chiaro); cursor: pointer; display: inline-block; margin-top: 15px; }
 
-        /* Media Queries per la griglia */
-        @media (max-width: 900px) {
-            #results-container { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { #results-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -103,10 +107,10 @@
             <p>Ecco gli immobili 100% compatibili con il tuo profilo e le tue preferenze.</p>
         </header>
         <div id="results-container">
-            <p class="message">Analizzando la compatibilità tra te e le nostre proposte...</p>
+            <p class="message"><i class="fa-solid fa-spinner fa-spin"></i> Sto analizzando la compatibilità tra te e le nostre proposte...</p>
         </div>
         <div class="back-link-container">
-            <a href="index.html" class="back-link">Modifica la tua Ricerca</a>
+            <a href="https://script.google.com/macros/s/AKfycbx7e4bC5w3N2hJ4jD0i-Lp0bM7hGj3w-o8kF9x-eJ1sYlI0d/exec" class="back-link"><i class="fa-solid fa-arrow-left"></i> Modifica la tua Ricerca</a>
         </div>
     </div>
     <!-- Struttura del Modal di Pagamento (nascosto) -->
@@ -114,8 +118,8 @@
         <div class="modal-content">
             <div class="icon"><i class="fa-solid fa-ticket"></i></div>
             <h3>Il Tuo Ticket per l'Open Day Esclusivo</h3>
-            <p>Per garantire un evento di alta qualità a numero chiuso e confermare il tuo reale interesse, è richiesta una piccola <strong>fee di prenotazione di 2,99€</strong>.</p>
-            <p>Questo "ticket" ti assicura un posto e ti permette di visitare l'immobile senza folla. Dopo il pagamento, sarai reindirizzato/a a Calendly per scegliere il tuo orario.</p>
+            <p>Per garantire un evento di alta qualità e confermare il tuo reale interesse, è richiesta una piccola <strong>fee di prenotazione di 2,99€</strong>.</p>
+            <p>Questo "ticket" ti assicura un posto. Dopo il pagamento, sarai reindirizzato/a a Calendly per scegliere il tuo orario.</p>
             <a id="payment-button" href="#" target="_blank">Paga 2,99€ e Ottieni l'Accesso</a>
             <a id="close-modal">Annulla</a>
         </div>
@@ -125,8 +129,15 @@
         const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
         const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
         const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
-
-        let allProperties = [], allRequirements = [], allCandidates = [];
+        
+        // Mappa delle icone per i requisiti
+        const ICONS_MAP = {
+            'situazione_lavorativa': 'fa-solid fa-briefcase',
+            'animali': 'fa-solid fa-paw',
+            'fumatore': 'fa-solid fa-smoking',
+            'sesso_utente': 'fa-solid fa-venus-mars'
+            // Aggiungi qui altre mappature se hai altri requisiti con icone
+        };
 
         function csvToObjects(csv) {
             if (!csv || typeof csv !== 'string') return [];
@@ -147,7 +158,7 @@
             return objects;
         }
 
-        function displayResults(properties) {
+        function displayResults(properties, userProfile) {
             const resultsContainer = document.getElementById('results-container');
             resultsContainer.innerHTML = '';
             if (properties.length === 0) {
@@ -155,43 +166,37 @@
                 return;
             }
 
-            const params = new URLSearchParams(window.location.search);
-            const userPrefs = {
-                tipo: (params.get('tipo') || '').toLowerCase().trim(),
-                zona: (params.get('zona') || '').toLowerCase().trim(),
-                situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
-                animali: (params.get('animali') || '').toLowerCase().trim()
-            };
-
             properties.forEach(p => {
                 if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
                 
+                // --- NUOVA LOGICA PER LE ICONE DI COMPATIBILITÀ ---
                 let compatibilityHtml = '<div class="compatibility-icons">';
-                if (userPrefs.situazione_lavorativa) compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-briefcase"></i></div>`;
-                if (userPrefs.animali) compatibilityHtml += `<div class="icon-tag"><i class="fa-solid fa-paw"></i></div>`;
-                // Aggiungi qui altre icone per altri filtri del profilo...
+                for (const key in userProfile) {
+                    // Mostra un'icona solo se l'utente ha fornito un valore per quel filtro
+                    // e se esiste un'icona mappata per quel filtro.
+                    if (userProfile[key] && ICONS_MAP[key]) {
+                        compatibilityHtml += `<div class="icon-tag" title="${key.replace('_', ' ')}: ${userProfile[key]}"><i class="${ICONS_MAP[key]}"></i></div>`;
+                    }
+                }
                 compatibilityHtml += '</div>';
 
                 const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
                 const postiTotali = parseInt(p.MaxPartecipanti);
                 const postiRimasti = postiTotali - prenotati;
-                let buttonHtml;
-                if (postiRimasti > 0) {
-                    buttonHtml = `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket (${postiRimasti}/${postiTotali})</button>`;
-                } else {
-                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti (${postiTotali}/${postiTotali})</button>`;
-                }
+                let buttonHtml = (postiRimasti > 0) 
+                    ? `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></button>`
+                    : `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
 
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'property-card';
                 cardDiv.innerHTML = `
-                    <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}"></div>
+                    <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}" loading="lazy"></div>
                     <div class="property-card-info">
                         ${compatibilityHtml}
                         <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
                         <h3>${p.Titolo}</h3>
                         <div class="price">${p.Prezzo} €/mese</div>
-                        <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+                        <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
                         <div class="open-day-info"><i class="fa-solid fa-calendar-check"></i> Open Day: ${p.DataOpenDay || 'Da Definire'}</div>
                         <div class="booking-action">${buttonHtml}</div>
                     </div>`;
@@ -209,14 +214,16 @@
             document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
             modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
         }
-
+        
         async function main() {
             const resultsContainer = document.getElementById('results-container');
+            let allProperties = [], allRequirements = [], allCandidates = [];
+            
             try {
                 const [propsRes, reqsRes, candsRes] = await Promise.all([
                     fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
                 ]);
-                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Network response was not ok.');
+                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Risposta di rete non valida.');
                 
                 allProperties = csvToObjects(await propsRes.text());
                 allRequirements = csvToObjects(await reqsRes.text());
@@ -227,41 +234,64 @@
                     tipo: (params.get('tipo') || '').toLowerCase().trim(),
                     zona: (params.get('zona') || '').toLowerCase().trim(),
                     prezzo: parseInt(params.get('prezzo')) || Infinity,
-                    data_disponibile: params.get('data_disponibile') || null,
-                    periodo_affitto: (params.get('periodo_affitto') || '').toLowerCase().trim(),
                     situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
                     reddito_utente: parseInt(params.get('reddito_utente')) || 0,
-                    tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim(),
                     sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
                     fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
                     animali: (params.get('animali') || '').toLowerCase().trim()
                 };
 
                 const finalProperties = allProperties.filter(property => {
+                    // --- FILTRO INIZIALE (primo box "Cosa Cerchi") ---
                     if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
                     if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) return false;
                     if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) return false;
                     if (parseInt(property.Prezzo) > userProfile.prezzo) return false;
 
+                    // --- FILTRO REQUISITI (secondo box "Completa Profilo") ---
                     const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
+
+                    // Cicla su ogni requisito dell'immobile
                     for (const req of propertyRequirements) {
                         const reqKey = (req.Requisito || '').trim();
                         const reqValue = (req.Valore_Richiesto || '').toLowerCase().trim();
-                        if (reqValue === '' || reqValue === 'indifferente') continue;
+                        
+                        // Se il requisito non è specificato o è 'indifferente', l'immobile passa questo controllo.
+                        if (!reqKey || !reqValue || reqValue === 'indifferente') {
+                            continue; 
+                        }
+
+                        // Prende il valore corrispondente dal profilo dell'utente.
                         const userValue = userProfile[reqKey];
+
+                        // Se l'utente NON ha fornito un valore per questo requisito, l'immobile non è compatibile.
+                        if (!userValue) {
+                            return false; 
+                        }
+                        
+                        // Controlli specifici
                         if (reqKey === 'reddito_minimo') {
-                            if (!userValue || userValue < parseInt(reqValue)) return false;
+                            // Confronto numerico per il reddito
+                            if (userProfile.reddito_utente < parseInt(reqValue)) {
+                                return false; // Reddito insufficiente
+                            }
                         } else {
-                            if (!userValue || userValue !== reqValue) return false;
+                            // Confronto testuale per tutti gli altri requisiti
+                            if (userValue !== reqValue) {
+                                return false; // Il valore dell'utente non corrisponde a quello richiesto
+                            }
                         }
                     }
+                    
+                    // Se l'immobile ha superato tutti i filtri e tutti i requisiti, è compatibile.
                     return true;
                 });
                 
-                displayResults(finalProperties);
+                displayResults(finalProperties, userProfile);
+
             } catch (error) {
-                console.error("ERRORE CRITICO:", error);
-                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore.</p>`;
+                console.error("ERRORE CRITICO DURANTE IL CARICAMENTO DATI:", error);
+                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
             }
         }
         
