@@ -218,7 +218,6 @@
     const resultsContainer = document.getElementById('results-container');
     
     try {
-        // Il caricamento dei dati rimane invariato
         const [propsRes, reqsRes, candsRes] = await Promise.all([
             fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
         ]);
@@ -228,95 +227,111 @@
         allRequirements = csvToObjects(await reqsRes.text());
         allCandidates = csvToObjects(await candsRes.text());
         
-        // La raccolta del profilo utente rimane invariata
         const params = new URLSearchParams(window.location.search);
-        const userProfile = {
+        // Usiamo un oggetto separato per i filtri dell'utente per maggiore chiarezza
+        const userFilters = {
             tipo: (params.get('tipo') || '').toLowerCase().trim(),
             zona: (params.get('zona') || '').toLowerCase().trim(),
-            prezzo: parseInt(params.get('prezzo')) || Infinity,
+            prezzoMax: parseInt(params.get('prezzo')) || Infinity,
             situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
-            reddito_utente: parseInt(params.get('reddito_utente')) || 0,
-            sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
+            reddito: parseInt(params.get('reddito_utente')) || 0,
+            sesso: (params.get('sesso_utente') || '').toLowerCase().trim(),
             fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
             animali: (params.get('animali') || '').toLowerCase().trim(),
             tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim()
         };
 
+        console.log("--- PROFILO UTENTE ---", userFilters);
+
         const finalProperties = allProperties.filter(property => {
-            // --- Filtro base (Box 1) ---
-            if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
-            if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) return false;
-            if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) return false;
-            if (parseInt(property.Prezzo) > userProfile.prezzo) return false;
+            // Log per ogni immobile che viene analizzato
+            console.log(`\n--- ANALISI IMMOBILE ID: ${property.ID} ---`);
 
-            // --- LOGICA DI COMPATIBILITÀ RIGOROSA (Box 2) ---
+            // 1. FILTRO BASE (Box 1: Cosa cerchi)
+            if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') {
+                console.log(`SCARTATO: Stato non è 'disponibile'`);
+                return false;
+            }
+            if (userFilters.tipo && (property.Tipo || '').toLowerCase().trim() !== userFilters.tipo) {
+                console.log(`SCARTATO: Tipo immobile non corrisponde ('${(property.Tipo || '').toLowerCase().trim()}' vs '${userFilters.tipo}')`);
+                return false;
+            }
+            if (userFilters.zona && (property.Zona || '').toLowerCase().trim() !== userFilters.zona) {
+                console.log(`SCARTATO: Zona non corrisponde ('${(property.Zona || '').toLowerCase().trim()}' vs '${userFilters.zona}')`);
+                return false;
+            }
+            if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) {
+                console.log(`SCARTATO: Prezzo troppo alto (${property.Prezzo} > ${userFilters.prezzoMax})`);
+                return false;
+            }
+            
+            console.log("OK: Passa filtri base (tipo, zona, prezzo).");
 
-            // Prendi tutti i requisiti specifici di questo immobile
+            // 2. FILTRO REQUISITI (Box 2: Profilo)
             const propertyReqs = allRequirements.filter(r => r.ID_Immobile === property.ID);
-
-            // Trasforma i requisiti in una mappa per un accesso più facile (es. 'situazione_lavorativa' -> 'studente/ssa...')
-            const reqsMap = new Map();
-            propertyReqs.forEach(req => {
-                if (req.Requisito) {
-                    reqsMap.set(req.Requisito.trim(), (req.Valore_Richiesto || '').toLowerCase().trim());
-                }
-            });
-
-            // Adesso, controlliamo ogni campo del profilo utente contro la mappa dei requisiti dell'immobile.
+            const reqsMap = new Map(propertyReqs.map(req => [req.Requisito.trim(), (req.Valore_Richiesto || '').toLowerCase().trim()]));
             
-            // 1. SITUAZIONE LAVORATIVA
-            if (userProfile.situazione_lavorativa) {
-                const reqValue = reqsMap.get('situazione_lavorativa');
-                // Se l'immobile ha un requisito specifico e non è 'indifferente' e non corrisponde a quello dell'utente, scarta.
-                if (reqValue && reqValue !== 'indifferente' && reqValue !== userProfile.situazione_lavorativa) {
+            console.log("Requisiti per questo immobile:", Object.fromEntries(reqsMap));
+
+            // Controlliamo ogni requisito uno per uno
+            
+            // Situazione Lavorativa
+            if (userFilters.situazione_lavorativa) {
+                const required = reqsMap.get('situazione_lavorativa');
+                if (required && required !== 'indifferente' && required !== userFilters.situazione_lavorativa) {
+                    console.log(`SCARTATO: Situazione lavorativa non corrisponde (richiesto: '${required}', utente: '${userFilters.situazione_lavorativa}')`);
                     return false;
                 }
             }
 
-            // 2. ANIMALI
-            if (userProfile.animali) {
-                const reqValue = reqsMap.get('animali');
-                if (reqValue && reqValue !== 'indifferente' && reqValue !== userProfile.animali) {
-                    return false;
-                }
-            }
-
-            // 3. FUMATORE
-            if (userProfile.fumatore) {
-                const reqValue = reqsMap.get('fumatore');
-                if (reqValue && reqValue !== 'indifferente' && reqValue !== userProfile.fumatore) {
-                    return false;
-                }
-            }
-
-            // 4. SESSO ACCETTATO (gestisce M, F, M, F)
-            if (userProfile.sesso_utente) {
-                const reqValue = reqsMap.get('sesso_accettato');
-                // Se il requisito esiste e non è indifferente e non include il sesso dell'utente, scarta.
-                if (reqValue && reqValue !== 'indifferente' && !reqValue.includes(userProfile.sesso_utente.toLowerCase())) {
+            // Animali
+            if (userFilters.animali) {
+                const required = reqsMap.get('animali');
+                if (required && required !== 'indifferente' && required !== userFilters.animali) {
+                    console.log(`SCARTATO: Animali non corrispondono (richiesto: '${required}', utente: '${userFilters.animali}')`);
                     return false;
                 }
             }
             
-            // 5. TIPO RICERCA (gestisce Da solo/a, In coppia)
-            if (userProfile.tipo_ricerca) {
-                const reqValue = reqsMap.get('tipo_ricerca');
-                 if (reqValue && reqValue !== 'indifferente' && reqValue !== userProfile.tipo_ricerca) {
+            // Fumatore
+            if (userFilters.fumatore) {
+                const required = reqsMap.get('fumatore');
+                if (required && required !== 'indifferente' && required !== userFilters.fumatore) {
+                    console.log(`SCARTATO: Fumatore non corrisponde (richiesto: '${required}', utente: '${userFilters.fumatore}')`);
                     return false;
                 }
             }
 
-            // 6. REDDITO MINIMO
+            // Sesso
+            if (userFilters.sesso) {
+                const required = reqsMap.get('sesso_accettato');
+                if (required && required !== 'indifferente' && !required.includes(userFilters.sesso.toLowerCase())) {
+                    console.log(`SCARTATO: Sesso non corrisponde (richiesto: '${required}', utente: '${userFilters.sesso}')`);
+                    return false;
+                }
+            }
+            
+            // Tipo Ricerca
+            if (userFilters.tipo_ricerca) {
+                const required = reqsMap.get('tipo_ricerca');
+                if (required && required !== 'indifferente' && required !== userFilters.tipo_ricerca) {
+                    console.log(`SCARTATO: Tipo ricerca non corrisponde (richiesto: '${required}', utente: '${userFilters.tipo_ricerca}')`);
+                    return false;
+                }
+            }
+            
+            // Reddito Minimo
             const redditoMinimoRichiesto = parseInt(reqsMap.get('reddito_minimo')) || 0;
-            if (userProfile.reddito_utente < redditoMinimoRichiesto) {
+            if (userFilters.reddito < redditoMinimoRichiesto) {
+                console.log(`SCARTATO: Reddito insufficiente (richiesto: ${redditoMinimoRichiesto}, utente: ${userFilters.reddito})`);
                 return false;
             }
 
-            // Se l'immobile è arrivato fin qui, ha superato tutti i controlli!
-            return true;
+            console.log(`✅ IMMOBILE COMPATIBILE: ${property.ID}`);
+            return true; // Se è arrivato fin qui, l'immobile è compatibile
         });
         
-        displayResults(finalProperties, userProfile);
+        displayResults(finalProperties, userFilters);
 
     } catch (error) {
         console.error("ERRORE CRITICO DURANTE IL CARICAMENTO DATI:", error);
