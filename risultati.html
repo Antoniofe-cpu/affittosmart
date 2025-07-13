@@ -228,7 +228,6 @@
         allCandidates = csvToObjects(await candsRes.text());
         
         const params = new URLSearchParams(window.location.search);
-        // Usiamo un oggetto separato per i filtri dell'utente per maggiore chiarezza
         const userFilters = {
             tipo: (params.get('tipo') || '').toLowerCase().trim(),
             zona: (params.get('zona') || '').toLowerCase().trim(),
@@ -244,42 +243,47 @@
         console.log("--- PROFILO UTENTE ---", userFilters);
 
         const finalProperties = allProperties.filter(property => {
-            // Log per ogni immobile che viene analizzato
             console.log(`\n--- ANALISI IMMOBILE ID: ${property.ID} ---`);
 
-            // 1. FILTRO BASE (Box 1: Cosa cerchi)
             if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') {
                 console.log(`SCARTATO: Stato non è 'disponibile'`);
                 return false;
             }
             if (userFilters.tipo && (property.Tipo || '').toLowerCase().trim() !== userFilters.tipo) {
-                console.log(`SCARTATO: Tipo immobile non corrisponde ('${(property.Tipo || '').toLowerCase().trim()}' vs '${userFilters.tipo}')`);
+                console.log(`SCARTATO: Tipo immobile non corrisponde.`);
                 return false;
             }
             if (userFilters.zona && (property.Zona || '').toLowerCase().trim() !== userFilters.zona) {
-                console.log(`SCARTATO: Zona non corrisponde ('${(property.Zona || '').toLowerCase().trim()}' vs '${userFilters.zona}')`);
+                console.log(`SCARTATO: Zona non corrisponde.`);
                 return false;
             }
             if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) {
-                console.log(`SCARTATO: Prezzo troppo alto (${property.Prezzo} > ${userFilters.prezzoMax})`);
+                console.log(`SCARTATO: Prezzo troppo alto.`);
                 return false;
             }
             
             console.log("OK: Passa filtri base (tipo, zona, prezzo).");
 
-            // 2. FILTRO REQUISITI (Box 2: Profilo)
             const propertyReqs = allRequirements.filter(r => r.ID_Immobile === property.ID);
-            const reqsMap = new Map(propertyReqs.map(req => [req.Requisito.trim(), (req.Valore_Richiesto || '').toLowerCase().trim()]));
+
+            // =================================================================
+            // --- CORREZIONE CHIAVE: Creazione della Mappa a prova di errore ---
+            // =================================================================
+            const reqsMap = new Map();
+            propertyReqs.forEach(req => {
+                // Aggiungiamo una riga alla mappa SOLO SE la colonna 'Requisito' esiste e non è vuota.
+                if (req && req.Requisito && req.Requisito.trim() !== '') {
+                    reqsMap.set(req.Requisito.trim(), (req.Valore_Richiesto || '').toLowerCase().trim());
+                }
+            });
             
             console.log("Requisiti per questo immobile:", Object.fromEntries(reqsMap));
 
-            // Controlliamo ogni requisito uno per uno
-            
             // Situazione Lavorativa
             if (userFilters.situazione_lavorativa) {
                 const required = reqsMap.get('situazione_lavorativa');
                 if (required && required !== 'indifferente' && required !== userFilters.situazione_lavorativa) {
-                    console.log(`SCARTATO: Situazione lavorativa non corrisponde (richiesto: '${required}', utente: '${userFilters.situazione_lavorativa}')`);
+                    console.log(`SCARTATO: Situazione lavorativa (richiesto: '${required}', utente: '${userFilters.situazione_lavorativa}')`);
                     return false;
                 }
             }
@@ -288,7 +292,7 @@
             if (userFilters.animali) {
                 const required = reqsMap.get('animali');
                 if (required && required !== 'indifferente' && required !== userFilters.animali) {
-                    console.log(`SCARTATO: Animali non corrispondono (richiesto: '${required}', utente: '${userFilters.animali}')`);
+                    console.log(`SCARTATO: Animali (richiesto: '${required}', utente: '${userFilters.animali}')`);
                     return false;
                 }
             }
@@ -297,7 +301,7 @@
             if (userFilters.fumatore) {
                 const required = reqsMap.get('fumatore');
                 if (required && required !== 'indifferente' && required !== userFilters.fumatore) {
-                    console.log(`SCARTATO: Fumatore non corrisponde (richiesto: '${required}', utente: '${userFilters.fumatore}')`);
+                    console.log(`SCARTATO: Fumatore (richiesto: '${required}', utente: '${userFilters.fumatore}')`);
                     return false;
                 }
             }
@@ -306,7 +310,7 @@
             if (userFilters.sesso) {
                 const required = reqsMap.get('sesso_accettato');
                 if (required && required !== 'indifferente' && !required.includes(userFilters.sesso.toLowerCase())) {
-                    console.log(`SCARTATO: Sesso non corrisponde (richiesto: '${required}', utente: '${userFilters.sesso}')`);
+                    console.log(`SCARTATO: Sesso (richiesto: '${required}', utente: '${userFilters.sesso}')`);
                     return false;
                 }
             }
@@ -315,7 +319,7 @@
             if (userFilters.tipo_ricerca) {
                 const required = reqsMap.get('tipo_ricerca');
                 if (required && required !== 'indifferente' && required !== userFilters.tipo_ricerca) {
-                    console.log(`SCARTATO: Tipo ricerca non corrisponde (richiesto: '${required}', utente: '${userFilters.tipo_ricerca}')`);
+                    console.log(`SCARTATO: Tipo ricerca (richiesto: '${required}', utente: '${userFilters.tipo_ricerca}')`);
                     return false;
                 }
             }
@@ -328,7 +332,7 @@
             }
 
             console.log(`✅ IMMOBILE COMPATIBILE: ${property.ID}`);
-            return true; // Se è arrivato fin qui, l'immobile è compatibile
+            return true;
         });
         
         displayResults(finalProperties, userFilters);
