@@ -214,7 +214,17 @@
         modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
     }
     
-    async function main() {
+    // Aggiungi questa funzione helper all'inizio del tuo script, dopo le costanti URL
+function normalizeString(str) {
+    if (!str) return '';
+    return str
+        .toLowerCase()
+        .trim()
+        .normalize("NFD") // Decompone i caratteri accentati (es. 'é' -> 'e' + '´')
+        .replace(/[\u0300-\u036f]/g, ""); // Rimuove i segni diacritici (gli accenti)
+}
+
+async function main() {
     const resultsContainer = document.getElementById('results-container');
     
     try {
@@ -228,86 +238,79 @@
         allCandidates = csvToObjects(await candsRes.text());
         
         const params = new URLSearchParams(window.location.search);
+        // Applichiamo la normalizzazione subito quando leggiamo i dati dell'utente
         const userFilters = {
-            tipo: (params.get('tipo') || '').toLowerCase().trim(),
-            zona: (params.get('zona') || '').toLowerCase().trim(),
+            tipo: normalizeString(params.get('tipo')),
+            zona: normalizeString(params.get('zona')),
             prezzoMax: parseInt(params.get('prezzo')) || Infinity,
-            situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+            situazione_lavorativa: normalizeString(params.get('situazione_lavorativa')),
             reddito: parseInt(params.get('reddito_utente')) || 0,
-            sesso: (params.get('sesso_utente') || '').toLowerCase().trim(),
-            fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
-            animali: (params.get('animali') || '').toLowerCase().trim(),
-            tipo_ricerca: (params.get('tipo_ricerca') || '').toLowerCase().trim()
+            sesso: normalizeString(params.get('sesso_utente')),
+            fumatore: normalizeString(params.get('fumatore')),
+            animali: normalizeString(params.get('animali')),
+            tipo_ricerca: normalizeString(params.get('tipo_ricerca'))
         };
 
-        console.log("--- PROFILO UTENTE ---", userFilters);
+        console.log("--- PROFILO UTENTE NORMALIZZATO ---", userFilters);
 
         const finalProperties = allProperties.filter(property => {
             const propertyID = (property.ID || '').trim();
             console.log(`\n--- ANALISI IMMOBILE ID: ${propertyID} ---`);
 
-            // 1. Filtro Base (invariato)
             if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
-            if (userFilters.tipo && (property.Tipo || '').toLowerCase().trim() !== userFilters.tipo) return false;
-            if (userFilters.zona && (property.Zona || '').toLowerCase().trim() !== userFilters.zona) return false;
+            // Applichiamo la normalizzazione anche qui per sicurezza
+            if (userFilters.tipo && normalizeString(property.Tipo) !== userFilters.tipo) return false;
+            if (userFilters.zona && normalizeString(property.Zona) !== userFilters.zona) return false;
             if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) return false;
 
-            // ====================================================================
-            // --- NUOVA LOGICA ADATTATA ALLA TUA STRUTTURA DATI ---
-            // ====================================================================
-
-            // Trova l'UNICA riga di requisiti per questo immobile.
             const propertyReqs = allRequirements.find(r => (r.ID_Immobile || '').trim() === propertyID);
 
-            // Se non ci sono requisiti per questo immobile, lo consideriamo compatibile (a meno che non venga scartato dopo).
             if (!propertyReqs) {
-                console.log("Nessun requisito specifico trovato per questo immobile. Viene considerato compatibile per ora.");
+                console.log("Nessun requisito specifico trovato. L'immobile passa questo blocco di filtri.");
             } else {
-                 console.log("Requisiti trovati per questo immobile:", propertyReqs);
-                
-                // Ora confrontiamo i filtri dell'utente con l'oggetto 'propertyReqs'
+                 console.log("Requisiti trovati:", propertyReqs);
                 
                 // Situazione Lavorativa
                 if (userFilters.situazione_lavorativa) {
-                    const required = (propertyReqs.situazione_lavorativa || '').toLowerCase().trim();
+                    const required = normalizeString(propertyReqs.situazione_lavorativa);
                     if (required && required !== 'indifferente' && required !== userFilters.situazione_lavorativa) {
-                        console.log(`SCARTATO: Situazione lavorativa (richiesto: '${required}')`);
+                        console.log(`SCARTATO: Situazione lavorativa (richiesto: '${required}', utente: '${userFilters.situazione_lavorativa}')`);
                         return false;
                     }
                 }
 
                 // Animali
                 if (userFilters.animali) {
-                    const required = (propertyReqs.animali || '').toLowerCase().trim();
+                    const required = normalizeString(propertyReqs.animali);
                     if (required && required !== 'indifferente' && required !== userFilters.animali) {
-                        console.log(`SCARTATO: Animali (richiesto: '${required}')`);
+                        console.log(`SCARTATO: Animali (richiesto: '${required}', utente: '${userFilters.animali}')`);
                         return false;
                     }
                 }
                 
                 // Fumatore
                 if (userFilters.fumatore) {
-                    const required = (propertyReqs.fumatore || '').toLowerCase().trim();
+                    const required = normalizeString(propertyReqs.fumatore);
                     if (required && required !== 'indifferente' && required !== userFilters.fumatore) {
-                        console.log(`SCARTATO: Fumatore (richiesto: '${required}')`);
+                        console.log(`SCARTATO: Fumatore (richiesto: '${required}', utente: '${userFilters.fumatore}')`);
                         return false;
                     }
                 }
 
                 // Sesso
                 if (userFilters.sesso) {
-                    const required = (propertyReqs.sesso_accettato || '').toLowerCase().trim();
-                    if (required && required !== 'indifferente' && !required.includes(userFilters.sesso.toLowerCase())) {
-                        console.log(`SCARTATO: Sesso (richiesto: '${required}')`);
+                    const required = normalizeString(propertyReqs.sesso_accettato);
+                    if (required && required !== 'indifferente' && !required.includes(userFilters.sesso)) {
+                        console.log(`SCARTATO: Sesso (richiesto: '${required}', utente: '${userFilters.sesso}')`);
                         return false;
                     }
                 }
                 
                 // Tipo Ricerca
                 if (userFilters.tipo_ricerca) {
-                    const required = (propertyReqs.tipo_ricerca || '').toLowerCase().trim();
+                    const required = normalizeString(propertyReqs.tipo_ricerca);
                     if (required && required !== 'indifferente' && required !== userFilters.tipo_ricerca) {
-                        console.log(`SCARTATO: Tipo ricerca (richiesto: '${required}')`);
+                        console.log(`SCARTATO: Tipo ricerca (richiesto: '${required}', utente: '${userFilters.tipo_ricerca}')`);
                         return false;
                     }
                 }
@@ -315,7 +318,7 @@
                 // Reddito Minimo
                 const redditoMinimoRichiesto = parseInt(propertyReqs.reddito_minimo) || 0;
                 if (redditoMinimoRichiesto > 0 && userFilters.reddito < redditoMinimoRichiesto) {
-                    console.log(`SCARTATO: Reddito insufficiente (richiesto: ${redditoMinimoRichiesto})`);
+                    console.log(`SCARTATO: Reddito insufficiente (richiesto: ${redditoMinimoRichiesto}, utente: ${userFilters.reddito})`);
                     return false;
                 }
             }
