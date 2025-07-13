@@ -227,6 +227,10 @@
         allRequirements = csvToObjects(await reqsRes.text());
         allCandidates = csvToObjects(await candsRes.text());
         
+        // Per debug: controlliamo i primi oggetti per vedere i nomi esatti delle chiavi
+        console.log("Esempio oggetto Immobile:", allProperties[0]);
+        console.log("Esempio oggetto Requisito:", allRequirements[0]);
+
         const params = new URLSearchParams(window.location.search);
         const userFilters = {
             tipo: (params.get('tipo') || '').toLowerCase().trim(),
@@ -245,40 +249,46 @@
         const finalProperties = allProperties.filter(property => {
             console.log(`\n--- ANALISI IMMOBILE ID: ${property.ID} ---`);
 
+            // 1. FILTRO BASE (Box 1: Cosa cerchi)
             if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') {
                 console.log(`SCARTATO: Stato non è 'disponibile'`);
                 return false;
             }
             if (userFilters.tipo && (property.Tipo || '').toLowerCase().trim() !== userFilters.tipo) {
-                console.log(`SCARTATO: Tipo immobile non corrisponde.`);
+                console.log(`SCARTATO: Tipo immobile non corrisponde ('${(property.Tipo || '').toLowerCase().trim()}' vs '${userFilters.tipo}')`);
                 return false;
             }
             if (userFilters.zona && (property.Zona || '').toLowerCase().trim() !== userFilters.zona) {
-                console.log(`SCARTATO: Zona non corrisponde.`);
+                console.log(`SCARTATO: Zona non corrisponde ('${(property.Zona || '').toLowerCase().trim()}' vs '${userFilters.zona}')`);
                 return false;
             }
             if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) {
-                console.log(`SCARTATO: Prezzo troppo alto.`);
+                console.log(`SCARTATO: Prezzo troppo alto (${property.Prezzo} > ${userFilters.prezzoMax})`);
                 return false;
             }
             
             console.log("OK: Passa filtri base (tipo, zona, prezzo).");
 
-            const propertyReqs = allRequirements.filter(r => r.ID_Immobile === property.ID);
+            // 2. FILTRO REQUISITI (Box 2: Profilo)
+            
+            // --- CORREZIONE DEFINITIVA DEL MATCHING DEGLI ID ---
+            const propertyID = (property.ID || '').trim();
+            const propertyReqs = allRequirements.filter(r => {
+                const reqID = (r.ID_Immobile || '').trim();
+                return reqID === propertyID;
+            });
 
-            // =================================================================
-            // --- CORREZIONE CHIAVE: Creazione della Mappa a prova di errore ---
-            // =================================================================
             const reqsMap = new Map();
             propertyReqs.forEach(req => {
-                // Aggiungiamo una riga alla mappa SOLO SE la colonna 'Requisito' esiste e non è vuota.
                 if (req && req.Requisito && req.Requisito.trim() !== '') {
                     reqsMap.set(req.Requisito.trim(), (req.Valore_Richiesto || '').toLowerCase().trim());
                 }
             });
             
-            console.log("Requisiti per questo immobile:", Object.fromEntries(reqsMap));
+            console.log("Requisiti trovati per questo immobile:", Object.fromEntries(reqsMap));
 
+            // -- Controlliamo ogni requisito uno per uno --
+            
             // Situazione Lavorativa
             if (userFilters.situazione_lavorativa) {
                 const required = reqsMap.get('situazione_lavorativa');
@@ -326,13 +336,13 @@
             
             // Reddito Minimo
             const redditoMinimoRichiesto = parseInt(reqsMap.get('reddito_minimo')) || 0;
-            if (userFilters.reddito < redditoMinimoRichiesto) {
+            if (redditoMinimoRichiesto > 0 && userFilters.reddito < redditoMinimoRichiesto) {
                 console.log(`SCARTATO: Reddito insufficiente (richiesto: ${redditoMinimoRichiesto}, utente: ${userFilters.reddito})`);
                 return false;
             }
 
             console.log(`✅ IMMOBILE COMPATIBILE: ${property.ID}`);
-            return true;
+            return true; // Se è arrivato fin qui, l'immobile è compatibile
         });
         
         displayResults(finalProperties, userFilters);
