@@ -162,7 +162,14 @@
         /* FAQ SECTION */
         #faq .section-title { color: var(--colore-bianco); }
         #faq .section-subtitle { color: rgba(255,255,255,0.8); }
-        .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .faq-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            max-width: 1100px; 
+            margin: 0 auto;
+            align-items: start; /* <-- LA SOLUZIONE È QUI */
+        }
         .faq-item { border-radius: 12px; background: rgba(255,255,255,0.1); overflow: hidden; }
         .faq-question { width: 100%; background: transparent; border: none; padding: 20px; font-size: 1.1em; font-weight: 600; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--colore-bianco); }
         .faq-answer { color: rgba(255,255,255,0.9); padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
@@ -450,53 +457,45 @@
                     return;
                 }
                 
-                // --- NUOVA LOGICA DI VALIDAZIONE ---
                 const lavoroSelect = document.getElementById('situazione_lavorativa');
                 const redditoSelect = document.getElementById('reddito_utente');
                 const errorLavoro = document.getElementById('error-lavoro');
                 const errorReddito = document.getElementById('error-reddito');
-
                 let isValid = true;
-
-                // Reset degli errori
                 lavoroSelect.classList.remove('input-error');
                 errorLavoro.classList.remove('visible');
                 redditoSelect.classList.remove('input-error');
                 errorReddito.classList.remove('visible');
-
-                // Validazione campo Situazione Lavorativa
                 if (lavoroSelect.value === '') {
                     isValid = false;
                     lavoroSelect.classList.add('input-error');
                     errorLavoro.classList.add('visible');
                 }
-                
-                // Validazione campo Reddito Netto Mensile
                 if (redditoSelect.value === '') {
                     isValid = false;
                     redditoSelect.classList.add('input-error');
                     errorReddito.classList.add('visible');
                 }
-
                 if (isValid) {
-                    // Se il form è valido, procedi con l'invio
                     const formData = new FormData(form);
                     const queryString = new URLSearchParams(formData).toString();
                     window.location.href = 'risultati.html?' + queryString;
                 } else {
-                    // Altrimenti, la sottomissione è bloccata e gli errori sono visibili.
-                    // Puoi opzionalmente fare scroll al primo campo con errore.
                     lavoroSelect.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
                 }
             });
 
-            // --- LOGICA FAQ MODIFICATA ---
+            // LOGICA FAQ RIPRISTINATA (CORRETTA)
             document.querySelectorAll('.faq-question').forEach(button => {
+                const faqItem = button.parentElement;
                 button.addEventListener('click', () => {
-                    const faqItem = button.parentElement;
-                    // Semplicemente attiva/disattiva la classe 'active' sull'elemento cliccato.
-                    // Non interagisce più con gli altri elementi della FAQ.
-                    faqItem.classList.toggle('active');
+                    const wasActive = faqItem.classList.contains('active');
+                    // Prima chiudo tutto
+                    document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+                    // Poi, se non era già attiva, apro la domanda cliccata
+                    if (!wasActive) {
+                        faqItem.classList.add('active');
+                    }
                 });
             });
         });
