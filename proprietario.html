@@ -361,20 +361,24 @@
     margin: 0;
 }
 
-/* === BLOCCO CSS CORRETTO PER L'ALLINEAMENTO PERFETTO === */
+/* === CSS DEFINITIVO E SEMPLIFICATO PER L'ALLINEAMENTO === */
 .confronto-colonna li {
-    display: grid; /* <-- USARE GRID È LA SOLUZIONE PIÙ ROBUSTA */
-    grid-template-columns: auto 1fr; /* Colonna per icona (auto-size) e colonna per testo (restante) */
-    align-items: start; /* Allinea gli elementi all'inizio della riga */
+    display: flex;
+    align-items: flex-start; /* Allinea gli elementi all'inizio del loro container */
     gap: 15px;
     font-size: 1.1em;
     line-height: 1.6;
     margin-bottom: 20px;
 }
 .confronto-colonna li .fa-solid {
-    font-size: 1.3em; /* Leggermente ridotto per un miglior equilibrio visivo */
-    margin-top: 0.2em; /* Aggiustamento verticale per centrare l'icona con la prima riga di testo */
-    /* Nessun'altra proprietà necessaria */
+    font-size: 1.2em; /* Dimensione bilanciata */
+    color: #c0392b; /* Assicuriamoci che il colore sia definito qui */
+    margin-top: 5px; /* Sposta leggermente l'icona verso il basso per un allineamento visivo perfetto */
+    flex-shrink: 0; /* Impedisce all'icona di rimpicciolirsi */
+}
+/* Stile per le icone verdi nella colonna smart */
+.confronto-colonna.smart li .fa-solid {
+    color: var(--colore-successo);
 }
 
 .confronto-colonna .fa-circle-xmark {
@@ -469,37 +473,52 @@
 
    <!-- === INIZIO BLOCCO DA SOSTITUIRE (da #offerta fino al pulsante) === -->
 
-<!-- 1. SEZIONE CONFRONTO (SU SFONDO BIANCO) -->
-<section id="confronto" style="background-color: var(--colore-sfondo-chiaro);">
-    <div class="container">
-        <h2 class="hidden" style="color: var(--colore-primario); margin-bottom: 20px;">Il Tuo Tempo Vale Più di un Annuncio Gratuito.</h2>
-        <p class="sottotitolo-sezione hidden">Mettere un annuncio online sembra facile. Ma il costo nascosto in tempo e stress è enorme. Ecco la differenza tra il "fai da te" e affidarsi ad Affitto Smart.</p>
-
-        <div class="confronto-grid hidden">
-            <!-- Colonna Fai da Te -->
-            <div class="confronto-colonna">
-                <h3>Metodo Tradizionale<br>(Sui portali gratuiti)</h3>
-                <ul>
-                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Decine di telefonate</strong> e messaggi inutili da gestire.</li>
-                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Weekend persi</strong> in visite con persone non qualificate.</li>
-                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Ansia e incertezza</strong> nella scelta finale.</li>
-                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Rischio di scegliere</strong> l'inquilino sbagliato (morosità, problemi).</li>
-                </ul>
-            </div>
-            <!-- Colonna Affitto Smart -->
-            <div class="confronto-colonna smart">
-                <h3>Il Metodo Affitto Smart<br>(Il nostro servizio)</h3>
-                <ul>
-                    <li><i class="fa-solid fa-circle-check"></i> <strong>Zero chiamate a vuoto.</strong> Parli solo con noi.</li>
-                    <li><i class="fa-solid fa-circle-check"></i> <strong>Un solo Open Day</strong> con i migliori candidati già selezionati.</li>
-                    <li><i class="fa-solid fa-circle-check"></i> <strong>Tranquillità totale.</strong> Scegli tra profili verificati.</li>
-                    <li><i class="fa-solid fa-circle-check"></i> <strong>Massima sicurezza.</strong> Il nostro processo è la tua migliore garanzia.</li>
-                </ul>
-            </div>
-        </div>
+<div class="confronto-grid hidden">
+    <!-- Colonna Fai da Te -->
+    <div class="confronto-colonna">
+        <h3>Metodo Tradizionale<br>(Sui portali gratuiti)</h3>
+        <ul>
+            <li>
+                <i class="fa-solid fa-circle-xmark"></i>
+                <div><strong>Decine di telefonate</strong> e messaggi inutili da gestire.</div>
+            </li>
+            <li>
+                <i class="fa-solid fa-circle-xmark"></i>
+                <div><strong>Weekend persi</strong> in visite con persone non qualificate.</div>
+            </li>
+            <li>
+                <i class="fa-solid fa-circle-xmark"></i>
+                <div><strong>Ansia e incertezza</strong> nella scelta finale.</div>
+            </li>
+            <li>
+                <i class="fa-solid fa-circle-xmark"></i>
+                <div><strong>Rischio di scegliere</strong> l'inquilino sbagliato (morosità, problemi).</div>
+            </li>
+        </ul>
     </div>
-</section>
-
+    <!-- Colonna Affitto Smart -->
+    <div class="confronto-colonna smart">
+        <h3>Il Metodo Affitto Smart<br>(Il nostro servizio)</h3>
+        <ul>
+            <li>
+                <i class="fa-solid fa-circle-check"></i>
+                <div><strong>Zero chiamate a vuoto.</strong> Parli solo con noi.</div>
+            </li>
+            <li>
+                <i class="fa-solid fa-circle-check"></i>
+                <div><strong>Un solo Open Day</strong> con i migliori candidati già selezionati.</div>
+            </li>
+            <li>
+                <i class="fa-solid fa-circle-check"></i>
+                <div><strong>Tranquillità totale.</strong> Scegli tra profili verificati.</div>
+            </li>
+            <li>
+                <i class="fa-solid fa-circle-check"></i>
+                <div><strong>Massima sicurezza.</strong> Il nostro processo è la tua migliore garanzia.</div>
+            </li>
+        </ul>
+    </div>
+</div>
 <!-- 2. SEZIONE FINALE "SCELTA INTELLIGENTE" - IL VERO FUNNEL -->
 <section id="scelta-intelligente">
     <div class="container">
