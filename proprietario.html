@@ -195,6 +195,59 @@
     padding: 25px;
     margin-top: 60px;
 }
+        /* === INIZIO STILI PER LA NUOVA SEZIONE FINALE === */
+#scelta-intelligente {
+    background: linear-gradient(135deg, var(--colore-primario) 0%, #002c6b 100%);
+    color: var(--colore-bianco);
+    padding: 100px 0;
+    text-align: center;
+}
+#scelta-intelligente h2 {
+    color: var(--colore-bianco);
+    font-size: 3em; /* Più grande e d'impatto */
+    margin-bottom: 15px;
+}
+#scelta-intelligente .sottotitolo-finale {
+    font-size: 1.3em;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 700px;
+    margin: 0 auto 50px auto;
+}
+.garanzia-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--colore-accento);
+    border-radius: 16px;
+    padding: 35px 40px;
+    max-width: 650px;
+    margin: 0 auto 40px auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+.garanzia-card .icon {
+    font-size: 3em;
+    color: var(--colore-accento);
+    margin-bottom: 15px;
+}
+.garanzia-card h3 {
+    color: var(--colore-accento);
+    font-size: 1.8em;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.garanzia-card p {
+    font-size: 1.3em;
+    line-height: 1.7;
+    margin: 0;
+    color: var(--colore-bianco);
+}
+.testo-conclusivo {
+    font-size: 1.2em;
+    font-weight: 600;
+    max-width: 700px;
+    margin: 0 auto 40px auto;
+}
+/* === FINE STILI PER LA NUOVA SEZIONE FINALE === */
 
         /* --- DA AGGIUNGERE --- */
 .main-footer {
@@ -308,18 +361,18 @@
     margin: 0;
 }
 
-/* Allineamento testo nelle card di confronto */
+/* --- SOSTITUZIONE PER UN ALLINEAMENTO PERFETTO --- */
 .confronto-colonna li {
     display: flex;
-    align-items: center; /* <<< MODIFICA: da flex-start a center */
-    gap: 15px;
+    gap: 15px; /* Spazio tra icona e testo */
     font-size: 1.1em;
     line-height: 1.6;
     margin-bottom: 20px;
 }
-/* E CANCELLA questa regola, non serve più */
-.confronto-colonna li .fa-solid { 
-    /* margin-top: 5px; */ /* <<< CANCELLA QUESTA RIGA */
+.confronto-colonna li .fa-solid {
+    flex-shrink: 0; /* Impedisce all'icona di rimpicciolirsi */
+    margin-top: 0.25em; /* Sposta l'icona leggermente in basso per allinearla con la prima riga di testo */
+    font-size: 1.5em;
 }
 
 .confronto-colonna .fa-circle-xmark {
@@ -412,48 +465,65 @@
         </div>
     </section>
 
-    <!-- NUOVA SEZIONE CONFRONTO POTENZIATA - IL CUORE DELLA PAGINA -->
-    <section id="offerta" style="background: white; color: var(--colore-testo);">
-        <div class="container">
-            <h2 class="hidden" style="color: var(--colore-primario); margin-bottom: 20px;">Il Tuo Tempo Vale Più di un Annuncio Gratuito.</h2>
-            <p class="sottotitolo-sezione hidden" style="color: var(--colore-testo-chiaro);">Mettere un annuncio online sembra facile, ma il costo nascosto in tempo e stress è enorme. Ecco la differenza tra il "fai da te" e affidarsi ad Affitto Smart.</p>
+   <!-- === INIZIO BLOCCO DA SOSTITUIRE (da #offerta fino al pulsante) === -->
 
-            <div class="confronto-grid hidden">
-                <!-- Colonna Fai da Te -->
-                <div class="confronto-colonna">
-                    <h3>Metodo Tradizionale<br>(Sui portali gratuiti)</h3>
-                    <ul>
-                        <li><i class="fa-solid fa-circle-xmark"></i> <strong>Decine di telefonate</strong> e messaggi inutili da gestire.</li>
-                        <li><i class="fa-solid fa-circle-xmark"></i> <strong>Weekend persi</strong> in visite con persone non qualificate.</li>
-                        <li><i class="fa-solid fa-circle-xmark"></i> <strong>Ansia e incertezza</strong> nella scelta finale.</li>
-                        <li><i class="fa-solid fa-circle-xmark"></i> <strong>Rischio di scegliere</strong> l'inquilino sbagliato (morosità, problemi).</li>
-                    </ul>
-                </div>
-                <!-- Colonna Affitto Smart -->
-                <div class="confronto-colonna smart">
-                    <h3>Il Metodo Affitto Smart<br>(Il nostro servizio)</h3>
-                    <ul>
-                        <li><i class="fa-solid fa-circle-check"></i> <strong>Zero chiamate a vuoto.</strong> Parli solo con noi.</li>
-                        <li><i class="fa-solid fa-circle-check"></i> <strong>Un solo Open Day</strong> con i migliori candidati già selezionati.</li>
-                        <li><i class="fa-solid fa-circle-check"></i> <strong>Tranquillità totale.</strong> Scegli tra profili verificati.</li>
-                        <li><i class="fa-solid fa-circle-check"></i> <strong>Massima sicurezza.</strong> Il nostro processo è la tua migliore garanzia.</li>
-                    </ul>
-                </div>
+<!-- 1. SEZIONE CONFRONTO (SU SFONDO BIANCO) -->
+<section id="confronto" style="background-color: var(--colore-sfondo-chiaro);">
+    <div class="container">
+        <h2 class="hidden" style="color: var(--colore-primario); margin-bottom: 20px;">Il Tuo Tempo Vale Più di un Annuncio Gratuito.</h2>
+        <p class="sottotitolo-sezione hidden">Mettere un annuncio online sembra facile. Ma il costo nascosto in tempo e stress è enorme. Ecco la differenza tra il "fai da te" e affidarsi ad Affitto Smart.</p>
+
+        <div class="confronto-grid hidden">
+            <!-- Colonna Fai da Te -->
+            <div class="confronto-colonna">
+                <h3>Metodo Tradizionale<br>(Sui portali gratuiti)</h3>
+                <ul>
+                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Decine di telefonate</strong> e messaggi inutili da gestire.</li>
+                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Weekend persi</strong> in visite con persone non qualificate.</li>
+                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Ansia e incertezza</strong> nella scelta finale.</li>
+                    <li><i class="fa-solid fa-circle-xmark"></i> <strong>Rischio di scegliere</strong> l'inquilino sbagliato (morosità, problemi).</li>
+                </ul>
             </div>
-
-            <div class="promozione light hidden">
-                La nostra offerta di lancio "Rischio Zero": <br><strong>Paghi il nostro servizio SOLO a contratto firmato!</strong>
-            </div>
-
-            <p class="hidden text-center" style="font-size: 1.2em; font-weight: 600; color: var(--colore-primario); max-width: 700px; margin: 40px auto 40px auto;">
-                Ci assumiamo tutto il rischio perché siamo certi del risultato. <br>Non hai nulla da perdere, solo la serenità da guadagnare.
-            </p>
-
-            <div class="hidden text-center"> 
-                <a href="contatto-proprietari.html" class="cta-button">Sì, Voglio Questa Garanzia!</a> 
+            <!-- Colonna Affitto Smart -->
+            <div class="confronto-colonna smart">
+                <h3>Il Metodo Affitto Smart<br>(Il nostro servizio)</h3>
+                <ul>
+                    <li><i class="fa-solid fa-circle-check"></i> <strong>Zero chiamate a vuoto.</strong> Parli solo con noi.</li>
+                    <li><i class="fa-solid fa-circle-check"></i> <strong>Un solo Open Day</strong> con i migliori candidati già selezionati.</li>
+                    <li><i class="fa-solid fa-circle-check"></i> <strong>Tranquillità totale.</strong> Scegli tra profili verificati.</li>
+                    <li><i class="fa-solid fa-circle-check"></i> <strong>Massima sicurezza.</strong> Il nostro processo è la tua migliore garanzia.</li>
+                </ul>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<!-- 2. SEZIONE FINALE "SCELTA INTELLIGENTE" - IL VERO FUNNEL -->
+<section id="scelta-intelligente">
+    <div class="container">
+        <h2 class="hidden">È il Momento di Fare la Scelta Intelligente.</h2>
+        <p class="sottotitolo-finale hidden">Smetti di sprecare tempo. Inizia a guadagnare tranquillità.</p>
+        
+        <div class="garanzia-card hidden">
+            <div class="icon">
+                <i class="fa-solid fa-shield-heart"></i>
+            </div>
+            <h3>Garanzia Rischio Zero</h3>
+            <p><strong>Paghi il nostro servizio solo dopo aver firmato il contratto</strong> con l'inquilino perfetto che TU hai scelto.</p>
+        </div>
+
+        <p class="testo-conclusivo hidden">
+            Siamo così sicuri del nostro metodo che ci assumiamo tutto il rischio. <br>
+            Non hai assolutamente nulla da perdere.
+        </p>
+
+        <div class="hidden">
+            <a href="contatto-proprietari.html" class="cta-button">Sì, Voglio Questa Garanzia!</a>
+        </div>
+    </div>
+</section>
+
+<!-- === FINE BLOCCO DA SOSTITUIRE === -->
 
     <section id="about-us" style="background-color: var(--colore-sfondo-chiaro);">
         <div class="container about-us">
