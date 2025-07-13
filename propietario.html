@@ -135,7 +135,10 @@
         .about-us-text h3 { font-size: 2em; }
         
         /* SEZIONE VANTAGGI (Stile "Mixato") */
-        #vantaggi { background-color: var(--colore-bianco); } /* Sfondo bianco per staccare */
+        #vantaggi {
+            background-color: var(--colore-bianco); /* Sfondo bianco per staccare */
+            padding-top: 40px; /* <<< MODIFICA PER RIDURRE LO SPAZIO */
+        }
         .vantaggi-grid-mix {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -208,25 +211,25 @@
             .about-us-img { margin-bottom: 30px; }
         }
         /* Stile per il logo con tagline */
-.logo-container {
-    line-height: 1.2;
-}
-.logo-main {
-    font-size: 1.8em;
-    font-weight: 800;
-    color: var(--colore-primario);
-}
-.logo-main span {
-    font-weight: 400;
-    color: var(--colore-secondario);
-}
-.logo-tagline {
-    font-size: 0.7em; /* Molto più piccolo */
-    font-weight: 600;
-    color: var(--colore-testo-chiaro);
-    letter-spacing: 0.5px;
-    margin-top: -5px; /* Avvicina la tagline al logo principale */
-}
+    .logo-container {
+        line-height: 1.2;
+    }
+    .logo-main {
+        font-size: 1.8em;
+        font-weight: 800;
+        color: var(--colore-primario);
+    }
+    .logo-main span {
+        font-weight: 400;
+        color: var(--colore-secondario);
+    }
+    .logo-tagline {
+        font-size: 0.7em; /* Molto più piccolo */
+        font-weight: 600;
+        color: var(--colore-testo-chiaro);
+        letter-spacing: 0.5px;
+        margin-top: -5px; /* Avvicina la tagline al logo principale */
+    }
     </style>
 </head>
 <body>
@@ -371,7 +374,7 @@
                             <i class="fa-solid fa-hands-holding-child"></i>
                             <h3>Servizio Dedicato</h3>
                         </div>
-                        <p>Non siete un numero in un archivio. Il nostro team si dedica personalmente alla ricerca del vostro inquilino ideale.</p>
+                        <p>Non siete un numero in un archivio. Il nostro team si dedica personally alla ricerca del vostro inquilino ideale.</p>
                     </div>
                     <div class="vantaggio-card-mix">
                         <div class="vantaggio-header">
