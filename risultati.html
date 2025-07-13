@@ -130,7 +130,6 @@
     const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
     const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
     
-    // --- MODIFICA CHIAVE: Dichiarazione delle variabili a livello globale ---
     let allProperties = [], allRequirements = [], allCandidates = [];
 
     const ICONS_MAP = {
@@ -178,7 +177,6 @@
             }
             compatibilityHtml += '</div>';
 
-            // ORA QUESTA VARIABILE È VISIBILE E LA FUNZIONE NON DARÀ ERRORE
             const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
             const postiTotali = parseInt(p.MaxPartecipanti);
             const postiRimasti = postiTotali - prenotati;
@@ -214,127 +212,137 @@
         modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
     }
     
-    // Aggiungi questa funzione helper all'inizio del tuo script, dopo le costanti URL
-function normalizeString(str) {
-    if (!str) return '';
-    return str
-        .toLowerCase()
-        .trim()
-        .normalize("NFD") // Decompone i caratteri accentati (es. 'é' -> 'e' + '´')
-        .replace(/[\u0300-\u036f]/g, ""); // Rimuove i segni diacritici (gli accenti)
-}
-
-async function main() {
-    const resultsContainer = document.getElementById('results-container');
-    
-    try {
-        const [propsRes, reqsRes, candsRes] = await Promise.all([
-            fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
-        ]);
-        if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Risposta di rete non valida.');
-        
-        allProperties = csvToObjects(await propsRes.text());
-        allRequirements = csvToObjects(await reqsRes.text());
-        allCandidates = csvToObjects(await candsRes.text());
-        
-        const params = new URLSearchParams(window.location.search);
-        // Applichiamo la normalizzazione subito quando leggiamo i dati dell'utente
-        const userFilters = {
-            tipo: normalizeString(params.get('tipo')),
-            zona: normalizeString(params.get('zona')),
-            prezzoMax: parseInt(params.get('prezzo')) || Infinity,
-            situazione_lavorativa: normalizeString(params.get('situazione_lavorativa')),
-            reddito: parseInt(params.get('reddito_utente')) || 0,
-            sesso: normalizeString(params.get('sesso_utente')),
-            fumatore: normalizeString(params.get('fumatore')),
-            animali: normalizeString(params.get('animali')),
-            tipo_ricerca: normalizeString(params.get('tipo_ricerca'))
-        };
-
-        console.log("--- PROFILO UTENTE NORMALIZZATO ---", userFilters);
-
-        const finalProperties = allProperties.filter(property => {
-            const propertyID = (property.ID || '').trim();
-            console.log(`\n--- ANALISI IMMOBILE ID: ${propertyID} ---`);
-
-            if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
-            // Applichiamo la normalizzazione anche qui per sicurezza
-            if (userFilters.tipo && normalizeString(property.Tipo) !== userFilters.tipo) return false;
-            if (userFilters.zona && normalizeString(property.Zona) !== userFilters.zona) return false;
-            if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) return false;
-
-            const propertyReqs = allRequirements.find(r => (r.ID_Immobile || '').trim() === propertyID);
-
-            if (!propertyReqs) {
-                console.log("Nessun requisito specifico trovato. L'immobile passa questo blocco di filtri.");
-            } else {
-                 console.log("Requisiti trovati:", propertyReqs);
-                
-                // Situazione Lavorativa
-                if (userFilters.situazione_lavorativa) {
-                    const required = normalizeString(propertyReqs.situazione_lavorativa);
-                    if (required && required !== 'indifferente' && required !== userFilters.situazione_lavorativa) {
-                        console.log(`SCARTATO: Situazione lavorativa (richiesto: '${required}', utente: '${userFilters.situazione_lavorativa}')`);
-                        return false;
-                    }
-                }
-
-                // Animali
-                if (userFilters.animali) {
-                    const required = normalizeString(propertyReqs.animali);
-                    if (required && required !== 'indifferente' && required !== userFilters.animali) {
-                        console.log(`SCARTATO: Animali (richiesto: '${required}', utente: '${userFilters.animali}')`);
-                        return false;
-                    }
-                }
-                
-                // Fumatore
-                if (userFilters.fumatore) {
-                    const required = normalizeString(propertyReqs.fumatore);
-                    if (required && required !== 'indifferente' && required !== userFilters.fumatore) {
-                        console.log(`SCARTATO: Fumatore (richiesto: '${required}', utente: '${userFilters.fumatore}')`);
-                        return false;
-                    }
-                }
-
-                // Sesso
-                if (userFilters.sesso) {
-                    const required = normalizeString(propertyReqs.sesso_accettato);
-                    if (required && required !== 'indifferente' && !required.includes(userFilters.sesso)) {
-                        console.log(`SCARTATO: Sesso (richiesto: '${required}', utente: '${userFilters.sesso}')`);
-                        return false;
-                    }
-                }
-                
-                // Tipo Ricerca
-                if (userFilters.tipo_ricerca) {
-                    const required = normalizeString(propertyReqs.tipo_ricerca);
-                    if (required && required !== 'indifferente' && required !== userFilters.tipo_ricerca) {
-                        console.log(`SCARTATO: Tipo ricerca (richiesto: '${required}', utente: '${userFilters.tipo_ricerca}')`);
-                        return false;
-                    }
-                }
-                
-                // Reddito Minimo
-                const redditoMinimoRichiesto = parseInt(propertyReqs.reddito_minimo) || 0;
-                if (redditoMinimoRichiesto > 0 && userFilters.reddito < redditoMinimoRichiesto) {
-                    console.log(`SCARTATO: Reddito insufficiente (richiesto: ${redditoMinimoRichiesto}, utente: ${userFilters.reddito})`);
-                    return false;
-                }
-            }
-
-            console.log(`✅ IMMOBILE COMPATIBILE: ${propertyID}`);
-            return true;
-        });
-        
-        displayResults(finalProperties, userFilters);
-
-    } catch (error) {
-        console.error("ERRORE CRITICO DURANTE IL CARICAMENTO DATI:", error);
-        resultsContainer.innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
+    function normalizeString(str) {
+        if (!str) return '';
+        return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
-}
-    
+
+    async function main() {
+        const resultsContainer = document.getElementById('results-container');
+        
+        try {
+            const [propsRes, reqsRes, candsRes] = await Promise.all([
+                fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
+            ]);
+            if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Risposta di rete non valida.');
+            
+            allProperties = csvToObjects(await propsRes.text());
+            allRequirements = csvToObjects(await reqsRes.text());
+            allCandidates = csvToObjects(await candsRes.text());
+            
+            const params = new URLSearchParams(window.location.search);
+            const userFilters = {
+                tipo: normalizeString(params.get('tipo')),
+                zona: normalizeString(params.get('zona')),
+                prezzoMax: parseInt(params.get('prezzo')) || Infinity,
+                situazione_lavorativa: normalizeString(params.get('situazione_lavorativa')),
+                reddito: parseInt(params.get('reddito_utente')) || 0,
+                sesso: normalizeString(params.get('sesso_utente')),
+                fumatore: normalizeString(params.get('fumatore')),
+                animali: normalizeString(params.get('animali')),
+                tipo_ricerca: normalizeString(params.get('tipo_ricerca')),
+                // === NUOVI FILTRI AGGIUNTI ===
+                data_disponibile: params.get('data_disponibile'), // Manteniamo come stringa 'AAAA-MM-DD'
+                periodo_affitto: normalizeString(params.get('periodo_affitto'))
+            };
+
+            console.log("--- PROFILO UTENTE NORMALIZZATO ---", userFilters);
+
+            const finalProperties = allProperties.filter(property => {
+                const propertyID = (property.ID || '').trim();
+                console.log(`\n--- ANALISI IMMOBILE ID: ${propertyID} ---`);
+
+                if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
+                if (userFilters.tipo && normalizeString(property.Tipo) !== userFilters.tipo) return false;
+                if (userFilters.zona && normalizeString(property.Zona) !== userFilters.zona) return false;
+                if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) return false;
+
+                // === INIZIO NUOVA LOGICA DI FILTRO ===
+                
+                // Filtro per Data di Disponibilità
+                if (userFilters.data_disponibile && property.data_disponibile) {
+                    const dataUtente = new Date(userFilters.data_disponibile);
+                    const dataImmobile = new Date(property.data_disponibile);
+                    // Controlla che le date siano valide prima di confrontare
+                    if (!isNaN(dataUtente.getTime()) && !isNaN(dataImmobile.getTime())) {
+                        // Scarta l'immobile solo se la sua data di disponibilità è SUCCESSIVA a quella richiesta
+                        if (dataImmobile > dataUtente) {
+                            console.log(`SCARTATO: Data non compatibile (richiesto entro: ${userFilters.data_disponibile}, disponibile da: ${property.data_disponibile})`);
+                            return false;
+                        }
+                    }
+                }
+
+                // Filtro per Periodo di Affitto
+                // Si attiva solo se l'utente ha scelto un'opzione specifica (non "Qualsiasi", che ha value="")
+                if (userFilters.periodo_affitto) {
+                    const periodoRichiesto = userFilters.periodo_affitto;
+                    const periodoOfferto = normalizeString(property.periodo_affitto);
+                    if (periodoOfferto !== periodoRichiesto) {
+                        console.log(`SCARTATO: Periodo affitto non compatibile (richiesto: ${periodoRichiesto}, offerto: ${periodoOfferto})`);
+                        return false;
+                    }
+                }
+                
+                // === FINE NUOVA LOGICA DI FILTRO ===
+
+                const propertyReqs = allRequirements.find(r => (r.ID_Immobile || '').trim() === propertyID);
+
+                if (!propertyReqs) {
+                    console.log("Nessun requisito specifico trovato. L'immobile passa questo blocco di filtri.");
+                } else {
+                     console.log("Requisiti trovati:", propertyReqs);
+                    
+                    if (userFilters.situazione_lavorativa) {
+                        const required = normalizeString(propertyReqs.situazione_lavorativa);
+                        if (required && required !== 'indifferente' && required !== userFilters.situazione_lavorativa) {
+                            console.log(`SCARTATO: Situazione lavorativa (richiesto: '${required}', utente: '${userFilters.situazione_lavorativa}')`);
+                            return false;
+                        }
+                    }
+                    if (userFilters.animali) {
+                        const required = normalizeString(propertyReqs.animali);
+                        if (required && required !== 'indifferente' && required !== userFilters.animali) {
+                            console.log(`SCARTATO: Animali (richiesto: '${required}', utente: '${userFilters.animali}')`);
+                            return false;
+                        }
+                    }
+                    if (userFilters.fumatore) {
+                        const required = normalizeString(propertyReqs.fumatore);
+                        if (required && required !== 'indifferente' && required !== userFilters.fumatore) {
+                            console.log(`SCARTATO: Fumatore (richiesto: '${required}', utente: '${userFilters.fumatore}')`);
+                            return false;
+                        }
+                    }
+                    if (userFilters.sesso) {
+                        const required = normalizeString(propertyReqs.sesso_accettato);
+                        if (required && required !== 'indifferente' && !required.includes(userFilters.sesso)) {
+                            console.log(`SCARTATO: Sesso (richiesto: '${required}', utente: '${userFilters.sesso}')`);
+                            return false;
+                        }
+                    }
+                    if (userFilters.tipo_ricerca) {
+                        const required = normalizeString(propertyReqs.tipo_ricerca);
+                        if (required && required !== 'indifferente' && required !== userFilters.tipo_ricerca) {
+                            console.log(`SCARTATO: Tipo ricerca (richiesto: '${required}', utente: '${userFilters.tipo_ricerca}')`);
+                            return false;
+                        }
+                    }
+                    const redditoMinimoRichiesto = parseInt(propertyReqs.reddito_minimo) || 0;
+                    if (redditoMinimoRichiesto > 0 && userFilters.reddito < redditoMinimoRichiesto) {
+                        console.log(`SCARTATO: Reddito insufficiente (richiesto: ${redditoMinimoRichiesto}, utente: ${userFilters.reddito})`);
+                        return false;
+                    }
+                }
+                console.log(`✅ IMMOBILE COMPATIBILE: ${propertyID}`);
+                return true;
+            });
+            displayResults(finalProperties, userFilters);
+        } catch (error) {
+            console.error("ERRORE CRITICO DURANTE IL CARICAMENTO DATI:", error);
+            resultsContainer.innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
+        }
+    }
     document.addEventListener('DOMContentLoaded', main);
 </script>
 </body>
