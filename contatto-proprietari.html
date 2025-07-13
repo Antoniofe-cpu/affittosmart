@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contatta Affitto Smart - Per Proprietari</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* STILI COPIATI DALLA PAGINA PRINCIPALE PER COERENZA */
+        :root {
+            --colore-primario: #0D47A1;
+            --colore-secondario: #1976D2;
+            --colore-accento: #FFB300;
+            --colore-successo: #2E7D32;
+            --colore-testo: #212121;
+            --colore-testo-chiaro: #5f6368;
+            --colore-sfondo-chiaro: #f5f7fa;
+            --colore-bianco: #ffffff;
+            --font-principale: 'Poppins', sans-serif;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-principale);
+            margin: 0;
+            color: var(--colore-testo);
+            line-height: 1.7;
+            background-color: var(--colore-sfondo-chiaro); /* Sfondo leggermente grigio */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .main-header {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky; top: 0; z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo-container { line-height: 1.2; }
+        .logo-main { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); }
+        .logo-main span { font-weight: 400; color: var(--colore-secondario); }
+        .logo-tagline { font-size: 0.7em; font-weight: 600; color: var(--colore-testo-chiaro); letter-spacing: 0.5px; margin-top: -5px; }
+        .contatti-rapidi a { color: var(--colore-testo); text-decoration: none; margin-left: 20px; font-weight: 600; transition: color 0.3s; }
+        .contatti-rapidi a:hover { color: var(--colore-accento); }
+        .cta-button {
+            display: inline-block;
+            background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
+            color: var(--colore-testo);
+            padding: 18px 40px;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 25px rgba(255, 179, 0, 0.3);
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+        }
+        .cta-button:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 30px rgba(255, 179, 0, 0.4); }
+        .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 50px 0; text-align: center; }
+        .main-footer .logo { color: white; }
+        .main-footer a { color: white; text-decoration: none; transition: color 0.3s; }
+        .main-footer a:hover { color: var(--colore-accento); }
+
+        /* NUOVI STILI SPECIFICI PER LA PAGINA DEL FORM */
+        .form-section {
+            padding: 100px 0;
+            text-align: center;
+        }
+        .form-section h1 {
+            font-size: 2.8em;
+            color: var(--colore-primario);
+            margin-bottom: 15px;
+        }
+        .form-section .sottotitolo {
+            font-size: 1.2em;
+            color: var(--colore-testo-chiaro);
+            max-width: 600px;
+            margin: 0 auto 50px auto;
+        }
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: var(--colore-bianco);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--colore-primario);
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-family: var(--font-principale);
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            box-sizing: border-box;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--colore-secondario);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .submit-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        /* Stili per le opzioni radio */
+        .radio-options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            background-color: var(--colore-sfondo-chiaro);
+            border: 1px solid #ccc;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .radio-label:hover {
+            background-color: #e9ecf1;
+            border-color: #aaa;
+        }
+        .radio-label input[type="radio"] {
+            display: none; /* Nascondiamo il pallino di default */
+        }
+        .radio-label span {
+            font-weight: 500;
+            color: var(--colore-testo-chiaro);
+             transition: color 0.3s ease;
+        }
+        .radio-label:has(input:checked) {
+             background-color: #dbeafe; /* Un blu molto chiaro */
+             border-color: var(--colore-secondario);
+        }
+        .radio-label:has(input:checked) span {
+             color: var(--colore-primario);
+             font-weight: 600;
+        }
+        
+        #success-message {
+            display: none;
+            background-color: var(--colore-successo);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 30px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container header-content">
+             <a href="index.html" style="text-decoration: none;"> <!-- Assicurati che il nome del file della homepage sia corretto -->
+                <div class="logo-container">
+                    <div class="logo-main">Affitto <span>Smart</span></div>
+                    <div class="logo-tagline">Scartiamo il 98% dei candidati. Per te.</div>
+                </div>
+            </a>
+            <div class="contatti-rapidi">
+                <a href="tel:+393330000000"><i class="fa-solid fa-phone"></i> Chiama</a>
+                <a href="mailto:bologna@affitto-smart.it"><i class="fa-solid fa-envelope"></i> Scrivi</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="form-section">
+            <div class="container">
+                <h1>Inizia la tua Consulenza Gratuita</h1>
+                <p class="sottotitolo">Compila il modulo per essere ricontattato. Raccontaci del tuo immobile e scopri come possiamo trovare il tuo inquilino perfetto, senza stress e senza rischi.</p>
+                
+                <div class="form-container">
+                    <!-- SOSTITUISCI l'email nell'attributo "action" e nello script in fondo -->
+                    <form id="proprietari-form">
+                        <div class="form-group">
+                            <label for="nome">Nome e Cognome</label>
+                            <input type="text" id="nome" name="Nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">La tua Email</label>
+                            <input type="email" id="email" name="Email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono">Numero di Telefono</label>
+                            <input type="tel" id="telefono" name="Telefono" required>
+                        </div>
+                        
+                        <!-- NUOVA SEZIONE FASCIA ORARIA -->
+                        <div class="form-group">
+                            <label>Fascia oraria preferita per essere ricontattato</label>
+                            <div class="radio-options-container">
+                                <label class="radio-label">
+                                    <input type="radio" name="fascia_oraria" value="Mattina (9-12)" checked>
+                                    <span>Mattina (9-12)</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="fascia_oraria" value="Pausa Pranzo (12-14)">
+                                    <span>Pausa Pranzo (12-14)</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="fascia_oraria" value="Pomeriggio (14-18)">
+                                    <span>Pomeriggio (14-18)</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="fascia_oraria" value="Qualsiasi orario">
+                                    <span>Qualsiasi orario</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="indirizzo">Indirizzo dell'immobile (o zona)</label>
+                            <input type="text" id="indirizzo" name="Indirizzo Immobile" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="messaggio">Breve descrizione dell'immobile e tue necessità</label>
+                            <textarea id="messaggio" name="Messaggio" placeholder="Es: Bilocale ristrutturato in zona Murri, cerco coppia di lavoratori referenziati. Libero da..."></textarea>
+                        </div>
+                        <div class="submit-container">
+                            <button type="submit" class="cta-button">Invia la tua richiesta</button>
+                        </div>
+                    </form>
+                    <div id="success-message">
+                        Grazie! Il tuo client di posta si sta aprendo per l'invio. Se non succede nulla, invia una mail a <strong>bologna@affitto-smart.it</strong>.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="logo-container">
+                <div class="logo-main">Affitto <span>Smart</span></div>
+                <div class="logo-tagline">Scartiamo il 98% dei candidati. Per te.</div>
+            </div>
+            <div class="contatti-completi">
+                <!-- SOSTITUISCI CON I TUOI DATI REALI -->
+                <p>Affitto Smart Bologna | <a href="tel:+393330000000">[Il Vostro Numero]</a> | <a href="mailto:bologna@affitto-smart.it">bologna@affitto-smart.it</a></p>
+            </div>
+            <div class="legal-links"> <a href="#">Privacy Policy</a> | <a href="#">Termini di Servizio</a> </div>
+            <p>© 2025 Affitto Smart. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+    
+    <script>
+    const form = document.getElementById('proprietari-form');
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Impedisce l'invio standard del form
+
+        // Raccolta dei dati dai campi
+        const nome = document.getElementById('nome').value;
+        const email = document.getElementById('email').value;
+        const telefono = document.getElementById('telefono').value;
+        const indirizzo = document.getElementById('indirizzo').value;
+        const messaggio = document.getElementById('messaggio').value;
+        
+        // Lettura del radio button selezionato per la fascia oraria
+        const fasciaOraria = document.querySelector('input[name="fascia_oraria"]:checked').value;
+        
+        // ** SOSTITUISCI QUESTO INDIRIZZO EMAIL CON IL TUO **
+        const tuoEmail = 'bologna@affitto-smart.it';
+
+        const subject = `Nuova Richiesta Proprietario: ${nome} - Immobile in ${indirizzo}`;
+
+        // Aggiunta della fascia oraria nel corpo dell'email
+        const body = `Un nuovo proprietario ha compilato il modulo sul sito.\n
+------------------------------------------------------
+Dettagli del Contatto:
+------------------------------------------------------
+- Nome: ${nome}
+- Email: ${email}
+- Telefono: ${telefono}
+- Fascia oraria preferita: ${fasciaOraria}
+\n------------------------------------------------------
+Dettagli dell'Immobile:
+------------------------------------------------------
+- Indirizzo/Zona: ${indirizzo}
+- Messaggio:
+${messaggio}
+\n------------------------------------------------------
+`;
+
+        // Crea il link mailto e lo apre
+        let mailtoLink = `mailto:${tuoEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        
+        // Tenta di aprire il client di posta
+        window.location.href = mailtoLink;
+
+        // Mostra un messaggio di cortesia dopo un breve ritardo
+        setTimeout(() => {
+            document.getElementById('success-message').style.display = 'block';
+        }, 1500);
+    });
+    </script>
+</body>
+</html>
