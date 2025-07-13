@@ -125,177 +125,158 @@
         </div>
     </div>
 
-    <script>
-        const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
-        const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
-        const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
-        
-        // Mappa delle icone per i requisiti
-        const ICONS_MAP = {
-            'situazione_lavorativa': 'fa-solid fa-briefcase',
-            'animali': 'fa-solid fa-paw',
-            'fumatore': 'fa-solid fa-smoking',
-            'sesso_utente': 'fa-solid fa-venus-mars'
-            // Aggiungi qui altre mappature se hai altri requisiti con icone
-        };
+   <script>
+    const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
+    const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
+    const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+    
+    // --- MODIFICA CHIAVE: Dichiarazione delle variabili a livello globale ---
+    let allProperties = [], allRequirements = [], allCandidates = [];
 
-        function csvToObjects(csv) {
-            if (!csv || typeof csv !== 'string') return [];
-            const lines = csv.trim().split('\n');
-            if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
-            const objects = [];
-            for (let i = 1; i < lines.length; i++) {
-                if (lines[i] && lines[i].trim() !== '') {
-                    const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    const obj = {};
-                    for (let j = 0; j < headers.length; j++) {
-                        if (headers[j]) obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
-                    }
-                    if (Object.keys(obj).length > 0) objects.push(obj);
+    const ICONS_MAP = {
+        'situazione_lavorativa': 'fa-solid fa-briefcase',
+        'animali': 'fa-solid fa-paw',
+        'fumatore': 'fa-solid fa-smoking',
+        'sesso_utente': 'fa-solid fa-venus-mars'
+    };
+
+    function csvToObjects(csv) {
+        if (!csv || typeof csv !== 'string') return [];
+        const lines = csv.trim().split('\n');
+        if (lines.length < 2) return [];
+        const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
+        const objects = [];
+        for (let i = 1; i < lines.length; i++) {
+            if (lines[i] && lines[i].trim() !== '') {
+                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                const obj = {};
+                for (let j = 0; j < headers.length; j++) {
+                    if (headers[j]) obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
                 }
+                if (Object.keys(obj).length > 0) objects.push(obj);
             }
-            return objects;
+        }
+        return objects;
+    }
+
+    function displayResults(properties, userProfile) {
+        const resultsContainer = document.getElementById('results-container');
+        resultsContainer.innerHTML = '';
+        if (properties.length === 0) {
+            resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
+            return;
         }
 
-        function displayResults(properties, userProfile) {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '';
-            if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
-                return;
-            }
-
-            properties.forEach(p => {
-                if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
-                
-                // --- NUOVA LOGICA PER LE ICONE DI COMPATIBILITÀ ---
-                let compatibilityHtml = '<div class="compatibility-icons">';
-                for (const key in userProfile) {
-                    // Mostra un'icona solo se l'utente ha fornito un valore per quel filtro
-                    // e se esiste un'icona mappata per quel filtro.
-                    if (userProfile[key] && ICONS_MAP[key]) {
-                        compatibilityHtml += `<div class="icon-tag" title="${key.replace('_', ' ')}: ${userProfile[key]}"><i class="${ICONS_MAP[key]}"></i></div>`;
-                    }
-                }
-                compatibilityHtml += '</div>';
-
-                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-                const postiTotali = parseInt(p.MaxPartecipanti);
-                const postiRimasti = postiTotali - prenotati;
-                let buttonHtml = (postiRimasti > 0) 
-                    ? `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></button>`
-                    : `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
-
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'property-card';
-                cardDiv.innerHTML = `
-                    <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}" loading="lazy"></div>
-                    <div class="property-card-info">
-                        ${compatibilityHtml}
-                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                        <h3>${p.Titolo}</h3>
-                        <div class="price">${p.Prezzo} €/mese</div>
-                        <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
-                        <div class="open-day-info"><i class="fa-solid fa-calendar-check"></i> Open Day: ${p.DataOpenDay || 'Da Definire'}</div>
-                        <div class="booking-action">${buttonHtml}</div>
-                    </div>`;
-                resultsContainer.appendChild(cardDiv);
-            });
-            document.querySelectorAll('.cta-button[data-link]').forEach(button => {
-                button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
-            });
-        }
-
-        function openPaymentModal(stripeLink) {
-            const modal = document.getElementById('payment-modal');
-            document.getElementById('payment-button').href = stripeLink;
-            modal.classList.add('visible');
-            document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
-            modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
-        }
-        
-        async function main() {
-            const resultsContainer = document.getElementById('results-container');
-            let allProperties = [], allRequirements = [], allCandidates = [];
+        properties.forEach(p => {
+            if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
             
-            try {
-                const [propsRes, reqsRes, candsRes] = await Promise.all([
-                    fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
-                ]);
-                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Risposta di rete non valida.');
-                
-                allProperties = csvToObjects(await propsRes.text());
-                allRequirements = csvToObjects(await reqsRes.text());
-                allCandidates = csvToObjects(await candsRes.text());
-                
-                const params = new URLSearchParams(window.location.search);
-                const userProfile = {
-                    tipo: (params.get('tipo') || '').toLowerCase().trim(),
-                    zona: (params.get('zona') || '').toLowerCase().trim(),
-                    prezzo: parseInt(params.get('prezzo')) || Infinity,
-                    situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
-                    reddito_utente: parseInt(params.get('reddito_utente')) || 0,
-                    sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
-                    fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
-                    animali: (params.get('animali') || '').toLowerCase().trim()
-                };
-
-                const finalProperties = allProperties.filter(property => {
-                    // --- FILTRO INIZIALE (primo box "Cosa Cerchi") ---
-                    if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
-                    if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) return false;
-                    if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) return false;
-                    if (parseInt(property.Prezzo) > userProfile.prezzo) return false;
-
-                    // --- FILTRO REQUISITI (secondo box "Completa Profilo") ---
-                    const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
-
-                    // Cicla su ogni requisito dell'immobile
-                    for (const req of propertyRequirements) {
-                        const reqKey = (req.Requisito || '').trim();
-                        const reqValue = (req.Valore_Richiesto || '').toLowerCase().trim();
-                        
-                        // Se il requisito non è specificato o è 'indifferente', l'immobile passa questo controllo.
-                        if (!reqKey || !reqValue || reqValue === 'indifferente') {
-                            continue; 
-                        }
-
-                        // Prende il valore corrispondente dal profilo dell'utente.
-                        const userValue = userProfile[reqKey];
-
-                        // Se l'utente NON ha fornito un valore per questo requisito, l'immobile non è compatibile.
-                        if (!userValue) {
-                            return false; 
-                        }
-                        
-                        // Controlli specifici
-                        if (reqKey === 'reddito_minimo') {
-                            // Confronto numerico per il reddito
-                            if (userProfile.reddito_utente < parseInt(reqValue)) {
-                                return false; // Reddito insufficiente
-                            }
-                        } else {
-                            // Confronto testuale per tutti gli altri requisiti
-                            if (userValue !== reqValue) {
-                                return false; // Il valore dell'utente non corrisponde a quello richiesto
-                            }
-                        }
-                    }
-                    
-                    // Se l'immobile ha superato tutti i filtri e tutti i requisiti, è compatibile.
-                    return true;
-                });
-                
-                displayResults(finalProperties, userProfile);
-
-            } catch (error) {
-                console.error("ERRORE CRITICO DURANTE IL CARICAMENTO DATI:", error);
-                resultsContainer.innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
+            let compatibilityHtml = '<div class="compatibility-icons">';
+            for (const key in userProfile) {
+                if (userProfile[key] && ICONS_MAP[key]) {
+                    compatibilityHtml += `<div class="icon-tag" title="${key.replace('_', ' ')}: ${userProfile[key]}"><i class="${ICONS_MAP[key]}"></i></div>`;
+                }
             }
-        }
+            compatibilityHtml += '</div>';
+
+            // ORA QUESTA VARIABILE È VISIBILE E LA FUNZIONE NON DARÀ ERRORE
+            const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+            const postiTotali = parseInt(p.MaxPartecipanti);
+            const postiRimasti = postiTotali - prenotati;
+            let buttonHtml = (postiRimasti > 0) 
+                ? `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></button>`
+                : `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'property-card';
+            cardDiv.innerHTML = `
+                <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}" loading="lazy"></div>
+                <div class="property-card-info">
+                    ${compatibilityHtml}
+                    <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                    <h3>${p.Titolo}</h3>
+                    <div class="price">${p.Prezzo} €/mese</div>
+                    <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
+                    <div class="open-day-info"><i class="fa-solid fa-calendar-check"></i> Open Day: ${p.DataOpenDay || 'Da Definire'}</div>
+                    <div class="booking-action">${buttonHtml}</div>
+                </div>`;
+            resultsContainer.appendChild(cardDiv);
+        });
+        document.querySelectorAll('.cta-button[data-link]').forEach(button => {
+            button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
+        });
+    }
+
+    function openPaymentModal(stripeLink) {
+        const modal = document.getElementById('payment-modal');
+        document.getElementById('payment-button').href = stripeLink;
+        modal.classList.add('visible');
+        document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
+        modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
+    }
+    
+    async function main() {
+        const resultsContainer = document.getElementById('results-container');
+        // --- MODIFICA CHIAVE: Rimuoviamo 'let' da qui, così usiamo le variabili globali ---
         
-        document.addEventListener('DOMContentLoaded', main);
-    </script>
+        try {
+            const [propsRes, reqsRes, candsRes] = await Promise.all([
+                fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
+            ]);
+            if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Risposta di rete non valida.');
+            
+            // Assegniamo i valori alle variabili globali
+            allProperties = csvToObjects(await propsRes.text());
+            allRequirements = csvToObjects(await reqsRes.text());
+            allCandidates = csvToObjects(await candsRes.text());
+            
+            const params = new URLSearchParams(window.location.search);
+            const userProfile = {
+                tipo: (params.get('tipo') || '').toLowerCase().trim(),
+                zona: (params.get('zona') || '').toLowerCase().trim(),
+                prezzo: parseInt(params.get('prezzo')) || Infinity,
+                situazione_lavorativa: (params.get('situazione_lavorativa') || '').toLowerCase().trim(),
+                reddito_utente: parseInt(params.get('reddito_utente')) || 0,
+                sesso_utente: (params.get('sesso_utente') || '').toLowerCase().trim(),
+                fumatore: (params.get('fumatore') || '').toLowerCase().trim(),
+                animali: (params.get('animali') || '').toLowerCase().trim()
+            };
+
+            const finalProperties = allProperties.filter(property => {
+                if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
+                if (userProfile.tipo && (property.Tipo || '').toLowerCase().trim() !== userProfile.tipo) return false;
+                if (userProfile.zona && (property.Zona || '').toLowerCase().trim() !== userProfile.zona) return false;
+                if (parseInt(property.Prezzo) > userProfile.prezzo) return false;
+
+                const propertyRequirements = allRequirements.filter(r => r.ID_Immobile === property.ID);
+
+                for (const req of propertyRequirements) {
+                    const reqKey = (req.Requisito || '').trim();
+                    const reqValue = (req.Valore_Richiesto || '').toLowerCase().trim();
+                    
+                    if (!reqKey || !reqValue || reqValue === 'indifferente') continue; 
+
+                    const userValue = userProfile[reqKey];
+
+                    if (!userValue) return false; 
+                    
+                    if (reqKey === 'reddito_minimo') {
+                        if (userProfile.reddito_utente < parseInt(reqValue)) return false;
+                    } else {
+                        if (userValue !== reqValue) return false;
+                    }
+                }
+                return true;
+            });
+            
+            displayResults(finalProperties, userProfile);
+
+        } catch (error) {
+            console.error("ERRORE CRITICO DURANTE IL CARICAMENTO DATI:", error);
+            resultsContainer.innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', main);
+</script>
 </body>
 </html>
