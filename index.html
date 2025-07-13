@@ -17,6 +17,7 @@
             --colore-testo-chiaro: #616161; 
             --colore-sfondo-pagina: #f4f6f9; 
             --colore-bianco: #ffffff;
+            --colore-errore: #D32F2F; /* Colore per messaggi di errore */
         }
         html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
@@ -47,7 +48,6 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            /* Immagine di sfondo per inquilini, più accogliente */
             background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200');
             background-size: cover;
             background-position: center;
@@ -71,7 +71,7 @@
         
         .unified-form {
             background: var(--colore-bianco); 
-            color: var(--colore-testo); /* Ripristina il colore del testo per il form */
+            color: var(--colore-testo); 
             padding: 40px; 
             border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
@@ -119,17 +119,31 @@
             color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer;
         }
 
+        /* --- STILI PER LA VALIDAZIONE --- */
+        .filter-group select.input-error {
+            border-color: var(--colore-errore);
+        }
+        .error-message {
+            color: var(--colore-errore);
+            font-size: 0.85em;
+            margin-top: 5px;
+            height: 1.2em; /* Occupa lo spazio per evitare salti di layout */
+            visibility: hidden; /* Nascosto ma occupa spazio */
+        }
+        .error-message.visible {
+            visibility: visible;
+        }
+
         @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 600px) { .filter-grid { grid-template-columns: 1fr; } }
 
         /* WHY US / EXPLANATION SECTION (3 COLONNE) */
         .process-grid { 
-    display: grid; 
-    /* Crea 4 colonne su schermi grandi */
-    grid-template-columns: repeat(4, 1fr); 
-    gap: 25px; 
-    margin-top: 60px;
-}
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 25px; 
+            margin-top: 60px;
+        }
         .process-step { 
             text-align: center; padding: 30px; background: white; border-radius: 16px; 
             box-shadow: 0 8px 30px rgba(0,0,0,0.07);
@@ -193,23 +207,21 @@
             font-size: 1.5em;
             color: var(--colore-successo);
         }
-/* --- NUOVI STILI PER IMMAGINE RITAGLIATA --- */
-.guarantee-image {
-    width: 100%;
-    height: 300px; /* Impostiamo un'altezza fissa e più bassa */
-    border-radius: 16px;
-    overflow: hidden; /* Nasconde le parti dell'immagine che escono */
-    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-}
+        .guarantee-image {
+            width: 100%;
+            height: 300px; 
+            border-radius: 16px;
+            overflow: hidden; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
 
-.guarantee-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* L'immagine copre l'area senza deformarsi */
-    object-position: center 25%; /* <-- LA MAGIA È QUI */
-}
+        .guarantee-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            object-position: center 25%;
+        }
         
-        /* Media Query per la nuova sezione */
         @media (max-width: 768px) {
             .guarantee-content {
                 grid-template-columns: 1fr;
@@ -217,22 +229,21 @@
         }
 
         @media (max-width: 1100px) {
-    .process-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 colonne su tablet */
-    }
-    .faq-grid {
-        grid-template-columns: 1fr;
-    }
-}
-@media (max-width: 600px) {
-    .process-grid {
-        grid-template-columns: 1fr; /* 1 colonna su mobile */
-    }
+            .process-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 600px) {
+            .process-grid {
+                grid-template-columns: 1fr; 
+            }
+        }
         @media (max-width: 768px) { 
             .visual-process { grid-template-columns: 1fr; }
         }
-        
-        
     </style>
 </head>
 <body>
@@ -262,8 +273,27 @@
                         <div class="form-section" id="profile-section">
                         <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
                         <div class="filter-grid">
-                            <div class="filter-group"><label>Situazione Lavorativa</label><select name="situazione_lavorativa"><option value="" disabled selected>Seleziona...</option><option>Dipendente a tempo indeterminato</option><option>Studente/ssa con garante</option><option>Lavoratore Autonomo / P.IVA</option></select></div>
-                            <div class="filter-group"><label>Reddito Netto Mensile</label><select name="reddito_utente"><option value="" disabled selected>Seleziona fascia...</option><option value="1500">Meno di 1.500 €</option><option value="2000">1.501-2.000 €</option><option value="2500">2.001-2.500 €</option><option value="3000">Oltre 2.500 €</option></select></div>
+                            <div class="filter-group">
+                                <label>Situazione Lavorativa</label>
+                                <select name="situazione_lavorativa" id="situazione_lavorativa">
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option>Dipendente a tempo indeterminato</option>
+                                    <option>Studente/ssa con garante</option>
+                                    <option>Lavoratore Autonomo / P.IVA</option>
+                                </select>
+                                <p class="error-message" id="error-lavoro">Campo obbligatorio</p>
+                            </div>
+                            <div class="filter-group">
+                                <label>Reddito Netto Mensile</label>
+                                <select name="reddito_utente" id="reddito_utente">
+                                    <option value="" disabled selected>Seleziona fascia...</option>
+                                    <option value="1500">Meno di 1.500 €</option>
+                                    <option value="2000">1.501-2.000 €</option>
+                                    <option value="2500">2.001-2.500 €</option>
+                                    <option value="3000">Oltre 2.500 €</option>
+                                </select>
+                                <p class="error-message" id="error-reddito">Campo obbligatorio</p>
+                            </div>
                             <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
                             <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
                             <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
@@ -271,141 +301,126 @@
                         </div>
                     </div>
                     <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
-                </form>
-            </div>
-        </section>
+                </div> <!-- Chiusura di .unified-form -->
+            </section>
+        </form>
               
 
-             <!-- SOSTITUISCI LA VECCHIA SEZIONE "WHY US" CON QUESTA -->
-
-<section class="why-us section-light">
-    <div class="container text-center">
-        <h2 class="section-title">Il nostro non è un semplice annuncio.<br>È un invito a un evento esclusivo.</h2>
-        <p class="section-subtitle">Capire il nostro metodo significa capire perché avrai più chance di trovare la casa che desideri, senza stress.</p>
-        
-        <div class="process-grid">
-            <!-- Card 1 -->
-            <div class="process-step">
-                <div class="icon"><i class="fa-solid fa-users-slash"></i></div>
-                <h3>Basta Caos, Solo Qualità</h3>
-                <p>Sui portali gratuiti la tua candidatura è una goccia nell'oceano. Qui, invece, entri in un canale esclusivo dove competi solo con profili compatibili come il tuo.</p>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="process-step" style="background-color: var(--colore-primario); color: white; border-color: var(--colore-accento);">
-                <div class="icon" style="color: var(--colore-accento);"><i class="fa-solid fa-crown"></i></div>
-                <h3 style="color: white;">Il Canale Preferenziale</h3>
-                <p style="color: rgba(255,255,255,0.9);">Mentre gli altri perdono tempo, tu investi in un accesso diretto. Noi facciamo il lavoro sporco, tu arrivi dritto all'opportunità.</p>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="process-step">
-                <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div>
-                <h3>Il Pass per l'Esclusività</h3>
-                <p>Il tuo pass da 2,99€ non è un costo, è la chiave. Garantisce Open Day a numero chiuso e, se non vieni scelto, è valido per altre 2 opportunità.</p>
-            </div>
+    <section class="why-us section-light">
+        <div class="container text-center">
+            <h2 class="section-title">Il nostro non è un semplice annuncio.<br>È un invito a un evento esclusivo.</h2>
+            <p class="section-subtitle">Capire il nostro metodo significa capire perché avrai più chance di trovare la casa che desideri, senza stress.</p>
             
-            <!-- Card 4 -->
-            <div class="process-step">
-                <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
-                <h3>L'Open Day Vincente</h3>
-                <p>Un evento rilassato e professionale dove hai tutto il tempo per vedere la casa e fare la differenza. La tua migliore occasione per essere scelto.</p>
+            <div class="process-grid">
+                <div class="process-step">
+                    <div class="icon"><i class="fa-solid fa-users-slash"></i></div>
+                    <h3>Basta Caos, Solo Qualità</h3>
+                    <p>Sui portali gratuiti la tua candidatura è una goccia nell'oceano. Qui, invece, entri in un canale esclusivo dove competi solo con profili compatibili come il tuo.</p>
+                </div>
+                <div class="process-step" style="background-color: var(--colore-primario); color: white; border-color: var(--colore-accento);">
+                    <div class="icon" style="color: var(--colore-accento);"><i class="fa-solid fa-crown"></i></div>
+                    <h3 style="color: white;">Il Canale Preferenziale</h3>
+                    <p style="color: rgba(255,255,255,0.9);">Mentre gli altri perdono tempo, tu investi in un accesso diretto. Noi facciamo il lavoro sporco, tu arrivi dritto all'opportunità.</p>
+                </div>
+                <div class="process-step">
+                    <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div>
+                    <h3>Il Pass per l'Esclusività</h3>
+                    <p>Il tuo pass da 2,99€ non è un costo, è la chiave. Garantisce Open Day a numero chiuso e, se non vieni scelto, è valido per altre 2 opportunità.</p>
+                </div>
+                <div class="process-step">
+                    <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
+                    <h3>L'Open Day Vincente</h3>
+                    <p>Un evento rilassato e professionale dove hai tutto il tempo per vedere la casa e fare la differenza. La tua migliore occasione per essere scelto.</p>
+                </div>
             </div>
         </div>
-    </div>
-</section>
-            <!-- ============================================= -->
-        <!-- ===== NUOVA SEZIONE GARANZIA E FIDUCIA ===== -->
-        <!-- ============================================= -->
-        <section class="guarantee-section">
-            <div class="container">
-                <div class="guarantee-content">
-                    <div class="guarantee-image">
-                        <!-- Immagine che trasmette professionalità e interazione umana -->
-                        <img src="https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Il nostro team verifica ogni immobile">
-                    </div>
-                    <div class="guarantee-text">
-                        <h2>Annunci Verificati, Opportunità Reali.</h2>
-                        <p>Sappiamo quanto sia frustrante il mercato degli affitti. <br>Annunci che spariscono, foto ingannevoli, appuntamenti a vuoto.<br>Noi abbiamo eliminato tutto questo.<br>Il nostro impegno è la tua tranquillità.</p>
-                        <div class="guarantee-points">
-                            <div class="point">
-                                <i class="fa-solid fa-house-circle-check icon"></i>
-                                <span>Ogni immobile è verificato di persona dal nostro team.</span>
-                            </div>
-                            <div class="point">
-                                <i class="fa-solid fa-calendar-check icon"></i>
-                                <span>Gli Open Day sono eventi reali e confermati.</span>
-                            </div>
-                            <div class="point">
-                                <i class="fa-solid fa-shield-halved icon"></i>
-                                <span>La piccola fee è la tua assicurazione contro i perditempo.</span>
-                            </div>
+    </section>
+
+    <section class="guarantee-section">
+        <div class="container">
+            <div class="guarantee-content">
+                <div class="guarantee-image">
+                    <img src="https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Il nostro team verifica ogni immobile">
+                </div>
+                <div class="guarantee-text">
+                    <h2>Annunci Verificati, Opportunità Reali.</h2>
+                    <p>Sappiamo quanto sia frustrante il mercato degli affitti. <br>Annunci che spariscono, foto ingannevoli, appuntamenti a vuoto.<br>Noi abbiamo eliminato tutto questo.<br>Il nostro impegno è la tua tranquillità.</p>
+                    <div class="guarantee-points">
+                        <div class="point">
+                            <i class="fa-solid fa-house-circle-check icon"></i>
+                            <span>Ogni immobile è verificato di persona dal nostro team.</span>
+                        </div>
+                        <div class="point">
+                            <i class="fa-solid fa-calendar-check icon"></i>
+                            <span>Gli Open Day sono eventi reali e confermati.</span>
+                        </div>
+                        <div class="point">
+                            <i class="fa-solid fa-shield-halved icon"></i>
+                            <span>La piccola fee è la tua assicurazione contro i perditempo.</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
+    
+    <section class="section-white">
+        <div class="container">
+            <div class="visual-process">
+                <div>
+                    <h3>Il Controllo è nelle Tue Mani.</h3>
+                    <p class="section-subtitle" style="text-align: left; margin: 20px 0; max-width: 100%;">Dopo aver acquistato il tuo ticket, il passo finale è semplice. Verrai reindirizzato alla nostra agenda privata dove potrai scegliere, con un solo click, lo slot orario che preferisci per l'Open Day. <br>Niente telefonate, niente attese. <br>Solo tu, il tuo calendario e la tua prossima casa.</p>
+                </div>
+                <div>
+                    <img src="assets/calendly-esempio.png" alt="Esempio di prenotazione orario su Calendly">
+                </div>
+            </div>
+        </div>
+    </section>
         
-        <section class="section-white">
-            <div class="container">
-                <div class="visual-process">
-                    <div>
-                        <h3>Il Controllo è nelle Tue Mani.</h3>
-                        <p class="section-subtitle" style="text-align: left; margin: 20px 0; max-width: 100%;">Dopo aver acquistato il tuo ticket, il passo finale è semplice. Verrai reindirizzato alla nostra agenda privata dove potrai scegliere, con un solo click, lo slot orario che preferisci per l'Open Day. <br>Niente telefonate, niente attese. <br>Solo tu, il tuo calendario e la tua prossima casa.</p>
-                    </div>
-                    <div>
-                        <!-- MODIFICA: Link all'immagine nella cartella locale 'assets' -->
-                        <img src="assets/calendly-esempio.png" alt="Esempio di prenotazione orario su Calendly">
-                    </div>
+    <section id="faq" class="section-dark">
+        <div class="container">
+            <h2 class="section-title text-center">Hai Ancora Dubbi? È Normale!</h2>
+            <p class="section-subtitle text-center">La nostra trasparenza è la tua prima garanzia.</p>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <button class="faq-question"><span>Perché devo pagare 2,99€?</span><i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>La piccola fee è un filtro di serietà. Ci permette di garantire che solo persone realmente interessate partecipino, creando un'esperienza di visita di alta qualità per tutti. È il tuo modo per dire "Io ci sono e faccio sul serio".</p></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question"><span>Cosa succede al mio pass se non vengo scelto?</span><i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>Questa è la parte migliore. Il tuo pass non è legato a un singolo immobile. Se non vieni scelto, resta valido per accedere ai prossimi 3 Open Day per cui risulterai compatibile. È la nostra garanzia per non farti mai sprecare un'opportunità.</p></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question"><span>Se pago, ho più chance di ottenere la casa?</span><i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>Pagare ti dà l'accesso esclusivo all'Open Day, un vantaggio enorme. Non garantisce l'assegnazione, ma ti mette in una posizione privilegiata per fare un'ottima impressione sul proprietario, che farà la sua scelta finale.</p></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question"><span>Cosa succede dopo l'Open Day?</span><i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>Dopo la visita, potrai formalizzare il tuo interesse. Raccoglieremo le proposte e le presenteremo al proprietario. Ti garantiamo un feedback rapido, qualunque sia l'esito.</p></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question"><span>Chi si occupa del contratto d'affitto?</span><i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>Una volta che il proprietario ha scelto e tu hai accettato, vi metteremo in contatto diretto per finalizzare l'accordo. Possiamo fornirvi modelli di contratto standard e consigliarvi professionisti per la stesura e la registrazione.</p></div>
+                </div>
+                 <div class="faq-item">
+                    <button class="faq-question"><span>E per la consegna delle chiavi?</span><i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>La consegna delle chiavi avviene direttamente tra te e il proprietario al momento della firma del contratto o nella data di inizio locazione concordata. Il nostro ruolo termina con il matching perfetto.</p></div>
                 </div>
             </div>
-        </section>
-            
-
-        <section id="faq" class="section-dark">
-            <div class="container">
-                <h2 class="section-title text-center">Hai Ancora Dubbi? È Normale!</h2>
-                <p class="section-subtitle text-center">La nostra trasparenza è la tua prima garanzia.</p>
-                <!-- MODIFICA: FAQ espanse e in griglia a 2 colonne -->
-                <div class="faq-grid">
-                    <div class="faq-item">
-                        <button class="faq-question"><span>Perché devo pagare 2,99€?</span><i class="fa-solid fa-chevron-down"></i></button>
-                        <div class="faq-answer"><p>La piccola fee è un filtro di serietà. Ci permette di garantire che solo persone realmente interessate partecipino, creando un'esperienza di visita di alta qualità per tutti. È il tuo modo per dire "Io ci sono e faccio sul serio".</p></div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question"><span>Cosa succede al mio pass se non vengo scelto?</span><i class="fa-solid fa-chevron-down"></i></button>
-                        <div class="faq-answer"><p>Questa è la parte migliore. Il tuo pass non è legato a un singolo immobile. Se non vieni scelto, resta valido per accedere ai prossimi 3 Open Day per cui risulterai compatibile. È la nostra garanzia per non farti mai sprecare un'opportunità.</p></div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question"><span>Se pago, ho più chance di ottenere la casa?</span><i class="fa-solid fa-chevron-down"></i></button>
-                        <div class="faq-answer"><p>Pagare ti dà l'accesso esclusivo all'Open Day, un vantaggio enorme. Non garantisce l'assegnazione, ma ti mette in una posizione privilegiata per fare un'ottima impressione sul proprietario, che farà la sua scelta finale.</p></div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question"><span>Cosa succede dopo l'Open Day?</span><i class="fa-solid fa-chevron-down"></i></button>
-                        <div class="faq-answer"><p>Dopo la visita, potrai formalizzare il tuo interesse. Raccoglieremo le proposte e le presenteremo al proprietario. Ti garantiamo un feedback rapido, qualunque sia l'esito.</p></div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question"><span>Chi si occupa del contratto d'affitto?</span><i class="fa-solid fa-chevron-down"></i></button>
-                        <div class="faq-answer"><p>Una volta che il proprietario ha scelto e tu hai accettato, vi metteremo in contatto diretto per finalizzare l'accordo. Possiamo fornirvi modelli di contratto standard e consigliarvi professionisti per la stesura e la registrazione.</p></div>
-                    </div>
-                     <div class="faq-item">
-                        <button class="faq-question"><span>E per la consegna delle chiavi?</span><i class="fa-solid fa-chevron-down"></i></button>
-                        <div class="faq-answer"><p>La consegna delle chiavi avviene direttamente tra te e il proprietario al momento della firma del contratto o nella data di inizio locazione concordata. Il nostro ruolo termina con il matching perfetto.</p></div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
+    </section>
     </main>
 
     <footer class="footer">
         <p>© 2025 Affitto Smart | <a href="/propietario.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
     </footer>
+
      <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('unified-search-form');
             const preferencesSection = document.getElementById('preferences-section');
             const profileSection = document.getElementById('profile-section');
-            
             const preferenceInputs = preferencesSection.querySelectorAll('select, input');
             
             function checkPreferences() {
@@ -432,27 +447,46 @@
                 if (!profileSection.classList.contains('visible')) {
                     profileSection.classList.add('visible');
                     profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    
                     return;
                 }
                 
-                const requiredFields = profileSection.querySelectorAll('[required]');
-                let allRequiredFilled = true;
-                requiredFields.forEach(field => {
-                    if (!field.value) {
-                        allRequiredFilled = false;
-                        field.style.border = '2px solid red';
-                    } else {
-                        field.style.border = '1px solid #ccc';
-                    }
-                });
+                // --- NUOVA LOGICA DI VALIDAZIONE ---
+                const lavoroSelect = document.getElementById('situazione_lavorativa');
+                const redditoSelect = document.getElementById('reddito_utente');
+                const errorLavoro = document.getElementById('error-lavoro');
+                const errorReddito = document.getElementById('error-reddito');
 
-                if (allRequiredFilled) {
+                let isValid = true;
+
+                // Reset degli errori
+                lavoroSelect.classList.remove('input-error');
+                errorLavoro.classList.remove('visible');
+                redditoSelect.classList.remove('input-error');
+                errorReddito.classList.remove('visible');
+
+                // Validazione campo Situazione Lavorativa
+                if (lavoroSelect.value === '') {
+                    isValid = false;
+                    lavoroSelect.classList.add('input-error');
+                    errorLavoro.classList.add('visible');
+                }
+                
+                // Validazione campo Reddito Netto Mensile
+                if (redditoSelect.value === '') {
+                    isValid = false;
+                    redditoSelect.classList.add('input-error');
+                    errorReddito.classList.add('visible');
+                }
+
+                if (isValid) {
+                    // Se il form è valido, procedi con l'invio
                     const formData = new FormData(form);
                     const queryString = new URLSearchParams(formData).toString();
                     window.location.href = 'risultati.html?' + queryString;
                 } else {
-                    alert('Per favore, completa tutti i campi della sezione "Il Tuo Profilo".');
+                    // Altrimenti, la sottomissione è bloccata e gli errori sono visibili.
+                    // Puoi opzionalmente fare scroll al primo campo con errore.
+                    lavoroSelect.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
                 }
             });
 
