@@ -299,72 +299,106 @@
         <p>© 2025 Affitto Smart | <a href="/propietario.html">Sei un Proprietario? Clicca qui</a> | <a href="#">Privacy Policy</a></p>
     </footer>
      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('search-form');
-            const searchButton = document.getElementById('search-button');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Riferimenti agli elementi del DOM
+        const form = document.getElementById('search-form');
+        const searchButton = document.getElementById('search-button');
+        const preferencesSection = document.getElementById('preferences-section');
+        const profileSection = document.getElementById('profile-section');
 
-            // Elementi per i messaggi di errore
-            const errorSituazione = document.getElementById('error-situazione');
-            const errorReddito = document.getElementById('error-reddito');
+        // Campi del primo box per la logica di comparsa
+        const preferenceInputs = preferencesSection.querySelectorAll('select, input');
+        
+        // Elementi per i messaggi di errore
+        const errorSituazione = document.getElementById('error-situazione');
+        const errorReddito = document.getElementById('error-reddito');
+        
+        // Campi obbligatori da validare
+        const situazioneLavorativa = document.getElementById('situazione_lavorativa');
+        const redditoUtente = document.getElementById('reddito_utente');
+
+        // --- LOGICA 1: MOSTRA IL BOX DEL PROFILO DINAMICAMENTE (la tua logica originale) ---
+        function checkPreferences() {
+            let filledCount = 0;
+            preferenceInputs.forEach(input => {
+                // Considera un campo "compilato" se ha un valore
+                // e, se è un numero, è maggiore di zero.
+                if (input.value && (input.type !== 'number' || parseInt(input.value) > 0)) {
+                    filledCount++;
+                }
+            });
             
-            // Campi obbligatori da validare
-            const situazioneLavorativa = document.getElementById('situazione_lavorativa');
-            const redditoUtente = document.getElementById('reddito_utente');
-
-            if (form && searchButton) {
-                form.addEventListener('submit', function(event) {
-                    // Preveniamo sempre l'invio per fare il nostro controllo
-                    event.preventDefault();
-
-                    // Reset dei messaggi di errore ad ogni click
-                    errorSituazione.textContent = '';
-                    errorSituazione.classList.remove('visible');
-                    errorReddito.textContent = '';
-                    errorReddito.classList.remove('visible');
-
-                    let isValid = true;
-
-                    // Validazione #1: Situazione Lavorativa
-                    if (!situazioneLavorativa.value) {
-                        errorSituazione.textContent = 'Campo obbligatorio.';
-                        errorSituazione.classList.add('visible');
-                        isValid = false;
-                    }
-
-                    // Validazione #2: Reddito Netto Mensile
-                    if (!redditoUtente.value) {
-                        errorReddito.textContent = 'Campo obbligatorio.';
-                        errorReddito.classList.add('visible');
-                        isValid = false;
-                    }
-
-                    // Se tutto è valido, procediamo
-                    if (isValid) {
-                        // Ricostruiamo la query string per la pagina dei risultati
-                        const formData = new FormData(form);
-                        const queryString = new URLSearchParams(formData).toString();
-                        // Reindirizziamo l'utente alla pagina dei risultati
-                        window.location.href = 'risultati.html?' + queryString;
-                    } else {
-                        // Se non è valido, il form non viene inviato
-                        // e l'utente vede i messaggi di errore.
-                        console.log("Validazione fallita. Il form non verrà inviato.");
-                    }
-                });
+            // Se almeno 3 campi del primo box sono compilati, mostra il secondo box
+            if (filledCount >= 3) {
+                profileSection.style.maxHeight = profileSection.scrollHeight + "px";
+                profileSection.style.opacity = "1";
+                profileSection.style.paddingTop = "30px";
+                profileSection.style.marginTop = "30px";
+                profileSection.style.borderTop = "2px dashed #d0d0d0";
             }
+        }
 
-            // Aggiungo la logica per le FAQ, se presente
-            document.querySelectorAll('.faq-question').forEach(button => {
-                const faqItem = button.parentElement;
-                button.addEventListener('click', () => {
-                    const wasActive = faqItem.classList.contains('active');
-                    document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
-                    if (!wasActive) {
-                        faqItem.classList.add('active');
-                    }
-                });
+        // Aggiungi i listener per controllare la compilazione del primo box
+        preferenceInputs.forEach(input => {
+            input.addEventListener('change', checkPreferences);
+            // 'keyup' è utile per l'input numerico del prezzo
+            input.addEventListener('keyup', checkPreferences); 
+        });
+
+
+        // --- LOGICA 2: VALIDAZIONE AL CLICK DEL PULSANTE "SCOPRI" ---
+        if (form && searchButton) {
+            form.addEventListener('submit', function(event) {
+                // Preveniamo sempre l'invio per fare il nostro controllo
+                event.preventDefault();
+
+                // Reset dei messaggi di errore ad ogni click
+                errorSituazione.textContent = '';
+                errorSituazione.classList.remove('visible');
+                errorReddito.textContent = '';
+                errorReddito.classList.remove('visible');
+
+                let isValid = true;
+
+                // Validazione #1: Situazione Lavorativa
+                if (!situazioneLavorativa.value) {
+                    errorSituazione.textContent = 'Campo obbligatorio.';
+                    errorSituazione.classList.add('visible');
+                    isValid = false;
+                }
+
+                // Validazione #2: Reddito Netto Mensile
+                if (!redditoUtente.value) {
+                    errorReddito.textContent = 'Campo obbligatorio.';
+                    errorReddito.classList.add('visible');
+                    isValid = false;
+                }
+
+                // Se la validazione fallisce, focalizza l'attenzione sulla sezione del profilo
+                if (!isValid) {
+                    profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return; // Interrompi l'esecuzione qui
+                }
+                
+                // Se tutto è valido, procediamo con l'invio
+                const formData = new FormData(form);
+                const queryString = new URLSearchParams(formData).toString();
+                window.location.href = 'risultati.html?' + queryString;
+            });
+        }
+        
+        // Logica per le FAQ (invariata)
+        document.querySelectorAll('.faq-question').forEach(button => {
+            const faqItem = button.parentElement;
+            button.addEventListener('click', () => {
+                const wasActive = faqItem.classList.contains('active');
+                document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+                if (!wasActive) {
+                    faqItem.classList.add('active');
+                }
             });
         });
-    </script>
+    });
+</script>
 </body>
 </html>
