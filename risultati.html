@@ -183,7 +183,7 @@
             const postiTotali = parseInt(p.MaxPartecipanti);
             const postiRimasti = postiTotali - prenotati;
             let buttonHtml = (postiRimasti > 0) 
-                ? `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></button>`
+                ? `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></button>`
                 : `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
 
             const cardDiv = document.createElement('div');
