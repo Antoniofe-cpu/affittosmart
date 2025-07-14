@@ -38,21 +38,33 @@
     .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
     
     /* HEADER */
-    .header { 
-        display: flex; 
-        align-items: center; 
-        padding: 20px 40px; 
-        border-bottom: 1px solid #eee; 
-    }
-    .logo { 
-        font-size: 2.2em; 
-        font-weight: 800; 
-        color: var(--colore-primario); 
-        text-decoration: none; 
-        margin-right: auto; /* Spinge tutto il resto a destra */
-    }
-    .logo span { font-weight: 400; color: var(--colore-secondario); }
-    .header-actions { flex-shrink: 0; }
+    .header {
+    display: flex;
+    justify-content: center; /* Forza il contenuto principale (il logo) a centrarsi */
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 1px solid #eee;
+    position: relative; /* Necessario per il posizionamento assoluto del figlio */
+}
+
+.logo {
+    font-size: 2.2em;
+    font-weight: 800;
+    color: var(--colore-primario);
+    text-decoration: none;
+    /* Rimuovi margin-right: auto; non serve più */
+}
+.logo span { 
+    font-weight: 400; 
+    color: var(--colore-secondario); 
+}
+
+.header-actions {
+    position: absolute; /* Strappa il pulsante dal flusso normale */
+    right: 40px; /* Lo posiziona a 40px dal bordo destro */
+    top: 50%; /* Lo posiziona a metà altezza */
+    transform: translateY(-50%); /* Lo centra verticalmente in modo perfetto */
+}
     .login-link { 
         display: inline-flex; 
         align-items: center; 
