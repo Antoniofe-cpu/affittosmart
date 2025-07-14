@@ -364,7 +364,9 @@
             <p class="copyright">© 2025 Affitto Smart. Tutti i diritti riservati.</p>
         </div>
     </footer>
-    <!-- MODAL 1: Per il Login / Accesso Diretto -->
+   <!-- === HTML DEFINITIVO PER I MODAL === -->
+
+<!-- MODAL 1: Per il Login / Accesso Diretto -->
 <div class="modal-overlay" id="login-modal">
     <div class="modal-content">
         <button class="close-modal-button" aria-label="Chiudi modal">×</button>
@@ -376,7 +378,7 @@
                 <input type="email" id="login-email" required>
                 <p class="error-message" id="login-error-email"></p>
             </div>
-            <button type="submit" id="login-modal-button" class="login-button">Inviami il Link di Accesso</button>
+            <button type="submit" class="login-button">Inviami il Link di Accesso</button>
         </form>
     </div>
 </div>
@@ -393,29 +395,30 @@
                 <input type="email" id="search-user-email" required placeholder="mario.rossi@email.com">
                 <p class="error-message" id="search-error-email"></p>
             </div>
-            <button type="submit" id="search-modal-button" class="login-button">Vedi i Risultati</button>
+            <button type="submit" class="login-button">Vedi i Risultati</button>
         </form>
     </div>
 </div>
+
+<!-- === FINE HTML MODAL === -->
 
      <script>
         document.addEventListener('DOMContentLoaded', function() {
             const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
              const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec';
             
-             // === RIFERIMENTI AGLI ELEMENTI DEL DOM ===
+            // === RIFERIMENTI AGLI ELEMENTI DEL DOM ===
         const mainSearchForm = document.getElementById('unified-search-form');
         const searchButton = document.getElementById('search-button');
         const profileSection = document.getElementById('profile-section');
+        const openLoginModalButton = document.getElementById('open-login-modal');
         
-       const openLoginModalButton = document.getElementById('open-login-modal');
-       const loginModal = document.getElementById('login-modal'); // Deve trovare l'HTML sopra
-       const searchModal = document.getElementById('search-modal'); // Deve trovare l'HTML sopra
+        const loginModal = document.getElementById('login-modal'); // Cerca ID "login-modal"
+        const searchModal = document.getElementById('search-modal'); // Cerca ID "search-modal"
         
-        const searchModal = document.getElementById('email-request-modal');
-        const searchModalForm = document.getElementById('email-modal-form');
+        const loginModalForm = document.getElementById('login-modal-form');
+        const searchModalForm = document.getElementById('search-modal-form');
 
-        // Variabile per gestire le fasi del form di ricerca
         let formPhase = 1;
 
         // === FUNZIONI HELPER ===
@@ -455,16 +458,23 @@
         }
 
         // === GESTIONE APERTURA/CHIUSURA DEI MODAL ===
-        openLoginModalButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            openModal(loginModal);
-        });
+        if (openLoginModalButton) {
+            openLoginModalButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(loginModal);
+            });
+        }
 
         [loginModal, searchModal].forEach(modal => {
-            modal.querySelector('.close-modal-button').addEventListener('click', () => closeModal(modal));
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal(modal);
-            });
+            // --- CONTROLLO DI SICUREZZA CHE RISOLVE L'ERRORE ---
+            if (modal) { 
+                modal.querySelector('.close-modal-button').addEventListener('click', () => closeModal(modal));
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal(modal);
+                });
+            } else {
+                console.error("ERRORE: Uno degli elementi modal non è stato trovato nell'HTML.");
+            }
         });
 
         // === LOGICA DEL WIZARD DEL FORM DI RICERCA PRINCIPALE ===
