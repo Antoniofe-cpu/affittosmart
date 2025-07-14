@@ -39,9 +39,22 @@
     }
     .ticket-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
     
-    .ticket-card.concluded {
-        opacity: 0.7;
-    }
+    /* NUOVO BLOCCO CSS - PIÙ COMPLETO */
+.ticket-card.concluded {
+    opacity: 0.65; /* Leggermente meno trasparente per leggibilità */
+    transition: opacity 0.3s ease; /* Aggiunge una transizione fluida */
+}
+
+/* Applica la scala di grigi solo all'immagine, non al testo */
+.ticket-card.concluded .ticket-card-img {
+    filter: grayscale(100%);
+}
+
+/* Opzionale: Rimuove l'effetto hover sulle card concluse */
+.ticket-card.concluded:hover {
+    transform: none;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
     .ticket-card.concluded .ticket-card-img {
         filter: grayscale(80%);
     }
