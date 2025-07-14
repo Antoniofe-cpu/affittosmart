@@ -31,29 +31,33 @@
         .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
         .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
         
-         .header { 
-        display: flex; 
-        justify-content: space-between;
-        align-items: center; 
-        padding: 20px 40px; 
-        border-bottom: 1px solid #eee; 
-    }
-    .logo { 
-        font-size: 2.2em; 
-        font-weight: 800; 
-        color: var(--colore-primario); 
-        text-decoration: none; 
-    }
+         /* NUOVO CSS HEADER */
+.header {
+    display: flex;
+    align-items: center; /* Allinea verticalmente */
+    padding: 20px 40px;
+    border-bottom: 1px solid #eee;
+}
+
+.logo {
+    font-size: 2.2em;
+    font-weight: 800;
+    color: var(--colore-primario);
+    text-decoration: none;
+    margin-right: auto; /* <<< LA MAGIA È QUI: spinge tutto il resto a destra */
+}
+
+/* Assicurati che il contenitore del pulsante esista */
+.header-actions {
+    flex-shrink: 0; /* Impedisce al pulsante di rimpicciolirsi */
+}
     .logo span { 
         font-weight: 400; 
         color: var(--colore-secondario); 
     }
         /* === STILI PER IL PULSANTE/LINK "LA MIA AREA" NELL'HEADER === */
 
-.header-actions {
-    /* Questo contenitore serve se vuoi aggiungere altri elementi in futuro,
-       come un numero di telefono o altri link. */
-}
+
 
 .login-link {
     display: inline-flex; /* Allinea l'icona e il testo sulla stessa linea */
@@ -241,13 +245,15 @@
 </head>
 <body>
     <header class="header">
-        <a href="index.html" class="logo">Affitto <span>Smart</span></a>
-        <div class="header-actions">
-            <a href="#" id="open-recover-modal" class="login-link">
-                <i class="fa-solid fa-ticket"></i> La Mia Area
-            </a>
-        </div>
-    </header>
+    <a href="index.html" class="logo">Affitto <span>Smart</span></a>
+    
+    <div class="header-actions">
+        <a href="#" id="open-login-modal" class="login-link">
+            <i class="fa-solid fa-user-circle"></i> 
+            <span>La Mia Area</span>
+        </a>
+    </div>
+</header>
 
      <main>
         <form id="unified-search-form" novalidate>
@@ -358,26 +364,39 @@
             <p class="copyright">© 2025 Affitto Smart. Tutti i diritti riservati.</p>
         </div>
     </footer>
-    <!-- MODAL RICHIESTA EMAIL -->
-    <div class="modal-overlay" id="email-request-modal">
-        <div class="modal-content">
-            <button class="close-modal-button" aria-label="Chiudi modal">×</button>
-            <h1>Un Ultimo Passo...</h1>
-            <p>Inserisci la tua email per vedere gli annunci compatibili. Se sei già nostro cliente, ti riconosceremo!</p>
-            <form id="email-modal-form" novalidate>
-                <div class="form-group">
-                    <label for="modal-user-email">Il tuo indirizzo email</label>
-                    <input type="email" id="modal-user-email" name="user_email" required placeholder="mario.rossi@email.com">
-                    <p class="error-message" id="modal-error-email"></p>
-                </div>
-                <button type="submit" id="modal-submit-button" class="login-button">Vedi i Risultati</button>
-            </form>
-        </div>
+    <!-- MODAL 1: Per il Login / Accesso Diretto -->
+<div class="modal-overlay" id="login-modal">
+    <div class="modal-content">
+        <button class="close-modal-button" aria-label="Chiudi modal">×</button>
+        <h1>Accedi alla Tua Area</h1>
+        <p>Inserisci la tua email per vedere le tue prenotazioni.</p>
+        <form id="login-modal-form" novalidate>
+            <div class="form-group">
+                <label for="login-email">Indirizzo Email</label>
+                <input type="email" id="login-email" required>
+                <p class="error-message" id="login-error-email"></p>
+            </div>
+            <button type="submit" id="login-modal-button" class="login-button">Inviami il Link di Accesso</button>
+        </form>
     </div>
+</div>
 
-    <!-- === INIZIO MODAL DI RECUPERO ACCESSO === -->
-   
-    <!-- === FINE MODAL DI RECUPERO ACCESSO === -->
+<!-- MODAL 2: Per completare la Ricerca -->
+<div class="modal-overlay" id="search-modal">
+    <div class="modal-content">
+        <button class="close-modal-button" aria-label="Chiudi modal">×</button>
+        <h1>Un Ultimo Passo...</h1>
+        <p>Inserisci la tua email per vedere gli annunci compatibili. Se sei già nostro cliente, ti riconosceremo!</p>
+        <form id="search-modal-form" novalidate>
+            <div class="form-group">
+                <label for="search-user-email">Il tuo indirizzo email</label>
+                <input type="email" id="search-user-email" required placeholder="mario.rossi@email.com">
+                <p class="error-message" id="search-error-email"></p>
+            </div>
+            <button type="submit" id="search-modal-button" class="login-button">Vedi i Risultati</button>
+        </form>
+    </div>
+</div>
 
      <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -389,9 +408,9 @@
         const searchButton = document.getElementById('search-button');
         const profileSection = document.getElementById('profile-section');
         
-        const openLoginModalButton = document.getElementById('open-recover-modal'); // Pulsante "La Mia Area"
-        const loginModal = document.getElementById('recover-access-modal');
-        const loginModalForm = document.getElementById('recover-form-modal');
+       const openLoginModalButton = document.getElementById('open-login-modal');
+       const loginModal = document.getElementById('login-modal'); // Deve trovare l'HTML sopra
+       const searchModal = document.getElementById('search-modal'); // Deve trovare l'HTML sopra
         
         const searchModal = document.getElementById('email-request-modal');
         const searchModalForm = document.getElementById('email-modal-form');
