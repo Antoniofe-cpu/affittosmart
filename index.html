@@ -48,6 +48,41 @@
         font-weight: 400; 
         color: var(--colore-secondario); 
     }
+        /* === STILI PER IL PULSANTE/LINK "LA MIA AREA" NELL'HEADER === */
+
+.header-actions {
+    /* Questo contenitore serve se vuoi aggiungere altri elementi in futuro,
+       come un numero di telefono o altri link. */
+}
+
+.login-link {
+    display: inline-flex; /* Allinea l'icona e il testo sulla stessa linea */
+    align-items: center;  /* Centra verticalmente icona e testo */
+    gap: 10px;            /* Spazio tra l'icona e il testo */
+    
+    font-weight: 600;
+    color: var(--colore-primario);
+    background-color: #e3f2fd; /* Sfondo azzurrino molto leggero */
+    
+    padding: 10px 20px;
+    border-radius: 50px; /* Crea la forma a "pillola" */
+    text-decoration: none;
+    
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer; /* Fa apparire la manina al passaggio del mouse */
+}
+
+.login-link:hover {
+    background-color: var(--colore-bianco);
+    border-color: var(--colore-primario);
+    transform: translateY(-2px); /* Effetto di leggero sollevamento */
+    box-shadow: 0 4px 12px rgba(13, 71, 161, 0.1);
+}
+
+.login-link .fa-solid {
+    font-size: 1.2em; /* Rende l'icona leggermente più prominente del testo */
+}
 
         .hero-search-wrapper { position: relative; padding: 80px 0; color: var(--colore-bianco); text-align: center; }
         .hero-search-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200'); background-size: cover; background-position: center; z-index: 1; }
