@@ -31,7 +31,13 @@
         .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
         .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
         
-        .header { display: flex; justify-content: center; align-items: center; padding: 25px 40px; border-bottom: 1px solid #eee; }
+        .header { 
+    display: flex; 
+    justify-content: space-between; /* Questo mette spazio tra gli elementi */
+    align-items: center; 
+    padding: 20px 40px; 
+    border-bottom: 1px solid #eee; 
+}
         .logo { font-size: 2.2em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
         .logo span { font-weight: 400; color: var(--colore-secondario); }
 
@@ -302,7 +308,7 @@
                 <p><a href="tel:+393330000000">[Il Vostro Numero]</a> | <a href="mailto:bologna@affitto-smart.it">bologna@affitto-smart.it</a></p>
             </div>
             <div class="legal-links">
-                <a href="recupera-accesso.html">Accedi / Gestisci Ticket</a>
+                
                 <a href="proprietario.html">Sei un Proprietario?</a>
                 <a href="#">Privacy Policy</a>
             </div>
@@ -327,122 +333,201 @@
     </div>
 
     <!-- === INIZIO MODAL DI RECUPERO ACCESSO === -->
-    <div class="modal-overlay" id="recover-access-modal">
-        <div class="modal-content">
-            <button class="close-modal-button" aria-label="Chiudi modal">×</button>
-            <h1>Accedi alla Tua Area</h1>
-            <p>Inserisci l'email che hai usato per la prenotazione. Ti invieremo un link personale per accedere alla tua dashboard.</p>
-            <form id="recover-form-modal">
-                <div class="form-group">
-                    <label for="modal-email">La tua Email</label>
-                    <input type="email" id="modal-email" name="email" required>
-                </div>
-                <button type="submit" class="login-button">Inviami il Link</button>
-            </form>
-            <div id="modal-form-message" class="form-message"></div>
-        </div>
-    </div>
+   
     <!-- === FINE MODAL DI RECUPERO ACCESSO === -->
 
      <script>
         document.addEventListener('DOMContentLoaded', function() {
             const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+             const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec';
             
-            const mainSearchForm = document.getElementById('unified-search-form');
-            const profileSection = document.getElementById('profile-section');
-            const emailModal = document.getElementById('email-request-modal');
-            const closeModalButton = emailModal.querySelector('.close-modal-button');
-            const emailModalForm = document.getElementById('email-modal-form');
-            const modalSubmitButton = document.getElementById('modal-submit-button');
+             // === RIFERIMENTI AGLI ELEMENTI DEL DOM ===
+        const mainSearchForm = document.getElementById('unified-search-form');
+        const searchButton = document.getElementById('search-button');
+        const profileSection = document.getElementById('profile-section');
+        
+        const openLoginModalButton = document.getElementById('open-recover-modal'); // Pulsante "La Mia Area"
+        const loginModal = document.getElementById('recover-access-modal');
+        const loginModalForm = document.getElementById('recover-form-modal');
+        
+        const searchModal = document.getElementById('email-request-modal');
+        const searchModalForm = document.getElementById('email-modal-form');
 
-            document.getElementById('preferences-section').addEventListener('change', () => {
-                profileSection.classList.add('visible');
-            });
+        // Variabile per gestire le fasi del form di ricerca
+        let formPhase = 1;
 
-            function csvToObjects(csv) {
-                if (!csv) return [];
-                const lines = csv.trim().split(/\r\n|\n/);
-                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-                return lines.slice(1).map(line => {
-                    if (!line) return null;
-                    const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    return headers.reduce((obj, header, i) => {
-                        obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
-                        return obj;
-                    }, {});
-                }).filter(Boolean);
+        // === FUNZIONI HELPER ===
+        function csvToObjects(csv) {
+            if (!csv) return [];
+            const lines = csv.trim().split(/\r\n|\n/);
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            return lines.slice(1).map(line => {
+                if (!line) return null;
+                const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                return headers.reduce((obj, header, i) => {
+                    obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
+                    return obj;
+                }, {});
+            }).filter(Boolean);
+        }
+
+        function openModal(modal) {
+            modal.classList.add('visible');
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('visible');
+        }
+
+        function validateEmail(inputElement, errorElement) {
+            const email = inputElement.value.trim();
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                errorElement.textContent = "Per favore, inserisci un'email valida.";
+                errorElement.classList.add('visible');
+                inputElement.classList.add('input-error');
+                return null;
             }
-            
-            mainSearchForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                emailModal.classList.add('visible');
-            });
+            errorElement.classList.remove('visible');
+            inputElement.classList.remove('input-error');
+            return email;
+        }
 
-            function closeModal() {
-                emailModal.classList.remove('visible');
-            }
-            closeModalButton.addEventListener('click', closeModal);
-            emailModal.addEventListener('click', (e) => {
-                if (e.target === emailModal) closeModal();
-            });
+        // === GESTIONE APERTURA/CHIUSURA DEI MODAL ===
+        openLoginModalButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal(loginModal);
+        });
 
-            emailModalForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const emailInput = document.getElementById('modal-user-email');
-                const email = emailInput.value.trim();
-                const errorEmail = document.getElementById('modal-error-email');
-                
-                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    emailInput.classList.add('input-error');
-                    errorEmail.textContent = "Per favore, inserisci un'email valida.";
-                    errorEmail.classList.add('visible');
-                    return;
-                } else {
-                    emailInput.classList.remove('input-error');
-                    errorEmail.classList.remove('visible');
-                }
-
-                modalSubmitButton.disabled = true;
-                modalSubmitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Controllo...';
-
-                try {
-                    const response = await fetch(CANDIDATES_URL);
-                    if (!response.ok) throw new Error(`Errore di rete: ${response.statusText}`);
-                    
-                    const csvText = await response.text();
-                    const candidates = csvToObjects(csvText);
-                    const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-
-                    const mainFormData = new FormData(mainSearchForm);
-                    mainFormData.append('user_email', email); // Aggiunge l'email dal modal
-                    
-                    const queryString = new URLSearchParams(mainFormData).toString();
-                    let finalUrl = `risultati.html?${queryString}`;
-
-                    if (existingUser && existingUser.Token) {
-                        finalUrl += `&token=${existingUser.Token}`;
-                    }
-                    
-                    window.location.href = finalUrl;
-
-                } catch (error) {
-                    console.error("Errore durante la ricerca:", error);
-                    alert("Si è verificato un problema di connessione. Assicurati che l'URL del foglio di calcolo sia corretto e pubblicato. Riprova.");
-                    modalSubmitButton.disabled = false;
-                    modalSubmitButton.innerHTML = 'Vedi i Risultati';
-                }
-            });
-            
-            document.querySelectorAll('.faq-question').forEach(button => {
-                const faqItem = button.parentElement;
-                button.addEventListener('click', () => {
-                    const wasActive = faqItem.classList.contains('active');
-                    document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
-                    if (!wasActive) faqItem.classList.add('active');
-                });
+        [loginModal, searchModal].forEach(modal => {
+            modal.querySelector('.close-modal-button').addEventListener('click', () => closeModal(modal));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal);
             });
         });
-    </script>
+
+        // === LOGICA DEL WIZARD DEL FORM DI RICERCA PRINCIPALE ===
+        mainSearchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (formPhase === 1) {
+                // FASE 1 -> FASE 2: Mostra la sezione del profilo
+                profileSection.classList.add('visible');
+                formPhase = 2;
+                searchButton.innerHTML = 'Verifica e Cerca <i class="fa-solid fa-arrow-right"></i>';
+                profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (formPhase === 2) {
+                // FASE 2 -> FASE 3: Valida il profilo e apre il modal per l'email
+                const lavoroSelect = document.getElementById('situazione_lavorativa');
+                const redditoSelect = document.getElementById('reddito_utente');
+                const errorLavoro = document.getElementById('error-lavoro');
+                const errorReddito = document.getElementById('error-reddito');
+                let isProfileValid = true;
+
+                // Reset errori
+                [lavoroSelect, redditoSelect].forEach(el => el.classList.remove('input-error'));
+                [errorLavoro, errorReddito].forEach(el => el.classList.remove('visible'));
+
+                if (!lavoroSelect.value) {
+                    isProfileValid = false;
+                    lavoroSelect.classList.add('input-error');
+                    errorLavoro.classList.add('visible');
+                }
+                if (!redditoSelect.value) {
+                    isProfileValid = false;
+                    redditoSelect.classList.add('input-error');
+                    errorReddito.classList.add('visible');
+                }
+
+                if (isProfileValid) {
+                    openModal(searchModal); // Se valido, apri il modal di ricerca
+                } else {
+                    lavoroSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+        
+        // === LOGICA DEL MODAL DI ACCESSO DIRETTO ("LA MIA AREA") ===
+        loginModalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById('modal-email');
+            const errorDiv = document.getElementById('modal-form-message');
+            const email = validateEmail(emailInput, errorDiv.parentElement.querySelector('input'), errorDiv.parentElement.querySelector('.error-message')); // Da sistemare
+            
+            const button = e.target.querySelector('button');
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
+            errorDiv.className = 'form-message'; // Reset
+            
+            const urlWithParams = `${WEB_APP_URL}?action=sendMagicLink&email=${encodeURIComponent(email)}`;
+            
+            try {
+                const response = await fetch(urlWithParams);
+                const result = await response.json();
+
+                if (result.result === 'success') {
+                    errorDiv.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
+                    errorDiv.className = 'form-message success';
+                } else {
+                     throw new Error(result.message || 'Errore sconosciuto');
+                }
+            } catch (error) {
+                console.error("Errore invio link magico:", error);
+                errorDiv.textContent = 'Si è verificato un errore. Riprova più tardi.';
+                errorDiv.className = 'form-message error';
+            } finally {
+                button.disabled = false;
+                button.innerHTML = 'Inviami il Link';
+            }
+        });
+
+        // === LOGICA DEL MODAL DI RICERCA (DOPO IL WIZARD) ===
+        searchModalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById('modal-user-email');
+            const errorDiv = document.getElementById('modal-error-email');
+            const email = validateEmail(emailInput, errorDiv);
+            if (!email) return;
+
+            const button = e.target.querySelector('button');
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Controllo...';
+
+            try {
+                const response = await fetch(CANDIDATES_URL);
+                if (!response.ok) throw new Error('Errore di rete nel caricare i candidati.');
+                
+                const candidates = csvToObjects(await response.text());
+                const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+
+                const mainFormData = new FormData(mainSearchForm);
+                mainFormData.append('user_email', email);
+                
+                const queryString = new URLSearchParams(mainFormData).toString();
+                let finalUrl = `risultati.html?${queryString}`;
+
+                if (existingUser && existingUser.Token) {
+                    finalUrl += `&token=${existingUser.Token}`;
+                }
+                
+                window.location.href = finalUrl;
+            } catch (error) {
+                console.error("Errore durante la ricerca:", error);
+                alert("Si è verificato un problema di connessione. Riprova.");
+                button.disabled = false;
+                button.innerHTML = 'Vedi i Risultati';
+            }
+        });
+
+        // === LOGICA FAQ ===
+        document.querySelectorAll('.faq-question').forEach(button => {
+            const faqItem = button.parentElement;
+            button.addEventListener('click', () => {
+                const wasActive = faqItem.classList.contains('active');
+                document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+                if (!wasActive) faqItem.classList.add('active');
+            });
+        });
+    });
+</script>
 </body>
 </html>
