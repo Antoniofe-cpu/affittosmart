@@ -27,7 +27,6 @@
         .section { padding: 100px 0; }
         .section-light { background-color: var(--colore-sfondo-pagina); }
         .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); }
-        
         .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
         .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
         
@@ -61,8 +60,9 @@
         #profile-section.visible { max-height: 1000px; opacity: 1; border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px; }
         
         #search-button { width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 40px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer; }
+        #search-button .fa-solid { margin-left: 10px; }
         
-        .filter-group input.input-error { border-color: var(--colore-errore); }
+        .filter-group .input-error { border-color: var(--colore-errore); }
         .error-message { color: var(--colore-errore); font-size: 0.85em; margin-top: 5px; height: 1.2em; visibility: hidden; }
         .error-message.visible { visibility: visible; }
 
@@ -205,7 +205,7 @@
             <section class="hero-search-wrapper">
                 <div class="hero-search-content container">
                     <h1>La casa giusta, senza compromessi.</h1>
-                    <p class="subtitle">Compila le tue preferenze. <br>Ti chiederemo l'email solo alla fine per mostrarti i risultati.</p>
+                    <p class="subtitle">Compila le tue preferenze. <br>Ti guideremo passo dopo passo per trovare le tue opportunità.</p>
                     <div class="unified-form">
                         <div class="form-section" id="preferences-section">
                             <h2><i class="fa-solid fa-map-location-dot icon"></i>Le tue preferenze</h2>
@@ -220,15 +220,15 @@
                         <div class="form-section" id="profile-section">
                             <h2><i class="fa-solid fa-user-check icon"></i>Il tuo profilo</h2>
                             <div class="filter-grid">
-                                <div class="filter-group"> <label>Situazione Lavorativa</label> <select name="situazione_lavorativa" id="situazione_lavorativa" required> <option value="" disabled selected>Seleziona...</option> <option>Dipendente a tempo indeterminato</option> <option>Studente/ssa con garante</option> <option>Lavoratore Autonomo / P.IVA</option> </select> </div>
-                                <div class="filter-group"> <label>Reddito Netto Mensile</label> <select name="reddito_utente" id="reddito_utente" required> <option value="" disabled selected>Seleziona fascia...</option> <option value="1500">Meno di 1.500 €</option> <option value="2000">1.501-2.000 €</option> <option value="2500">2.001-2.500 €</option> <option value="3000">Oltre 2.500 €</option> </select> </div>
+                                <div class="filter-group"> <label>Situazione Lavorativa</label> <select name="situazione_lavorativa" id="situazione_lavorativa" required> <option value="" disabled selected>Seleziona...</option> <option>Dipendente a tempo indeterminato</option> <option>Studente/ssa con garante</option> <option>Lavoratore Autonomo / P.IVA</option> </select> <p class="error-message" id="error-lavoro">Campo obbligatorio</p> </div>
+                                <div class="filter-group"> <label>Reddito Netto Mensile</label> <select name="reddito_utente" id="reddito_utente" required> <option value="" disabled selected>Seleziona fascia...</option> <option value="1500">Meno di 1.500 €</option> <option value="2000">1.501-2.000 €</option> <option value="2500">2.001-2.500 €</option> <option value="3000">Oltre 2.500 €</option> </select> <p class="error-message" id="error-reddito">Campo obbligatorio</p> </div>
                                 <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
                                 <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
                                 <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
                                 <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
                             </div>
                         </div>
-                        <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
+                        <button type="submit" id="search-button">Avanti <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                 </div>
             </section>
@@ -309,22 +309,7 @@
             <p class="copyright">© 2025 Affitto Smart. Tutti i diritti riservati.</p>
         </div>
     </footer>
-    <!-- MODAL RICHIESTA EMAIL -->
-    <div class="modal-overlay" id="email-request-modal">
-        <div class="modal-content">
-            <button class="close-modal-button" aria-label="Chiudi modal">×</button>
-            <h1>Un Ultimo Passo...</h1>
-            <p>Inserisci la tua email per vedere gli annunci compatibili. Se sei già nostro cliente, ti riconosceremo!</p>
-            <form id="email-modal-form" novalidate>
-                <div class="form-group">
-                    <label for="modal-user-email">Il tuo indirizzo email</label>
-                    <input type="email" id="modal-user-email" name="user_email" required placeholder="mario.rossi@email.com">
-                    <p class="error-message" id="modal-error-email"></p>
-                </div>
-                <button type="submit" id="modal-submit-button" class="login-button">Vedi i Risultati</button>
-            </form>
-        </div>
-    </div>
+    
 
     <!-- === INIZIO MODAL DI RECUPERO ACCESSO === -->
     <div class="modal-overlay" id="recover-access-modal">
@@ -343,21 +328,37 @@
         </div>
     </div>
     <!-- === FINE MODAL DI RECUPERO ACCESSO === -->
+     <!-- MODAL RICHIESTA EMAIL -->
+    <div class="modal-overlay" id="email-request-modal">
+        <div class="modal-content">
+            <button class="close-modal-button" aria-label="Chiudi modal">×</button>
+            <h1>Un Ultimo Passo...</h1>
+            <p>Inserisci la tua email per vedere gli annunci compatibili. Se sei già nostro cliente, ti riconosceremo!</p>
+            <form id="email-modal-form" novalidate>
+                <div class="form-group">
+                    <label for="modal-user-email">Il tuo indirizzo email</label>
+                    <input type="email" id="modal-user-email" name="user_email" required placeholder="mario.rossi@email.com">
+                    <p class="error-message" id="modal-error-email"></p>
+                </div>
+                <button type="submit" id="modal-submit-button" class="login-button">Vedi i Risultati</button>
+            </form>
+        </div>
+    </div>
 
-     <script>
+      <script>
         document.addEventListener('DOMContentLoaded', function() {
             const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
             
-            const mainSearchForm = document.getElementById('unified-search-form');
+            const form = document.getElementById('unified-search-form');
+            const searchButton = document.getElementById('search-button');
             const profileSection = document.getElementById('profile-section');
+            
             const emailModal = document.getElementById('email-request-modal');
             const closeModalButton = emailModal.querySelector('.close-modal-button');
             const emailModalForm = document.getElementById('email-modal-form');
             const modalSubmitButton = document.getElementById('modal-submit-button');
 
-            document.getElementById('preferences-section').addEventListener('change', () => {
-                profileSection.classList.add('visible');
-            });
+            let formPhase = 1;
 
             function csvToObjects(csv) {
                 if (!csv) return [];
@@ -372,10 +373,44 @@
                     }, {});
                 }).filter(Boolean);
             }
-            
-            mainSearchForm.addEventListener('submit', function(e) {
+
+            form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                emailModal.classList.add('visible');
+
+                if (formPhase === 1) {
+                    profileSection.classList.add('visible');
+                    formPhase = 2;
+                    searchButton.innerHTML = 'Verifica e Prosegui <i class="fa-solid fa-arrow-right"></i>';
+                    profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else if (formPhase === 2) {
+                    const lavoroSelect = document.getElementById('situazione_lavorativa');
+                    const redditoSelect = document.getElementById('reddito_utente');
+                    const errorLavoro = document.getElementById('error-lavoro');
+                    const errorReddito = document.getElementById('error-reddito');
+                    let isProfileValid = true;
+
+                    lavoroSelect.classList.remove('input-error');
+                    errorLavoro.classList.remove('visible');
+                    redditoSelect.classList.remove('input-error');
+                    errorReddito.classList.remove('visible');
+
+                    if (lavoroSelect.value === '') {
+                        isProfileValid = false;
+                        lavoroSelect.classList.add('input-error');
+                        errorLavoro.classList.add('visible');
+                    }
+                    if (redditoSelect.value === '') {
+                        isProfileValid = false;
+                        redditoSelect.classList.add('input-error');
+                        errorReddito.classList.add('visible');
+                    }
+
+                    if (isProfileValid) {
+                        emailModal.classList.add('visible');
+                    } else {
+                        lavoroSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
             });
 
             function closeModal() {
@@ -414,8 +449,8 @@
                     const candidates = csvToObjects(csvText);
                     const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
 
-                    const mainFormData = new FormData(mainSearchForm);
-                    mainFormData.append('user_email', email); // Aggiunge l'email dal modal
+                    const mainFormData = new FormData(form);
+                    mainFormData.append('user_email', email);
                     
                     const queryString = new URLSearchParams(mainFormData).toString();
                     let finalUrl = `risultati.html?${queryString}`;
@@ -433,7 +468,7 @@
                     modalSubmitButton.innerHTML = 'Vedi i Risultati';
                 }
             });
-            
+
             document.querySelectorAll('.faq-question').forEach(button => {
                 const faqItem = button.parentElement;
                 button.addEventListener('click', () => {
@@ -444,5 +479,7 @@
             });
         });
     </script>
+</body>
+</html>
 </body>
 </html>
