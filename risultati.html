@@ -6,7 +6,11 @@
     <title>Le Tue Opportunità Esclusive - Affitto Smart</title>
     
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <!-- Altri link favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -14,20 +18,26 @@
     
     <style>
         :root { 
-            --colore-primario: #0D47A1; --colore-accento: #FFA000; --colore-testo: #212121; 
-            --colore-testo-chiaro: #5f6368; --colore-sfondo-pagina: #f4f6f9; --colore-successo: #2E7D32; 
+            --colore-primario: #0D47A1; 
+            --colore-secondario: #1565C0;
+            --colore-accento: #FFA000; 
+            --colore-testo: #212121; 
+            --colore-testo-chiaro: #5f6368; 
+            --colore-sfondo-pagina: #f4f6f9; 
+            --colore-successo: #2E7D32; 
             --colore-bianco: #ffffff;
         }
         body { 
-            font-family: 'Poppins', sans-serif; margin: 0; 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
             background-color: var(--colore-sfondo-pagina);
             color: var(--colore-testo);
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-
-        /* === STILI PER L'HEADER UNIFICATO (NUOVO) === */
+        
+        /* HEADER DI NAVIGAZIONE (BIANCO) */
         .main-header {
             display: flex;
+            justify-content: center; /* Centra il logo */
             align-items: center;
             padding: 20px 40px;
             background-color: var(--colore-bianco);
@@ -39,11 +49,10 @@
             font-weight: 800;
             color: var(--colore-primario);
             text-decoration: none;
-            margin-right: auto;
         }
         .main-header .logo span { 
             font-weight: 400; 
-            color: #1565C0;
+            color: var(--colore-secondario);
         }
         .header-actions {
             position: absolute;
@@ -67,20 +76,40 @@
         .login-link:hover {
             background-color: var(--colore-bianco);
             border-color: var(--colore-primario);
+            transform: translateY(-2px);
         }
-        /* === FINE STILI HEADER UNIFICATO === */
-
-        /* Header specifico di questa pagina (blu) */
+        .login-link .fa-solid {
+            font-size: 1.2em;
+        }
+        
+        /* HEADER DI CONTESTO (BLU) */
         .page-header { 
-            text-align: center; padding: 60px 20px;
-            background-color: var(--colore-primario); color: var(--colore-bianco);
-            /* Rimosso border-radius e margin-bottom per un look più integrato */
+            text-align: center; 
+            padding: 60px 20px;
+            background-color: var(--colore-primario); 
+            color: var(--colore-bianco);
+            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.2);
         }
-        .page-header h1 { font-size: 3em; color: var(--colore-bianco); text-shadow: 0 2px 4px rgba(0,0,0,0.2); margin: 0; }
-        .page-header p { font-size: 1.2em; color: rgba(255,255,255,0.85); margin-top: 10px; max-width: 700px; margin-left: auto; margin-right: auto; }
+        .page-header h1 { 
+            font-size: 3em; 
+            color: var(--colore-bianco); 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2); 
+            margin: 0; 
+        }
+        .page-header p { 
+            font-size: 1.2em; 
+            color: rgba(255,255,255,0.85); 
+            margin-top: 10px; 
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
         .back-link-container { text-align: center; padding: 40px 0; }
-        .back-link { font-weight: 600; color: var(--colore-primario); text-decoration: none; font-size: 1.1em; }
+        .back-link { font-weight: 600; color: var(--colore-primario); text-decoration: none; font-size: 1.1em; transition: color 0.3s; }
+        .back-link:hover { color: var(--colore-accento); }
         
         #results-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .property-card { background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; }
@@ -101,12 +130,11 @@
         .property-card .cta-button.booked { background-image: none; background-color: var(--colore-successo); color: white; }
         .property-card .cta-button.booked:hover { background-color: #1e8223; }
         .message { grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
+        
         @media (max-width: 900px) { #results-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-
-    <!-- NUOVO HEADER UNIFICATO -->
     <header class="main-header">
         <a href="index.html" class="logo">Affitto <span>Smart</span></a>
         <div class="header-actions">
@@ -117,14 +145,14 @@
         </div>
     </header>
 
-    <!-- Contenitore principale della pagina -->
-    <div class="container">
-        <!-- Header specifico della pagina (blu) -->
-        <header class="page-header">
+    <header class="page-header">
+        <div class="container">
             <h1>Le Tue Opportunità Esclusive</h1>
             <p>Ecco gli immobili 100% compatibili con il tuo profilo e le tue preferenze.</p>
-        </header>
-        
+        </div>
+    </header>
+    
+    <div class="container">
         <div id="results-container">
             <p class="message"><i class="fa-solid fa-spinner fa-spin"></i> Sto analizzando la compatibilità tra te e le nostre proposte...</p>
         </div>
