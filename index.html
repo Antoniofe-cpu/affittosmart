@@ -162,6 +162,47 @@
         .hero-search-content { position: relative; z-index: 2; }
         .hero-search-content h1 { color: var(--colore-bianco); font-size: 3.5em; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         .hero-search-content .subtitle { color: rgba(255,255,255,0.9); font-size: 1.4em; max-width: 700px; margin: 15px auto 50px auto; }
+        /* === STILI PER IL PULSANTE/LINK "LA MIA AREA" NELL'HEADER === */
+
+.header-actions {
+    /* Questo contenitore serve se vuoi aggiungere altri elementi in futuro */
+}
+
+.login-link {
+    display: inline-flex; /* Per allineare icona e testo */
+    align-items: center;
+    gap: 8px; /* Spazio tra icona e testo */
+    
+    font-weight: 600;
+    color: var(--colore-primario);
+    background-color: #e3f2fd; /* Sfondo azzurrino leggero */
+    
+    padding: 10px 20px;
+    border-radius: 50px; /* Forma a "pillola" */
+    text-decoration: none;
+    
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.login-link:hover {
+    background-color: var(--colore-bianco);
+    border-color: var(--colore-primario);
+    transform: translateY(-2px); /* Leggero effetto "sollevamento" */
+    box-shadow: 0 4px 12px rgba(13, 71, 161, 0.1);
+}
+
+.login-link .fa-solid {
+    font-size: 1.1em; /* Rende l'icona leggermente più grande del testo */
+}
+
+/* Stile per schermi più piccoli, se l'header diventa flessibile */
+@media (max-width: 600px) {
+    .header {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
         
         .unified-form { background: var(--colore-bianco); color: var(--colore-testo); padding: 40px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: left; }
         .form-section { margin-bottom: 30px; padding-bottom: 30px; }
@@ -195,7 +236,7 @@
         <a href="index.html" class="logo">Affitto <span>Smart</span></a>
         <div class="header-actions">
             <a href="#" id="open-recover-modal" class="login-link">
-                <i class="fa-solid fa-ticket"></i> La Mia Area
+                <i class="fa-solid fa-user-circle"></i> La Mia Area
             </a>
         </div>
     </header>
