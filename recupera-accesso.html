@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recupera Accesso - Affitto Smart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --colore-primario: #0D47A1; --colore-accento: #FFA000; --colore-testo: #212121; --colore-sfondo-pagina: #f4f6f9; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-pagina); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .login-container { background: white; padding: 50px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
+        h1 { font-size: 2em; color: var(--colore-primario); margin-bottom: 10px; }
+        p { color: #5f6368; margin-bottom: 30px; line-height: 1.6; }
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { font-weight: 600; display: block; margin-bottom: 8px; }
+        .form-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
+        .login-button { width: 100%; padding: 15px; border: none; border-radius: 8px; background-color: var(--colore-primario); color: white; font-size: 1.1em; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .form-message { margin-top: 20px; font-weight: 600; }
+        .form-message.success { color: #2E7D32; }
+        .form-message.error { color: #c0392b; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Accedi alla Tua Area Personale</h1>
+        <p>Inserisci l'email che hai usato per la prenotazione. Ti invieremo un link personale per accedere alla tua dashboard.</p>
+        <form id="recover-form">
+            <div class="form-group">
+                <label for="email">La tua Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <button type="submit" class="login-button">Inviami il Link di Accesso</button>
+        </form>
+        <div id="form-message" class="form-message"></div>
+    </div>
+
+    <script>
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec'; // <-- SOSTITUISCI CON IL TUO STESSO URL DI PRIMA
+
+        const form = document.getElementById('recover-form');
+        const messageDiv = document.getElementById('form-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const button = e.target.querySelector('button');
+
+            button.disabled = true;
+            button.textContent = 'Invio in corso...';
+            messageDiv.textContent = '';
+            messageDiv.className = 'form-message';
+
+            // Aggiungiamo un parametro "action" per dire allo script cosa fare
+            const urlWithParams = `${WEB_APP_URL}?action=sendMagicLink&email=${encodeURIComponent(email)}`;
+            
+            try {
+                const response = await fetch(urlWithParams);
+                const result = await response.json();
+
+                if (result.result === 'success') {
+                    messageDiv.textContent = 'Fatto! Se l\'email è corretta, riceverai a breve un link per accedere. Controlla anche la cartella spam.';
+                    messageDiv.classList.add('success');
+                    form.reset();
+                } else {
+                    // Mostriamo un messaggio generico per non rivelare quali email sono registrate
+                    messageDiv.textContent = 'Se l\'email è presente nel nostro sistema, abbiamo inviato il link.';
+                    messageDiv.classList.add('success'); // Messaggio positivo anche in caso di "errore" per privacy
+                    console.error('Errore dal server:', result.message);
+                }
+
+            } catch (error) {
+                messageDiv.textContent = 'Si è verificato un errore di rete. Riprova più tardi.';
+                messageDiv.classList.add('error');
+                console.error('Errore di fetch:', error);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Inviami il Link di Accesso';
+            }
+        });
+    </script>
+</body>
+</html>
