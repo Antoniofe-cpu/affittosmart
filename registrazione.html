@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrazione in corso...</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
+        .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #0D47A1; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="spinner"></div>
+
+    <script>
+        // URL dello script di Google Apps Script che scrive sul foglio
+        const WEB_APP_URL = 'URL_DEL_TUO_SCRIPT_GOOGLE_APPS'; // <-- SOSTITUISCI QUESTO!
+
+        // Funzione per generare un token casuale e sicuro
+        function generateToken() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
+
+        async function registerAndRedirect() {
+            const params = new URLSearchParams(window.location.search);
+            const email = params.get('email');
+            const propertyId = params.get('propertyId');
+
+            if (!email || !propertyId) {
+                alert("Dati mancanti per la registrazione. Contatta l'assistenza.");
+                // window.location.href = 'index.html'; // Ritorna alla home
+                return;
+            }
+
+            // Dobbiamo prima recuperare i dati esistenti per vedere se l'utente ha già un token
+            const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+            const response = await fetch(CANDIDATES_URL);
+            const csvText = await response.text();
+            const candidates = csvToObjects(csvText); // Usa la tua funzione csvToObjects
+
+            let userToken;
+            const existingUser = candidates.find(c => c.Email === email);
+
+            if (existingUser && existingUser.Token) {
+                userToken = existingUser.Token; // L'utente esiste, usiamo il suo token
+            } else {
+                userToken = generateToken(); // Nuovo utente, generiamo un nuovo token
+            }
+
+            // Ora prepariamo i dati da inviare al nostro Google Apps Script per scrivere la nuova riga
+            const dataToSave = {
+                timestamp: new Date().toISOString(),
+                email: email,
+                propertyId: propertyId,
+                token: userToken
+            };
+
+            try {
+                // Invia i dati al Google Apps Script per la scrittura
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Necessario per questo tipo di richiesta
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSave)
+                });
+
+                // Attendi un istante per dare tempo a Google Sheets di aggiornarsi (opzionale ma consigliato)
+                setTimeout(() => {
+                    // Reindirizza alla dashboard con il token corretto
+                    window.location.href = `dashboard.html?token=${userToken}`;
+                }, 1000);
+
+            } catch (error) {
+                console.error('Errore durante la scrittura su Google Sheets:', error);
+                alert('Si è verificato un errore durante la registrazione della prenotazione.');
+            }
+        }
+        
+        // Funzione helper da includere
+        function csvToObjects(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).map(line => {
+                const values = line.split(',');
+                return headers.reduce((obj, header, i) => {
+                    obj[header] = values[i] ? values[i].trim() : '';
+                    return obj;
+                }, {});
+            });
+        }
+
+        window.onload = registerAndRedirect;
+    </script>
+</body>
+</html>
