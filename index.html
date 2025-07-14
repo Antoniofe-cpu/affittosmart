@@ -24,8 +24,6 @@
         html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
         .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-        .text-center { text-align: center; }
-        
         .section { padding: 100px 0; }
         .section-light { background-color: var(--colore-sfondo-pagina); }
         .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); }
@@ -33,7 +31,7 @@
         .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
         .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
         
-        .header { display: flex; justify-content: center; /* Centra il logo ora che è l'unico elemento */ align-items: center; padding: 25px 40px; border-bottom: 1px solid #eee; }
+        .header { display: flex; justify-content: center; align-items: center; padding: 25px 40px; border-bottom: 1px solid #eee; }
         .logo { font-size: 2.2em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
         .logo span { font-weight: 400; color: var(--colore-secondario); }
 
@@ -49,12 +47,11 @@
         .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 30px;}
         .form-section .icon { color: var(--colore-accento); }
         
-        #email-section p { text-align: left; color: var(--colore-testo-chiaro); margin-top: -15px; margin-bottom: 20px; line-height: 1.6;}
-        
         .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px 30px; }
         .filter-group { text-align: left; }
         .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
         .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; background-color: white; font-family: 'Poppins', sans-serif; }
+        
         .pill-options { display: flex; gap: 10px; height: 51px; }
         .pill-options input { display: none; }
         .pill-options label { flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; padding: 12px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; background-color: white; }
@@ -64,7 +61,6 @@
         #profile-section.visible { max-height: 1000px; opacity: 1; border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px; }
         
         #search-button { width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 40px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer; }
-        #search-button:disabled { background-image: none; background-color: #999; cursor: not-allowed; }
         
         .filter-group input.input-error { border-color: var(--colore-errore); }
         .error-message { color: var(--colore-errore); font-size: 0.85em; margin-top: 5px; height: 1.2em; visibility: hidden; }
@@ -124,6 +120,69 @@
         .modal-content .form-message { margin-top: 20px; padding: 15px; border-radius: 8px; font-weight: 600; display: none; }
         .modal-content .form-message.success { display: block; background-color: #e0f2f1; color: #00796b; }
         .modal-content .form-message.error { display: block; background-color: #ffebee; color: #c0392b; }
+        <!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trova la Tua Casa a Bologna - Affitto Smart</title>
+    
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --colore-primario: #0D47A1; --colore-secondario: #1565C0; --colore-accento: #FFA000; 
+            --colore-testo: #212121; --colore-testo-chiaro: #616161; --colore-sfondo-pagina: #f4f6f9; 
+            --colore-bianco: #ffffff; --colore-errore: #D32F2F;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .section { padding: 100px 0; }
+        .section-light { background-color: var(--colore-sfondo-pagina); }
+        .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); }
+        
+        .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
+        .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
+        
+        .header { display: flex; justify-content: center; align-items: center; padding: 25px 40px; border-bottom: 1px solid #eee; }
+        .logo { font-size: 2.2em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
+        .logo span { font-weight: 400; color: var(--colore-secondario); }
+
+        .hero-search-wrapper { position: relative; padding: 80px 0; color: var(--colore-bianco); text-align: center; }
+        .hero-search-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200'); background-size: cover; background-position: center; z-index: 1; }
+        .hero-search-content { position: relative; z-index: 2; }
+        .hero-search-content h1 { color: var(--colore-bianco); font-size: 3.5em; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .hero-search-content .subtitle { color: rgba(255,255,255,0.9); font-size: 1.4em; max-width: 700px; margin: 15px auto 50px auto; }
+        
+        .unified-form { background: var(--colore-bianco); color: var(--colore-testo); padding: 40px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: left; }
+        .form-section { margin-bottom: 30px; padding-bottom: 30px; }
+        .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 30px;}
+        .form-section .icon { color: var(--colore-accento); }
+        
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px 30px; }
+        .filter-group { text-align: left; }
+        .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
+        .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; background-color: white; font-family: 'Poppins', sans-serif; }
+        
+        .pill-options { display: flex; gap: 10px; height: 51px; }
+        .pill-options input { display: none; }
+        .pill-options label { flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; padding: 12px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; background-color: white; }
+        .pill-options input:checked + label { background-color: var(--colore-primario); color: white; border-color: var(--colore-primario); }
+        
+        #profile-section { max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out; }
+        #profile-section.visible { max-height: 1000px; opacity: 1; border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px; }
+        
+        #search-button { width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 40px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer; }
 
         @media (max-width: 1100px) { .process-grid { grid-template-columns: repeat(2, 1fr); } .faq-grid { grid-template-columns: 1fr; } }
         @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
@@ -141,47 +200,34 @@
         </div>
     </header>
 
-    <main>
+     <main>
         <form id="unified-search-form" novalidate>
             <section class="hero-search-wrapper">
                 <div class="hero-search-content container">
                     <h1>La casa giusta, senza compromessi.</h1>
-                    <p class="subtitle">Inserisci la tua email e le tue preferenze. <br>Il nostro sistema ti mostrerà solo le opportunità 100% compatibili.</p>
+                    <p class="subtitle">Compila le tue preferenze. <br>Ti chiederemo l'email solo alla fine per mostrarti i risultati.</p>
                     <div class="unified-form">
-                        
-                        <div class="form-section" id="email-section">
-                            <h2><i class="fa-solid fa-at icon"></i> Inizia da qui</h2>
-                            <p>Inserisci la tua email. Se hai già prenotato un ticket con noi, ti riconosceremo automaticamente!</p>
-                            <div class="filter-group" style="grid-column: 1 / -1;"> <!-- Occupa tutta la larghezza -->
-                                <label for="user_email">Il tuo indirizzo email</label>
-                                <input type="email" name="user_email" id="user_email" placeholder="mario.rossi@email.com" required>
-                                <p class="error-message" id="error-email"></p>
-                            </div>
-                        </div>
-                        
                         <div class="form-section" id="preferences-section">
                             <h2><i class="fa-solid fa-map-location-dot icon"></i>Le tue preferenze</h2>
                             <div class="filter-grid">
                                 <div class="filter-group"><label>Tipo di Immobile</label><select name="tipo"><option value="">Qualsiasi</option><option>Stanza Singola</option><option>Monolocale</option><option>Bilocale</option></select></div>
-                                <div class="filter-group"><label>Zona</label><select name="zona"><option value="">Qualsiasi</option><option>Centro Storico</option><option>Murri</option><option>Bolognina</option><option>Saragozza</option><option>Lame</option><option>San Donato</option></select></div>
+                                <div class="filter-group"><label>Zona</label><select name="zona"><option value="">Qualsiasi</option><option>Centro Storico</option><option>Murri</option><option>Bolognina</option><option>Saragozza</option></select></div>
                                 <div class="filter-group"><label>Budget Max (€)</label><input type="number" name="prezzo" placeholder="Es. 900"></div>
                                 <div class="filter-group"><label>Disponibile dal</label><input type="date" name="data_disponibile"></div>
                                 <div class="filter-group"><label>Periodo di Affitto</label><select name="periodo_affitto"><option value="">Qualsiasi</option><option>Breve (meno di 6 mesi)</option><option>Standard (1-3 anni)</option><option>Lungo (più di 3 anni)</option></select></div>
                             </div>
                         </div>
-
                         <div class="form-section" id="profile-section">
                             <h2><i class="fa-solid fa-user-check icon"></i>Il tuo profilo</h2>
                             <div class="filter-grid">
-                                <div class="filter-group"> <label>Situazione Lavorativa</label> <select name="situazione_lavorativa" id="situazione_lavorativa" required> <option value="" disabled selected>Seleziona...</option> <option>Dipendente a tempo indeterminato</option> <option>Studente/ssa con garante</option> <option>Lavoratore Autonomo / P.IVA</option> </select> <p class="error-message" id="error-lavoro">Campo obbligatorio</p> </div>
-                                <div class="filter-group"> <label>Reddito Netto Mensile</label> <select name="reddito_utente" id="reddito_utente" required> <option value="" disabled selected>Seleziona fascia...</option> <option value="1500">Meno di 1.500 €</option> <option value="2000">1.501-2.000 €</option> <option value="2500">2.001-2.500 €</option> <option value="3000">Oltre 2.500 €</option> </select> <p class="error-message" id="error-reddito">Campo obbligatorio</p> </div>
+                                <div class="filter-group"> <label>Situazione Lavorativa</label> <select name="situazione_lavorativa" id="situazione_lavorativa" required> <option value="" disabled selected>Seleziona...</option> <option>Dipendente a tempo indeterminato</option> <option>Studente/ssa con garante</option> <option>Lavoratore Autonomo / P.IVA</option> </select> </div>
+                                <div class="filter-group"> <label>Reddito Netto Mensile</label> <select name="reddito_utente" id="reddito_utente" required> <option value="" disabled selected>Seleziona fascia...</option> <option value="1500">Meno di 1.500 €</option> <option value="2000">1.501-2.000 €</option> <option value="2500">2.001-2.500 €</option> <option value="3000">Oltre 2.500 €</option> </select> </div>
                                 <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
                                 <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
                                 <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
                                 <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
                             </div>
                         </div>
-                        
                         <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                     </div>
                 </div>
@@ -263,6 +309,22 @@
             <p class="copyright">© 2025 Affitto Smart. Tutti i diritti riservati.</p>
         </div>
     </footer>
+    <!-- MODAL RICHIESTA EMAIL -->
+    <div class="modal-overlay" id="email-request-modal">
+        <div class="modal-content">
+            <button class="close-modal-button" aria-label="Chiudi modal">×</button>
+            <h1>Un Ultimo Passo...</h1>
+            <p>Inserisci la tua email per vedere gli annunci compatibili. Se sei già nostro cliente, ti riconosceremo!</p>
+            <form id="email-modal-form" novalidate>
+                <div class="form-group">
+                    <label for="modal-user-email">Il tuo indirizzo email</label>
+                    <input type="email" id="modal-user-email" name="user_email" required placeholder="mario.rossi@email.com">
+                    <p class="error-message" id="modal-error-email"></p>
+                </div>
+                <button type="submit" id="modal-submit-button" class="login-button">Vedi i Risultati</button>
+            </form>
+        </div>
+    </div>
 
     <!-- === INIZIO MODAL DI RECUPERO ACCESSO === -->
     <div class="modal-overlay" id="recover-access-modal">
@@ -284,13 +346,15 @@
 
      <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const CANDIDATES_URL = 'INCOLLA_QUI_LURL_PUBBLICATO_CSV_DELLA_SCHEDA_CANDIDATI';
-            const form = document.getElementById('unified-search-form');
-            const searchButton = document.getElementById('search-button');
-            const profileSection = document.getElementById('profile-section');
-            const emailInput = document.getElementById('user_email');
+            const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
             
-            // Logica per mostrare la sezione profilo quando si interagisce con le preferenze
+            const mainSearchForm = document.getElementById('unified-search-form');
+            const profileSection = document.getElementById('profile-section');
+            const emailModal = document.getElementById('email-request-modal');
+            const closeModalButton = emailModal.querySelector('.close-modal-button');
+            const emailModalForm = document.getElementById('email-modal-form');
+            const modalSubmitButton = document.getElementById('modal-submit-button');
+
             document.getElementById('preferences-section').addEventListener('change', () => {
                 profileSection.classList.add('visible');
             });
@@ -301,20 +365,34 @@
                 const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
                 return lines.slice(1).map(line => {
                     if (!line) return null;
-                    const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // Gestisce virgole dentro a valori tra virgolette
+                    const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     return headers.reduce((obj, header, i) => {
                         obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
                         return obj;
                     }, {});
                 }).filter(Boolean);
             }
+            
+            mainSearchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                emailModal.classList.add('visible');
+            });
 
-            form.addEventListener('submit', async function(e) {
+            function closeModal() {
+                emailModal.classList.remove('visible');
+            }
+            closeModalButton.addEventListener('click', closeModal);
+            emailModal.addEventListener('click', (e) => {
+                if (e.target === emailModal) closeModal();
+            });
+
+            emailModalForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
+                const emailInput = document.getElementById('modal-user-email');
                 const email = emailInput.value.trim();
-                const errorEmail = document.getElementById('error-email');
-
+                const errorEmail = document.getElementById('modal-error-email');
+                
                 if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                     emailInput.classList.add('input-error');
                     errorEmail.textContent = "Per favore, inserisci un'email valida.";
@@ -325,8 +403,8 @@
                     errorEmail.classList.remove('visible');
                 }
 
-                searchButton.disabled = true;
-                searchButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Controllo in corso...';
+                modalSubmitButton.disabled = true;
+                modalSubmitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Controllo...';
 
                 try {
                     const response = await fetch(CANDIDATES_URL);
@@ -336,10 +414,10 @@
                     const candidates = csvToObjects(csvText);
                     const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
 
-                    const formData = new FormData(form);
-                    formData.delete('submit');
-                    const queryString = new URLSearchParams(formData).toString();
+                    const mainFormData = new FormData(mainSearchForm);
+                    mainFormData.append('user_email', email); // Aggiunge l'email dal modal
                     
+                    const queryString = new URLSearchParams(mainFormData).toString();
                     let finalUrl = `risultati.html?${queryString}`;
 
                     if (existingUser && existingUser.Token) {
@@ -351,20 +429,17 @@
                 } catch (error) {
                     console.error("Errore durante la ricerca:", error);
                     alert("Si è verificato un problema di connessione. Assicurati che l'URL del foglio di calcolo sia corretto e pubblicato. Riprova.");
-                    searchButton.disabled = false;
-                    searchButton.innerHTML = 'Scopri le Tue Opportunità';
+                    modalSubmitButton.disabled = false;
+                    modalSubmitButton.innerHTML = 'Vedi i Risultati';
                 }
             });
-
-            // Logica FAQ
+            
             document.querySelectorAll('.faq-question').forEach(button => {
                 const faqItem = button.parentElement;
                 button.addEventListener('click', () => {
                     const wasActive = faqItem.classList.contains('active');
                     document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
-                    if (!wasActive) {
-                        faqItem.classList.add('active');
-                    }
+                    if (!wasActive) faqItem.classList.add('active');
                 });
             });
         });
