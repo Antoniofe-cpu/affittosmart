@@ -7,36 +7,81 @@
     <!-- Stili e Font (identici al concept precedente) -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --colore-primario: #0D47A1; --colore-accento: #FFA000; /* etc... */ }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f4f6f9; }
-        .dashboard-header { background-color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .dashboard-header .logo-small { font-size: 1.5em; font-weight: 800; color: var(--colore-primario); }
-        .user-menu a { color: #5f6368; text-decoration: none; font-weight: 600; }
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        h1 { font-size: 2.5em; color: var(--colore-primario); margin-bottom: 30px; }
-        .tickets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
-        .ticket-card { background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); display: flex; flex-direction: column; overflow: hidden; }
-        .ticket-card.concluded { opacity: 0.6; filter: grayscale(80%); }
-        .ticket-card-img { width: 100%; height: 180px; }
-        .ticket-card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .ticket-card-info { padding: 25px; }
-        .ticket-card-info h3 { margin: 0 0 10px 0; font-size: 1.3em; }
-        .status { font-weight: 700; padding: 4px 10px; border-radius: 20px; font-size: 0.8em; display: inline-block; margin-bottom: 15px; }
-        .status.active { background-color: #e0f2f1; color: #00796b; }
-        .status.concluded { background-color: #f5f5f5; color: #616161; }
-        .ticket-details { font-size: 0.9em; margin-bottom: 20px; }
-        .ticket-details i { margin-right: 8px; color: #5f6368; }
-        .ticket-action { width: 100%; padding: 14px; border: none; border-radius: 8px; background-color: var(--colore-accento); color: var(--colore-testo); font-weight: 700; text-decoration: none; display: block; text-align: center; }
-        .message { padding: 50px; text-align: center; font-size: 1.2em; color: #5f6368; }
-    </style>
+   <style>
+    :root { 
+        --colore-primario: #0D47A1; --colore-accento: #FFA000; --colore-testo: #212121; 
+        --colore-testo-chiaro: #5f6368; --colore-sfondo-pagina: #f4f6f9; --colore-successo: #2E7D32; 
+        --colore-bianco: #ffffff;
+    }
+    body { 
+        font-family: 'Poppins', sans-serif; margin: 0; 
+        background-color: var(--colore-sfondo-pagina);
+        color: var(--colore-testo);
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    
+    .dashboard-header { background-color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .dashboard-header .logo-small { font-size: 1.5em; font-weight: 800; color: var(--colore-primario); text-decoration: none;}
+    .dashboard-header .logo-small strong { font-weight: 400; color: var(--colore-secondario); }
+    .user-menu a { color: #5f6368; text-decoration: none; font-weight: 600; transition: color 0.2s; }
+    .user-menu a:hover { color: var(--colore-accento); }
+
+    h1 { font-size: 2.5em; color: var(--colore-primario); margin: 40px 0 30px 0; }
+    
+    #tickets-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 30px; }
+    
+    .ticket-card {
+        background: white; border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        display: flex; flex-direction: column;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+    }
+    .ticket-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+    
+    .ticket-card.concluded {
+        opacity: 0.7;
+    }
+    .ticket-card.concluded .ticket-card-img {
+        filter: grayscale(80%);
+    }
+
+    .ticket-card-img { width: 100%; height: 200px; background-color: #eee; position: relative; }
+    .ticket-card-img img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .ticket-card-info { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
+    
+    .status-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        color: white;
+        text-transform: uppercase;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .status-badge.active { background-color: var(--colore-successo); }
+    .status-badge.concluded { background-color: var(--colore-testo-chiaro); }
+    
+    .ticket-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); text-transform: capitalize; font-size: 0.9em; }
+    .ticket-card-info h3 { margin: 5px 0 10px 0; font-size: 1.4em; }
+    .ticket-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; }
+    
+    .ticket-details { font-size: 1em; line-height: 1.8; }
+    .ticket-details .detail-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .ticket-details .detail-item i { color: var(--colore-secondario); width: 20px; text-align: center; }
+    
+    .message { padding: 50px; text-align: center; font-size: 1.2em; color: #5f6368; }
+</style>
 </head>
 <body>
     <header class="dashboard-header">
-        <div class="logo-small">Affitto <strong>Smart</strong></div>
+        <a href="index.html" class="logo-small">Affitto <strong>Smart</strong></a>
         <nav class="user-menu">
-            <!-- Link per tornare alla ricerca principale -->
-            <a href="index.html">Cerca un altro immobile</a>
+            <a href="index.html">Nuova Ricerca</a>
         </nav>
     </header>
     <div class="container">
@@ -46,90 +91,109 @@
         </div>
     </div>
 
-    <script>
-        // URL dei tuoi fogli di calcolo (devono essere pubblicati come CSV)
-        const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
-        const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+   <script>
+    const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
+    const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
-        // Funzione helper
-        function csvToObjects(csv) {
+    function csvToObjects(csv) {
         if (!csv || typeof csv !== 'string') return [];
-        const lines = csv.trim().split('\n');
-        if (lines.length < 2) return [];
-        const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
-        const objects = [];
-        for (let i = 1; i < lines.length; i++) {
-            if (lines[i] && lines[i].trim() !== '') {
-                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                const obj = {};
-                for (let j = 0; j < headers.length; j++) {
-                    if (headers[j]) obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
-                }
-                if (Object.keys(obj).length > 0) objects.push(obj);
-            }
-        }
-        return objects;
+        const lines = csv.trim().split(/\r\n|\n/);
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        return lines.slice(1).map(line => {
+            if (!line) return null;
+            const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            return headers.reduce((obj, header, i) => {
+                obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
+                return obj;
+            }, {});
+        }).filter(Boolean);
     }
 
-        async function loadDashboard() {
-            const container = document.getElementById('tickets-container');
-            const params = new URLSearchParams(window.location.search);
-            const userToken = params.get('token');
+    async function loadDashboard() {
+        const container = document.getElementById('tickets-container');
+        const params = new URLSearchParams(window.location.search);
+        const urlToken = params.get('token');
 
-            if (!userToken) {
-                container.innerHTML = `<p class="message">Accesso non valido. <a href="login-email.html">Richiedi un nuovo link di accesso</a>.</p>`;
+        // Salva il token nel localStorage per le sessioni future
+        if (urlToken) {
+            localStorage.setItem('userToken', urlToken);
+            history.replaceState(null, '', window.location.pathname); // Pulisce l'URL
+        }
+        
+        const userToken = localStorage.getItem('userToken');
+
+        if (!userToken) {
+            container.innerHTML = `<p class="message">Accesso non valido. Per favore, torna alla home e inserisci la tua email per accedere.</p>`;
+            return;
+        }
+        
+        // Aggiunge il token ai link di navigazione
+        document.querySelector('.user-menu a').href = `index.html?token=${userToken}`;
+
+        try {
+            const [propsRes, candsRes] = await Promise.all([
+                fetch(PROPERTIES_URL), fetch(CANDIDATES_URL)
+            ]);
+            const properties = csvToObjects(await propsRes.text());
+            const candidates = csvToObjects(await candsRes.text());
+
+            const myTickets = candidates.filter(c => c.Token === userToken);
+
+            if (myTickets.length === 0) {
+                container.innerHTML = `<p class="message">Non hai ancora nessuna prenotazione attiva.<br><a href="index.html?token=${userToken}">Inizia una nuova ricerca!</a></p>`;
                 return;
             }
 
-            try {
-                const [propsRes, candsRes] = await Promise.all([
-                    fetch(PROPERTIES_URL), fetch(CANDIDATES_URL)
-                ]);
-                const properties = csvToObjects(await propsRes.text());
-                const candidates = csvToObjects(await candsRes.text());
+            container.innerHTML = ''; 
+            myTickets.forEach(ticket => {
+                const propertyInfo = properties.find(p => p.ID === ticket.ID_Immobile_Prenotato);
+                if (!propertyInfo) return;
 
-                // Filtra le prenotazioni (ticket) di questo specifico utente
-                const myTickets = candidates.filter(c => c.Token === userToken);
-
-                if (myTickets.length === 0) {
-                    container.innerHTML = `<p class="message">Nessuna prenotazione trovata per questo account.</p>`;
-                    return;
-                }
-
-                container.innerHTML = ''; // Svuota il messaggio di caricamento
-                myTickets.forEach(ticket => {
-                    const propertyInfo = properties.find(p => p.ID === ticket.ID_Immobile_Prenotato);
-                    if (!propertyInfo) return;
-
-                    const isConcluded = ticket.Stato === 'concluso'; // Assumi di avere una colonna "Stato"
-                    const cardClass = isConcluded ? 'ticket-card concluded' : 'ticket-card';
-                    const statusClass = isConcluded ? 'status concluded' : 'status active';
-                    const statusText = isConcluded ? 'CONCLUSO' : 'ATTIVO';
-
-                    const cardHtml = `
-                        <div class="${cardClass}">
-                            <div class="ticket-card-img"><img src="${propertyInfo.FotoURL}" alt="${propertyInfo.Titolo}"></div>
-                            <div class="ticket-card-info">
-                                <span class="${statusClass}">${statusText}</span>
-                                <h3>${propertyInfo.Titolo}</h3>
-                                <div class="ticket-details">
-                                    <p><i class="fa-solid fa-calendar-day"></i> <strong>Open Day:</strong> ${propertyInfo.DataOpenDay}</p>
-                                    ${!isConcluded ? `<p><i class="fa-solid fa-clock"></i> <strong>Acquistato il:</strong> ${new Date(ticket.Timestamp).toLocaleDateString('it-IT')}</p>` : ''}
-                                </div>
-                                ${!isConcluded ? `<a href="${propertyInfo.CalendlyLink}" target="_blank" class="ticket-action">Scegli il tuo orario</a>` : ''}
-                            </div>
-                        </div>`;
-                    
-                    container.innerHTML += cardHtml;
+                const isConcluded = ticket.Stato && ticket.Stato.toLowerCase() === 'concluso';
+                const cardClass = isConcluded ? 'ticket-card concluded' : 'ticket-card';
+                const statusClass = isConcluded ? 'status-badge concluded' : 'status-badge active';
+                const statusText = isConcluded ? 'Concluso' : 'Attivo';
+                
+                // Formattiamo la data per una migliore leggibilità
+                const formattedDate = new Date(ticket.Timestamp).toLocaleDateString('it-IT', {
+                    day: '2-digit', month: 'long', year: 'numeric'
                 });
 
-            } catch (error) {
-                console.error("Errore nel caricamento della dashboard:", error);
-                container.innerHTML = `<p class="message">Si è verificato un errore nel caricare i tuoi dati.</p>`;
-            }
-        }
+                // L'HTML ora è informativo e non contiene azioni
+                const cardHtml = `
+                    <div class="${cardClass}">
+                        <div class="ticket-card-img">
+                            <img src="${propertyInfo.FotoURL}" alt="${propertyInfo.Titolo}">
+                            <div class="${statusClass}">${statusText}</div>
+                        </div>
+                        <div class="ticket-card-info">
+                            <div class="type-zone">${propertyInfo.Tipo} - ${propertyInfo.Zona}</div>
+                            <h3>${propertyInfo.Titolo}</h3>
+                            <div class="price">${propertyInfo.Prezzo} €/mese</div>
+                            <div class="ticket-details">
+                                <div class="detail-item">
+                                    <i class="fa-solid fa-calendar-day"></i>
+                                    <span><strong>Open Day:</strong> ${propertyInfo.DataOpenDay}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fa-solid fa-receipt"></i>
+                                    <span><strong>Ticket acquistato il:</strong> ${formattedDate}</span>
+                                </div>
+                                <!-- Aggiungi qui altre info se necessario, es. lo slot prenotato se lo salvi -->
+                            </div>
+                        </div>
+                    </div>`;
+                
+                container.innerHTML += cardHtml;
+            });
 
-        window.onload = loadDashboard;
-    </script>
+        } catch (error) {
+            console.error("Errore nel caricamento della dashboard:", error);
+            container.innerHTML = `<p class="message">Si è verificato un errore nel caricare i tuoi dati.</p>`;
+        }
+    }
+
+    window.onload = loadDashboard;
+</script>
 </body>
 </html>
