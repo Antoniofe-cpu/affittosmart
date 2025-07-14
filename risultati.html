@@ -91,7 +91,8 @@
         return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
-    function displayResults(properties, userProfile, bookedPropertyIds, userToken) {
+    // === MODIFICA 1: La funzione ora ACCETTA allCandidates ===
+    function displayResults(properties, userProfile, bookedPropertyIds, userToken, allCandidates) {
         const resultsContainer = document.getElementById('results-container');
         resultsContainer.innerHTML = '';
         if (properties.length === 0) {
@@ -102,8 +103,9 @@
         properties.forEach(p => {
             if (!p.ID || !p.Titolo || !p.Prezzo) return;
             
+            // Ora 'allCandidates' è visibile qui e non darà errore
             const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-            const postiTotali = parseInt(p.MaxPartecipanti) || 10; // Default a 10 se non specificato
+            const postiTotali = parseInt(p.MaxPartecipanti) || 10;
             const postiRimasti = postiTotali - prenotati;
             
             let buttonHtml;
@@ -145,8 +147,7 @@
         }
         
         let bookedPropertyIds = [];
-        let allCandidates = [];
-
+        
         try {
             const [propsRes, reqsRes, candsRes] = await Promise.all([
                 fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
@@ -155,7 +156,7 @@
             
             const allProperties = csvToObjects(await propsRes.text());
             const allRequirements = csvToObjects(await reqsRes.text());
-            allCandidates = csvToObjects(await candsRes.text());
+            const allCandidates = csvToObjects(await candsRes.text()); // 'allCandidates' è creata qui
             
             if (userToken) {
                 const myBookings = allCandidates.filter(c => c.Token === userToken);
@@ -203,7 +204,9 @@
                 return true;
             });
             
+            // === MODIFICA 2: La chiamata ora PASSA allCandidates ===
             displayResults(finalProperties, userFilters, bookedPropertyIds, userToken, allCandidates);
+
         } catch (error) {
             console.error("ERRORE CRITICO:", error);
             resultsContainer.innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
