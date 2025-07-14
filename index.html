@@ -240,7 +240,7 @@
                             <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
                         </div>
                     </div>
-                    <button type="submit" id="search-button">Prosegui</button>
+                    <button type="submit" id="search-button">Prosegui <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </section>
         </form>
@@ -431,7 +431,7 @@
                     // FASE 1 -> FASE 2: Mostra il profilo
                     profileSection.classList.add('visible');
                     formPhase = 2;
-                    searchButton.innerHTML = 'Verifica e Cerca <i class="fa-solid fa-arrow-right"></i>';
+                    searchButton.innerHTML = 'Cerca Le Tue Opportunità <i class="fa-solid fa-arrow-right"></i>';
                     profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else if (formPhase === 2) {
                     // FASE 2 -> FASE 3: Valida il profilo e apre il modal per l'email
