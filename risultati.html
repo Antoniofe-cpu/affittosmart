@@ -21,20 +21,71 @@
         body { 
             font-family: 'Poppins', sans-serif; margin: 0; 
             background-color: var(--colore-sfondo-pagina);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23d0d4db' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
             color: var(--colore-testo);
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; padding: 60px 20px; background-color: var(--colore-primario); color: var(--colore-bianco); border-radius: 0 0 24px 24px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(13, 71, 161, 0.2); }
-        .header h1 { font-size: 3em; color: var(--colore-bianco); text-shadow: 0 2px 4px rgba(0,0,0,0.2); margin: 0; }
-        .header p { font-size: 1.2em; color: rgba(255,255,255,0.85); margin-top: 10px; }
+
+        /* === STILI PER L'HEADER UNIFICATO (NUOVO) === */
+        .main-header {
+            display: flex;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: var(--colore-bianco);
+            border-bottom: 1px solid #eee;
+            position: relative; 
+        }
+        .main-header .logo {
+            font-size: 2.2em;
+            font-weight: 800;
+            color: var(--colore-primario);
+            text-decoration: none;
+            margin-right: auto;
+        }
+        .main-header .logo span { 
+            font-weight: 400; 
+            color: #1565C0;
+        }
+        .header-actions {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .login-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--colore-primario);
+            background-color: #e3f2fd;
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .login-link:hover {
+            background-color: var(--colore-bianco);
+            border-color: var(--colore-primario);
+        }
+        /* === FINE STILI HEADER UNIFICATO === */
+
+        /* Header specifico di questa pagina (blu) */
+        .page-header { 
+            text-align: center; padding: 60px 20px;
+            background-color: var(--colore-primario); color: var(--colore-bianco);
+            /* Rimosso border-radius e margin-bottom per un look più integrato */
+        }
+        .page-header h1 { font-size: 3em; color: var(--colore-bianco); text-shadow: 0 2px 4px rgba(0,0,0,0.2); margin: 0; }
+        .page-header p { font-size: 1.2em; color: rgba(255,255,255,0.85); margin-top: 10px; max-width: 700px; margin-left: auto; margin-right: auto; }
+        
         .back-link-container { text-align: center; padding: 40px 0; }
-        .back-link { font-weight: 600; color: var(--colore-primario); text-decoration: none; font-size: 1.1em; transition: color 0.3s; }
-        .back-link:hover { color: var(--colore-accento); }
+        .back-link { font-weight: 600; color: var(--colore-primario); text-decoration: none; font-size: 1.1em; }
+        
         #results-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .property-card { background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .property-card { background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; }
         .property-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
-        .property-card-img { width: 100%; height: 220px; background-color: #eee; border-radius: 16px 16px 0 0; position: relative; overflow: hidden; }
+        .property-card-img { width: 100%; height: 220px; background-color: #eee; position: relative; }
         .property-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
         .property-card:hover .property-card-img img { transform: scale(1.05); }
         .property-card-info { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
@@ -43,12 +94,8 @@
         .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 15px; }
         .property-card-info p { flex-grow: 1; font-size: 0.95em; margin-top: 0; color: #444; }
         .open-day-info { font-weight: 700; color: var(--colore-primario); margin-bottom: 20px; }
-        .booking-action {
-    margin-top: auto; /* Mantiene il pulsante in fondo alla card */
-    display: flex; /* Attiva flexbox */
-    justify-content: center; /* Centra orizzontalmente il suo contenuto */
-}
-        .property-card .cta-button { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; padding: 14px; font-size: 1em; text-decoration: none; border-radius: 8px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; }
+        .booking-action { margin-top: auto; display: flex; justify-content: center; }
+        .property-card .cta-button { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; max-width: 320px; padding: 14px; font-size: 1em; text-decoration: none; border-radius: 8px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; }
         .property-card .cta-button:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(255, 160, 0, 0.4); }
         .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; transform: none; }
         .property-card .cta-button.booked { background-image: none; background-color: var(--colore-successo); color: white; }
@@ -58,134 +105,154 @@
     </style>
 </head>
 <body>
+
+    <!-- NUOVO HEADER UNIFICATO -->
+    <header class="main-header">
+        <a href="index.html" class="logo">Affitto <span>Smart</span></a>
+        <div class="header-actions">
+            <a href="#" id="dashboard-link" class="login-link" style="display: none;">
+                <i class="fa-solid fa-user-circle"></i> 
+                <span>La Mia Area</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Contenitore principale della pagina -->
     <div class="container">
-        <header class="header">
+        <!-- Header specifico della pagina (blu) -->
+        <header class="page-header">
             <h1>Le Tue Opportunità Esclusive</h1>
             <p>Ecco gli immobili 100% compatibili con il tuo profilo e le tue preferenze.</p>
         </header>
+        
         <div id="results-container">
             <p class="message"><i class="fa-solid fa-spinner fa-spin"></i> Sto analizzando la compatibilità tra te e le nostre proposte...</p>
         </div>
+        
         <div class="back-link-container">
            <a href="index.html" class="back-link" id="back-link">Modifica la tua Ricerca</a>
         </div>
     </div>
     
-   <script>
-    const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
-    const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
-    const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+    <script>
+        const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
+        const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
+        const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
-       // === MODIFICA CHIAVE: Dichiarazione a livello globale ===
-    // In questo modo, la variabile è accessibile da TUTTE le funzioni in questo script.
-    let allCandidates = [];
+        let allCandidates = [];
     
-    function csvToObjects(csv) {
-        if (!csv) return [];
-        const lines = csv.trim().split(/\r\n|\n/);
-        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-        return lines.slice(1).map(line => {
-            if (!line) return null;
-            const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            return headers.reduce((obj, header, i) => {
-                obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
-                return obj;
-            }, {});
-        }).filter(Boolean);
-    }
-
-    function normalizeString(str) {
-        if (!str) return '';
-        return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
-
-    // La funzione displayResults ora può accedere a 'allCandidates' perché è globale
-    function displayResults(properties, userProfile, bookedPropertyIds, userToken) {
-        const resultsContainer = document.getElementById('results-container');
-        resultsContainer.innerHTML = '';
-        if (properties.length === 0) {
-            resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
-            return;
+        function csvToObjects(csv) {
+            if (!csv) return [];
+            const lines = csv.trim().split(/\r\n|\n/);
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            return lines.slice(1).map(line => {
+                if (!line) return null;
+                const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                return headers.reduce((obj, header, i) => {
+                    obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
+                    return obj;
+                }, {});
+            }).filter(Boolean);
         }
 
-        properties.forEach(p => {
-            if (!p.ID || !p.Titolo || !p.Prezzo) return;
-            
-            // ORA QUESTA LINEA FUNZIONA CORRETTAMENTE
-            const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-            const postiTotali = parseInt(p.MaxPartecipanti) || 10;
-            const postiRimasti = postiTotali - prenotati;
-            
-            let buttonHtml;
-            const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
+        function normalizeString(str) {
+            if (!str) return '';
+            return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
 
-            if (isAlreadyBooked) {
-                buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
-            } else if (postiRimasti > 0) {
-                const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}`;
-                buttonHtml = `<a href="${registrationUrl}" class="cta-button">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
-            } else {
-                buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+        function displayResults(properties, userProfile, bookedPropertyIds, userToken) {
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '';
+            if (properties.length === 0) {
+                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
+                return;
             }
 
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'property-card';
-            cardDiv.innerHTML = `
-                <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}" loading="lazy"></div>
-                <div class="property-card-info">
-                    <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                    <h3>${p.Titolo}</h3>
-                    <div class="price">${p.Prezzo} €/mese</div>
-                    <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
-                    <div class="open-day-info"><i class="fa-solid fa-calendar-check"></i> Open Day: ${p.DataOpenDay || 'Da Definire'}</div>
-                    <div class="booking-action">${buttonHtml}</div>
-                </div>`;
-            resultsContainer.appendChild(cardDiv);
-        });
-    }
+            properties.forEach(p => {
+                if (!p.ID || !p.Titolo || !p.Prezzo) return;
+                
+                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+                const postiTotali = parseInt(p.MaxPartecipanti) || 10;
+                const postiRimasti = postiTotali - prenotati;
+                
+                let buttonHtml;
+                const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
 
-    async function main() {
-        const resultsContainer = document.getElementById('results-container');
-        const params = new URLSearchParams(window.location.search);
-        
-        const userToken = params.get('token');
-        const backLink = document.getElementById('back-link');
-        if (backLink && userToken) {
-            backLink.href = `index.html?token=${userToken}`;
+                if (isAlreadyBooked) {
+                    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
+                } else if (postiRimasti > 0) {
+                    const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}`;
+                    buttonHtml = `<a href="${registrationUrl}" class="cta-button">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
+                } else {
+                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+                }
+
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'property-card';
+                cardDiv.innerHTML = `
+                    <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}" loading="lazy"></div>
+                    <div class="property-card-info">
+                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                        <h3>${p.Titolo}</h3>
+                        <div class="price">${p.Prezzo} €/mese</div>
+                        <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
+                        <div class="open-day-info"><i class="fa-solid fa-calendar-check"></i> Open Day: ${p.DataOpenDay || 'Da Definire'}</div>
+                        <div class="booking-action">${buttonHtml}</div>
+                    </div>`;
+                resultsContainer.appendChild(cardDiv);
+            });
         }
-        
-        let bookedPropertyIds = [];
-        
-        try {
-            const [propsRes, reqsRes, candsRes] = await Promise.all([
-                fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
-            ]);
-            if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Risposta di rete non valida.');
+
+        async function main() {
+            const params = new URLSearchParams(window.location.search);
+            const userToken = params.get('token');
             
-            const allProperties = csvToObjects(await propsRes.text());
-            const allRequirements = csvToObjects(await reqsRes.text());
-            // Popoliamo la variabile globale
-            allCandidates = csvToObjects(await candsRes.text());
-            
+            const dashboardLink = document.getElementById('dashboard-link');
+            const backLink = document.getElementById('back-link');
+
             if (userToken) {
-                const myBookings = allCandidates.filter(c => c.Token === userToken);
-                bookedPropertyIds = myBookings.map(b => b.ID_Immobile_Prenotato);
+                if (dashboardLink) {
+                    dashboardLink.href = `dashboard.html?token=${userToken}`;
+                    dashboardLink.style.display = 'inline-flex';
+                }
+                if (backLink) {
+                    backLink.href = `index.html?token=${userToken}`;
+                }
+            } else if (backLink) {
+                backLink.href = 'index.html';
             }
             
-            const userFilters = {
-                user_email: params.get('user_email'),
-                tipo: normalizeString(params.get('tipo')),
-                zona: normalizeString(params.get('zona')),
-                prezzoMax: parseInt(params.get('prezzo')) || Infinity,
-                data_disponibile: params.get('data_disponibile'),
-                periodo_affitto: normalizeString(params.get('periodo_affitto')),
-                situazione_lavorativa: normalizeString(params.get('situazione_lavorativa')),
-                reddito: parseInt(params.get('reddito_utente')) || 0,
-                sesso: normalizeString(params.get('sesso_utente')),
-                fumatore: normalizeString(params.get('fumatore')),
-                animali: normalizeString(params.get('animali')),
-                tipo_ricerca: normalizeString(params.get('tipo_ricerca'))
-            };
+            let bookedPropertyIds = [];
+            
+            try {
+                const [propsRes, reqsRes, candsRes] = await Promise.all([
+                    fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
+                ]);
+                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Risposta di rete non valida.');
+                
+                const allProperties = csvToObjects(await propsRes.text());
+                const allRequirements = csvToObjects(await reqsRes.text());
+                allCandidates = csvToObjects(await candsRes.text());
+                
+                if (userToken) {
+                    const myBookings = allCandidates.filter(c => c.Token === userToken);
+                    bookedPropertyIds = myBookings.map(b => b.ID_Immobile_Prenotato);
+                }
+                
+                const userFilters = {
+                    user_email: params.get('user_email'),
+                    tipo: normalizeString(params.get('tipo')),
+                    zona: normalizeString(params.get('zona')),
+                    prezzoMax: parseInt(params.get('prezzo')) || Infinity,
+                    data_disponibile: params.get('data_disponibile'),
+                    periodo_affitto: normalizeString(params.get('periodo_affitto')),
+                    situazione_lavorativa: normalizeString(params.get('situazione_lavorativa')),
+                    reddito: parseInt(params.get('reddito_utente')) || 0,
+                    sesso: normalizeString(params.get('sesso_utente')),
+                    fumatore: normalizeString(params.get('fumatore')),
+                    animali: normalizeString(params.get('animali')),
+                    tipo_ricerca: normalizeString(params.get('tipo_ricerca'))
+                };
 
             const finalProperties = allProperties.filter(property => {
                 const propertyID = (property.ID || '').trim();
@@ -214,15 +281,15 @@
             });
             
             // === MODIFICA 2: La chiamata ora PASSA allCandidates ===
-            displayResults(finalProperties, userFilters, bookedPropertyIds, userToken, allCandidates);
+            displayResults(finalProperties, userFilters, bookedPropertyIds, userToken);
 
-        } catch (error) {
-            console.error("ERRORE CRITICO:", error);
-            resultsContainer.innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
+            } catch (error) {
+                console.error("ERRORE CRITICO:", error);
+                document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
+            }
         }
-    }
-    
-    document.addEventListener('DOMContentLoaded', main);
-</script>
+        
+        document.addEventListener('DOMContentLoaded', main);
+    </script>
 </body>
 </html>
