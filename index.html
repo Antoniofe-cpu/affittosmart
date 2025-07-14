@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <!-- === CODICE FAVICON DA AGGIUNGERE === -->
-
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="shortcut icon" href="favicon.ico">
-
-<!-- === FINE CODICE FAVICON === -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trova la Tua Casa a Bologna - Affitto Smart</title>
+    
+    <!-- === CODICE FAVICON === -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <!-- === FINE CODICE FAVICON === -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -26,291 +26,129 @@
             --colore-testo-chiaro: #616161; 
             --colore-sfondo-pagina: #f4f6f9; 
             --colore-bianco: #ffffff;
-            --colore-errore: #D32F2F; /* Colore per messaggi di errore */
+            --colore-errore: #D32F2F;
         }
         html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
         .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         .text-center { text-align: center; }
         
-        /* Layout e Titoli */
         .section { padding: 100px 0; }
-        .section-white { background-color: var(--colore-bianco); }
         .section-light { background-color: var(--colore-sfondo-pagina); }
         .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); }
         
         .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
         .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
         
-        .header { padding: 25px 0; text-align: center; border-bottom: 1px solid #eee;}
-        .logo { font-size: 2.5em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
+        /* === HEADER MODIFICATO === */
+        .header { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid #eee;
+        }
+        .logo { font-size: 2.2em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
         .logo span { font-weight: 400; color: var(--colore-secondario); }
+        .login-link {
+            font-weight: 600;
+            color: var(--colore-primario);
+            background-color: #e3f2fd;
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .login-link:hover {
+            background-color: var(--colore-bianco);
+            border-color: var(--colore-primario);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .login-link .fa-solid {
+            margin-right: 8px;
+        }
+        /* === FINE MODIFICHE HEADER === */
 
-        /* HERO & SEARCH FORM */
-        .hero-search-wrapper {
-            position: relative;
-            padding: 80px 0;
-            color: var(--colore-bianco);
-            text-align: center;
-        }
-        .hero-search-wrapper::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200');
-            background-size: cover;
-            background-position: center;
-            z-index: 1;
-        }
-        .hero-search-content {
-            position: relative;
-            z-index: 2;
-        }
-        .hero-search-content h1 {
-            color: var(--colore-bianco);
-            font-size: 3.5em;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-        .hero-search-content .subtitle {
-            color: rgba(255,255,255,0.9);
-            font-size: 1.4em;
-            max-width: 700px;
-            margin: 15px auto 50px auto;
-        }
+        .hero-search-wrapper { position: relative; padding: 80px 0; color: var(--colore-bianco); text-align: center; }
+        .hero-search-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200'); background-size: cover; background-position: center; z-index: 1; }
+        .hero-search-content { position: relative; z-index: 2; }
+        .hero-search-content h1 { color: var(--colore-bianco); font-size: 3.5em; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .hero-search-content .subtitle { color: rgba(255,255,255,0.9); font-size: 1.4em; max-width: 700px; margin: 15px auto 50px auto; }
         
-        .unified-form {
-            background: var(--colore-bianco); 
-            color: var(--colore-testo); 
-            padding: 40px; 
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            text-align: left;
-        }
+        .unified-form { background: var(--colore-bianco); color: var(--colore-testo); padding: 40px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: left; }
         .form-section { margin-bottom: 30px; padding-bottom: 30px; }
         .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 30px;}
         .form-section .icon { color: var(--colore-accento); }
-        
         .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px 30px; }
         .filter-group { text-align: left; }
         .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
-        
-        /* --- STILE UNICO PER TUTTI GLI INPUT DEL FORM --- */
-        .filter-group select, 
-        .filter-group input[type="number"], 
-        .filter-group input[type="date"] {
-            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; 
-            font-size: 1em; box-sizing: border-box; background-color: white; font-family: 'Poppins', sans-serif;
-        }
-        
+        .filter-group select, .filter-group input[type="number"], .filter-group input[type="date"] { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; background-color: white; font-family: 'Poppins', sans-serif; }
         .pill-options { display: flex; gap: 10px; height: 51px; }
         .pill-options input { display: none; }
-        .pill-options label {
-            flex: 1; display: flex; justify-content: center; align-items: center;
-            text-align: center; padding: 12px; border: 1px solid #ccc;
-            border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; background-color: white;
-        }
-        .pill-options input:checked + label {
-            background-color: var(--colore-primario); color: white; border-color: var(--colore-primario);
-        }
+        .pill-options label { flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; padding: 12px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; background-color: white; }
+        .pill-options input:checked + label { background-color: var(--colore-primario); color: white; border-color: var(--colore-primario); }
+        #profile-section { max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out; }
+        #profile-section.visible { max-height: 1000px; opacity: 1; border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px; }
+        #search-button { width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 40px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer; }
+        .filter-group select.input-error { border-color: var(--colore-errore); }
+        .error-message { color: var(--colore-errore); font-size: 0.85em; margin-top: 5px; height: 1.2em; visibility: hidden; }
+        .error-message.visible { visibility: visible; }
 
-        #profile-section {
-            max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out;
-        }
-        #profile-section.visible {
-            max-height: 1000px; opacity: 1;
-            border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px;
-        }
-        
-        #search-button {
-            width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 40px;
-            background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer;
-        }
-
-        /* --- STILI PER LA VALIDAZIONE --- */
-        .filter-group select.input-error {
-            border-color: var(--colore-errore);
-        }
-        .error-message {
-            color: var(--colore-errore);
-            font-size: 0.85em;
-            margin-top: 5px;
-            height: 1.2em; /* Occupa lo spazio per evitare salti di layout */
-            visibility: hidden; /* Nascosto ma occupa spazio */
-        }
-        .error-message.visible {
-            visibility: visible;
-        }
-
-        @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 600px) { .filter-grid { grid-template-columns: 1fr; } }
-
-        /* WHY US / EXPLANATION SECTION (3 COLONNE) */
-        .process-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 25px; 
-            margin-top: 60px;
-        }
-        .process-step { 
-            text-align: center; padding: 30px; background: white; border-radius: 16px; 
-            box-shadow: 0 8px 30px rgba(0,0,0,0.07);
-            border-bottom: 5px solid var(--colore-accento);
-            transition: transform 0.3s ease;
-        }
+        .process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-top: 60px; }
+        .process-step { text-align: center; padding: 30px; background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.07); border-bottom: 5px solid var(--colore-accento); transition: transform 0.3s ease; }
         .process-step:hover { transform: translateY(-10px); }
         .process-step .icon { font-size: 3.5em; color: var(--colore-primario); margin-bottom: 20px; line-height: 1; }
         .process-step h3 { font-size: 1.4em; color: var(--colore-primario); }
 
-        /* SEZIONE VISUAL */
         .visual-process { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
         .visual-process img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .visual-process h3 { font-size: 2em; }
         
-        /* FAQ SECTION */
         #faq .section-title { color: var(--colore-bianco); }
         #faq .section-subtitle { color: rgba(255,255,255,0.8); }
-        .faq-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 20px; 
-            max-width: 1100px; 
-            margin: 0 auto;
-            align-items: start; /* <-- LA SOLUZIONE È QUI */
-        }
+        .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; margin: 0 auto; align-items: start; }
         .faq-item { border-radius: 12px; background: rgba(255,255,255,0.1); overflow: hidden; }
         .faq-question { width: 100%; background: transparent; border: none; padding: 20px; font-size: 1.1em; font-weight: 600; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--colore-bianco); }
         .faq-answer { color: rgba(255,255,255,0.9); padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
         .faq-item.active .faq-answer { max-height: 200px; padding: 0 20px 20px 20px; }
 
-        /* --- DA AGGIUNGERE --- */
-.main-footer {
-    background-color: #1c2833;
-    color: #bdc3c7;
-    padding: 50px 0;
-    text-align: center;
-}
-.main-footer .logo-container {
-    margin-bottom: 20px;
-    line-height: 1.2;
-}
-.main-footer .logo-main {
-    font-size: 1.8em;
-    font-weight: 800;
-    color: var(--colore-bianco);
-}
-.main-footer .logo-main span {
-    font-weight: 400;
-    color: #76aae9; /* Un blu più chiaro per il contrasto sul fondo scuro */
-}
-.main-footer .logo-tagline {
-    font-size: 0.9em;
-    color: #bdc3c7;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
-}
-.main-footer .contatti-completi p {
-    margin: 20px 0;
-    font-size: 1em;
-}
-.main-footer .legal-links {
-    margin-bottom: 20px;
-    font-size: 1em;
-}
-.main-footer .legal-links a:not(:last-child)::after {
-    content: ' | ';
-    color: #bdc3c7;
-    margin: 0 10px;
-}
-.main-footer a {
-    color: var(--colore-bianco);
-    text-decoration: none;
-    transition: color 0.3s ease;
-    font-weight: 600;
-}
-.main-footer a:hover {
-    color: var(--colore-accento);
-}
-        .guarantee-section {
-            padding: 100px 0;
-            background-color: var(--colore-bianco);
-        }
-        .guarantee-content {
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 50px;
-            align-items: center;
-        }
-        .guarantee-image img {
-            width: 100%;
-            border-radius: 16px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-        }
-        .guarantee-text h2 {
-            font-size: 2.5em;
-            text-align: left;
-            margin-bottom: 20px;
-        }
-        .guarantee-text p {
-            font-size: 1.1em;
-            color: var(--colore-testo-chiaro);
-            line-height: 1.8;
-            margin-bottom: 20px;
-        }
-        .guarantee-points .point {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        .guarantee-points .icon {
-            font-size: 1.5em;
-            color: var(--colore-successo);
-        }
-        .guarantee-image {
-            width: 100%;
-            height: 300px; 
-            border-radius: 16px;
-            overflow: hidden; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-        }
-
-        .guarantee-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-            object-position: center 25%;
-        }
+        .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 50px 0; text-align: center; }
+        .main-footer .logo-container { margin-bottom: 20px; line-height: 1.2; }
+        .main-footer .logo-main { font-size: 1.8em; font-weight: 800; color: var(--colore-bianco); }
+        .main-footer .logo-main span { font-weight: 400; color: #76aae9; }
+        .main-footer .logo-tagline { font-size: 0.9em; color: #bdc3c7; letter-spacing: 0.5px; margin-top: 2px; font-weight: 600; }
+        .main-footer .contatti-completi p { margin: 20px 0; font-size: 1em; }
+        .main-footer .legal-links { margin-bottom: 20px; font-size: 1em; }
+        .main-footer .legal-links a { color: var(--colore-bianco); text-decoration: none; transition: color 0.3s ease; font-weight: 600; padding: 0 15px; }
+        .main-footer .legal-links a:hover { color: var(--colore-accento); }
+        .main-footer .copyright { margin-top: 20px; font-size: 0.9em; opacity: 0.7; }
         
-        @media (max-width: 768px) {
-            .guarantee-content {
-                grid-template-columns: 1fr;
-            }
-        }
+        .guarantee-section { padding: 100px 0; background-color: var(--colore-bianco); }
+        .guarantee-content { display: grid; grid-template-columns: 1fr 1.5fr; gap: 50px; align-items: center; }
+        .guarantee-image { width: 100%; height: 300px; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        .guarantee-image img { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
+        .guarantee-text h2 { font-size: 2.5em; text-align: left; margin-bottom: 20px; }
+        .guarantee-text p { font-size: 1.1em; color: var(--colore-testo-chiaro); line-height: 1.8; margin-bottom: 20px; }
+        .guarantee-points .point { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; font-weight: 600; }
+        .guarantee-points .icon { font-size: 1.5em; color: #2E7D32; }
 
-        @media (max-width: 1100px) {
-            .process-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .faq-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        @media (max-width: 600px) {
-            .process-grid {
-                grid-template-columns: 1fr; 
-            }
-        }
-        @media (max-width: 768px) { 
-            .visual-process { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 1100px) { .process-grid { grid-template-columns: repeat(2, 1fr); } .faq-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 768px) { .guarantee-content, .visual-process { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .process-grid, .filter-grid { grid-template-columns: 1fr; } .header { flex-direction: column; gap: 15px; } }
     </style>
 </head>
 <body>
     <header class="header">
         <a href="index.html" class="logo">Affitto <span>Smart</span></a>
+        <div class="header-actions">
+            <a href="recupera-accesso.html" class="login-link">
+                <i class="fa-solid fa-ticket"></i> La Mia Area
+            </a>
+        </div>
     </header>
 
     <main>
@@ -363,37 +201,19 @@
                         </div>
                     </div>
                     <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
-                </div> <!-- Chiusura di .unified-form -->
+                </div>
             </section>
         </form>
               
-
     <section class="why-us section-light">
         <div class="container text-center">
             <h2 class="section-title">Il nostro non è un semplice annuncio.<br>È un invito a un evento esclusivo.</h2>
             <p class="section-subtitle">Capire il nostro metodo significa capire perché avrai più chance di trovare la casa che desideri, senza stress.</p>
-            
             <div class="process-grid">
-                <div class="process-step">
-                    <div class="icon"><i class="fa-solid fa-users-slash"></i></div>
-                    <h3>Basta Caos, Solo Qualità</h3>
-                    <p>Sui portali gratuiti la tua candidatura è una goccia nell'oceano. Qui, invece, entri in un canale esclusivo dove competi solo con profili compatibili come il tuo.</p>
-                </div>
-                <div class="process-step" style="background-color: var(--colore-primario); color: white; border-color: var(--colore-accento);">
-                    <div class="icon" style="color: var(--colore-accento);"><i class="fa-solid fa-crown"></i></div>
-                    <h3 style="color: white;">Il Canale Preferenziale</h3>
-                    <p style="color: rgba(255,255,255,0.9);">Mentre gli altri perdono tempo, tu investi in un accesso diretto. Noi facciamo il lavoro sporco, tu arrivi dritto all'opportunità.</p>
-                </div>
-                <div class="process-step">
-                    <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div>
-                    <h3>Il Pass per l'Esclusività</h3>
-                    <p>Il tuo pass da 2,99€ non è un costo, è la chiave. Garantisce Open Day a numero chiuso e, se non vieni scelto, è valido per altre 2 opportunità.</p>
-                </div>
-                <div class="process-step">
-                    <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div>
-                    <h3>L'Open Day Vincente</h3>
-                    <p>Un evento rilassato e professionale dove hai tutto il tempo per vedere la casa e fare la differenza. La tua migliore occasione per essere scelto.</p>
-                </div>
+                <div class="process-step"> <div class="icon"><i class="fa-solid fa-users-slash"></i></div> <h3>Basta Caos, Solo Qualità</h3> <p>Sui portali gratuiti la tua candidatura è una goccia nell'oceano. Qui entri in un canale esclusivo dove competi solo con profili compatibili come il tuo.</p> </div>
+                <div class="process-step" style="background-color: var(--colore-primario); color: white; border-color: var(--colore-accento);"> <div class="icon" style="color: var(--colore-accento);"><i class="fa-solid fa-crown"></i></div> <h3 style="color: white;">Il Canale Preferenziale</h3> <p style="color: rgba(255,255,255,0.9);">Mentre gli altri perdono tempo, tu investi in un accesso diretto. Noi facciamo il lavoro sporco, tu arrivi dritto all'opportunità.</p> </div>
+                <div class="process-step"> <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div> <h3>Il Pass per l'Esclusività</h3> <p>Il tuo pass da 2,99€ non è un costo, è la chiave. Garantisce Open Day a numero chiuso e, se non vieni scelto, è valido per altre 2 opportunità.</p> </div>
+                <div class="process-step"> <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div> <h3>L'Open Day Vincente</h3> <p>Un evento rilassato e professionale dove hai tutto il tempo per vedere la casa e fare la differenza. La tua migliore occasione per essere scelto.</p> </div>
             </div>
         </div>
     </section>
@@ -401,25 +221,14 @@
     <section class="guarantee-section">
         <div class="container">
             <div class="guarantee-content">
-                <div class="guarantee-image">
-                    <img src="https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Il nostro team verifica ogni immobile">
-                </div>
+                <div class="guarantee-image"> <img src="https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Il nostro team verifica ogni immobile"> </div>
                 <div class="guarantee-text">
                     <h2>Annunci Verificati, Opportunità Reali.</h2>
                     <p>Sappiamo quanto sia frustrante il mercato degli affitti. <br>Annunci che spariscono, foto ingannevoli, appuntamenti a vuoto.<br>Noi abbiamo eliminato tutto questo.<br>Il nostro impegno è la tua tranquillità.</p>
                     <div class="guarantee-points">
-                        <div class="point">
-                            <i class="fa-solid fa-house-circle-check icon"></i>
-                            <span>Ogni immobile è verificato di persona dal nostro team.</span>
-                        </div>
-                        <div class="point">
-                            <i class="fa-solid fa-calendar-check icon"></i>
-                            <span>Gli Open Day sono eventi reali e confermati.</span>
-                        </div>
-                        <div class="point">
-                            <i class="fa-solid fa-shield-halved icon"></i>
-                            <span>La piccola fee è la tua assicurazione contro i perditempo.</span>
-                        </div>
+                        <div class="point"> <i class="fa-solid fa-house-circle-check icon"></i> <span>Ogni immobile è verificato di persona dal nostro team.</span> </div>
+                        <div class="point"> <i class="fa-solid fa-calendar-check icon"></i> <span>Gli Open Day sono eventi reali e confermati.</span> </div>
+                        <div class="point"> <i class="fa-solid fa-shield-halved icon"></i> <span>La piccola fee è la tua assicurazione contro i perditempo.</span> </div>
                     </div>
                 </div>
             </div>
@@ -433,9 +242,7 @@
                     <h3>Il Controllo è nelle Tue Mani.</h3>
                     <p class="section-subtitle" style="text-align: left; margin: 20px 0; max-width: 100%;">Dopo aver acquistato il tuo ticket, il passo finale è semplice. Verrai reindirizzato alla nostra agenda privata dove potrai scegliere, con un solo click, lo slot orario che preferisci per l'Open Day. <br>Niente telefonate, niente attese. <br>Solo tu, il tuo calendario e la tua prossima casa.</p>
                 </div>
-                <div>
-                    <img src="assets/calendly-esempio.png" alt="Esempio di prenotazione orario su Calendly">
-                </div>
+                <div> <img src="assets/calendly-esempio.png" alt="Esempio di prenotazione orario su Calendly"> </div>
             </div>
         </div>
     </section>
@@ -445,53 +252,34 @@
             <h2 class="section-title text-center">Hai Ancora Dubbi? È Normale!</h2>
             <p class="section-subtitle text-center">La nostra trasparenza è la tua prima garanzia.</p>
             <div class="faq-grid">
-                <div class="faq-item">
-                    <button class="faq-question"><span>Perché devo pagare 2,99€?</span><i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>La piccola fee è un filtro di serietà. Ci permette di garantire che solo persone realmente interessate partecipino, creando un'esperienza di visita di alta qualità per tutti. È il tuo modo per dire "Io ci sono e faccio sul serio".</p></div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question"><span>Cosa succede al mio pass se non vengo scelto?</span><i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>Questa è la parte migliore. Il tuo pass non è legato a un singolo immobile. Se non vieni scelto, resta valido per accedere ai prossimi 3 Open Day per cui risulterai compatibile. È la nostra garanzia per non farti mai sprecare un'opportunità.</p></div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question"><span>Se pago, ho più chance di ottenere la casa?</span><i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>Pagare ti dà l'accesso esclusivo all'Open Day, un vantaggio enorme. Non garantisce l'assegnazione, ma ti mette in una posizione privilegiata per fare un'ottima impressione sul proprietario, che farà la sua scelta finale.</p></div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question"><span>Cosa succede dopo l'Open Day?</span><i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>Dopo la visita, potrai formalizzare il tuo interesse. Raccoglieremo le proposte e le presenteremo al proprietario. Ti garantiamo un feedback rapido, qualunque sia l'esito.</p></div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question"><span>Chi si occupa del contratto d'affitto?</span><i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>Una volta che il proprietario ha scelto e tu hai accettato, vi metteremo in contatto diretto per finalizzare l'accordo. Possiamo fornirvi modelli di contratto standard e consigliarvi professionisti per la stesura e la registrazione.</p></div>
-                </div>
-                 <div class="faq-item">
-                    <button class="faq-question"><span>E per la consegna delle chiavi?</span><i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>La consegna delle chiavi avviene direttamente tra te e il proprietario al momento della firma del contratto o nella data di inizio locazione concordata. Il nostro ruolo termina con il matching perfetto.</p></div>
-                </div>
+                <div class="faq-item"> <button class="faq-question"><span>Perché devo pagare 2,99€?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>La piccola fee è un filtro di serietà. Ci permette di garantire che solo persone realmente interessate partecipino, creando un'esperienza di visita di alta qualità per tutti. È il tuo modo per dire "Io ci sono e faccio sul serio".</p></div> </div>
+                <div class="faq-item"> <button class="faq-question"><span>Cosa succede al mio pass se non vengo scelto?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Questa è la parte migliore. Il tuo pass non è legato a un singolo immobile. Se non vieni scelto, resta valido per accedere ai prossimi 3 Open Day per cui risulterai compatibile. È la nostra garanzia per non farti mai sprecare un'opportunità.</p></div> </div>
+                <div class="faq-item"> <button class="faq-question"><span>Se pago, ho più chance di ottenere la casa?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Pagare ti dà l'accesso esclusivo all'Open Day, un vantaggio enorme. Non garantisce l'assegnazione, ma ti mette in una posizione privilegiata per fare un'ottima impressione sul proprietario, che farà la sua scelta finale.</p></div> </div>
+                <div class="faq-item"> <button class="faq-question"><span>Cosa succede dopo l'Open Day?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Dopo la visita, potrai formalizzare il tuo interesse. Raccoglieremo le proposte e le presenteremo al proprietario. Ti garantiamo un feedback rapido, qualunque sia l'esito.</p></div> </div>
+                <div class="faq-item"> <button class="faq-question"><span>Chi si occupa del contratto d'affitto?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Una volta che il proprietario ha scelto e tu hai accettato, vi metteremo in contatto diretto per finalizzare l'accordo. Possiamo fornirvi modelli di contratto standard e consigliarvi professionisti per la stesura e la registrazione.</p></div> </div>
+                <div class="faq-item"> <button class="faq-question"><span>E per la consegna delle chiavi?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>La consegna delle chiavi avviene direttamente tra te e il proprietario al momento della firma del contratto o nella data di inizio locazione concordata. Il nostro ruolo termina con il matching perfetto.</p></div> </div>
             </div>
         </div>
     </section>
     </main>
 
     <footer class="main-footer">
-    <div class="container">
-        <div class="logo-container">
-            <div class="logo-main">Affitto <span>Smart</span></div>
-            <div class="logo-tagline">Il tuo canale preferenziale per la casa.</div>
+        <div class="container">
+            <div class="logo-container">
+                <div class="logo-main">Affitto <span>Smart</span></div>
+                <div class="logo-tagline">La tua ricerca intelligente, la nostra garanzia.</div>
+            </div>
+            <div class="contatti-completi">
+                <p><a href="tel:+393330000000">[Il Vostro Numero]</a> | <a href="mailto:bologna@affitto-smart.it">bologna@affitto-smart.it</a></p>
+            </div>
+            <div class="legal-links">
+                <a href="recupera-accesso.html">Accedi / Gestisci Ticket</a>
+                <a href="proprietario.html">Sei un Proprietario?</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+            <p class="copyright">© 2025 Affitto Smart. Tutti i diritti riservati.</p>
         </div>
-        <div class="contatti-completi">
-            <!-- SOSTITUISCI CON I TUOI DATI REALI -->
-            <p><a href="tel:+393330000000">[Il Vostro Numero]</a> | <a href="mailto:bologna@affitto-smart.it">bologna@affitto-smart.it</a></p>
-        </div>
-        <div class="legal-links">
-             <!-- Link per i proprietari, ben visibile -->
-            <a href="proprietario.html">Sei un Proprietario? Clicca qui</a>
-            <a href="#">Privacy Policy</a>
-        </div>
-        <p>© 2025 Affitto Smart. Tutti i diritti riservati.</p>
-    </div>
-</footer>
+    </footer>
 
      <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -555,14 +343,11 @@
                 }
             });
 
-            // LOGICA FAQ RIPRISTINATA (CORRETTA)
             document.querySelectorAll('.faq-question').forEach(button => {
                 const faqItem = button.parentElement;
                 button.addEventListener('click', () => {
                     const wasActive = faqItem.classList.contains('active');
-                    // Prima chiudo tutto
                     document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
-                    // Poi, se non era già attiva, apro la domanda cliccata
                     if (!wasActive) {
                         faqItem.classList.add('active');
                     }
