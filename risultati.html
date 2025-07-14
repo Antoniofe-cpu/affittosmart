@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <!-- === CODICE FAVICON DA AGGIUNGERE === -->
-
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="shortcut icon" href="favicon.ico">
-
-<!-- === FINE CODICE FAVICON === -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le Tue Opportunità Esclusive - Affitto Smart</title>
+    
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <!-- Altri link favicon -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -31,81 +25,31 @@
             color: var(--colore-testo);
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .header { 
-            text-align: center; padding: 60px 20px;
-            background-color: var(--colore-primario); color: var(--colore-bianco);
-            border-radius: 0 0 24px 24px; margin-bottom: 40px;
-            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.2);
-        }
+        .header { text-align: center; padding: 60px 20px; background-color: var(--colore-primario); color: var(--colore-bianco); border-radius: 0 0 24px 24px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(13, 71, 161, 0.2); }
         .header h1 { font-size: 3em; color: var(--colore-bianco); text-shadow: 0 2px 4px rgba(0,0,0,0.2); margin: 0; }
         .header p { font-size: 1.2em; color: rgba(255,255,255,0.85); margin-top: 10px; }
-        
         .back-link-container { text-align: center; padding: 40px 0; }
         .back-link { font-weight: 600; color: var(--colore-primario); text-decoration: none; font-size: 1.1em; transition: color 0.3s; }
         .back-link:hover { color: var(--colore-accento); }
-        
         #results-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .property-card {
-            background: white; border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            display: flex; flex-direction: column;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+        .property-card { background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .property-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
         .property-card-img { width: 100%; height: 220px; background-color: #eee; border-radius: 16px 16px 0 0; position: relative; overflow: hidden; }
         .property-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
         .property-card:hover .property-card-img img { transform: scale(1.05); }
-        
         .property-card-info { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
-        
-        .compatibility-icons {
-            display: flex; flex-wrap: wrap; gap: 15px;
-            padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0;
-        }
-        .icon-tag {
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2em; color: var(--colore-successo);
-            width: 30px; height: 30px;
-        }
-        
         .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); text-transform: capitalize; }
         .property-card-info h3 { margin: 5px 0 10px 0; font-size: 1.4em; }
         .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 15px; }
         .property-card-info p { flex-grow: 1; font-size: 0.95em; margin-top: 0; color: #444; }
         .open-day-info { font-weight: 700; color: var(--colore-primario); margin-bottom: 20px; }
-        
         .booking-action { margin-top: auto; }
-        .property-card .cta-button {
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-            width: 100%; padding: 14px; font-size: 1em; text-decoration: none;
-            border-radius: 8px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+        .property-card .cta-button { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; padding: 14px; font-size: 1em; text-decoration: none; border-radius: 8px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; }
         .property-card .cta-button:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(255, 160, 0, 0.4); }
         .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; transform: none; }
-        
+        .property-card .cta-button.booked { background-image: none; background-color: var(--colore-successo); color: white; }
+        .property-card .cta-button.booked:hover { background-color: #1e8223; }
         .message { grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
-        
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
-            display: none; justify-content: center; align-items: center;
-            z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
-        }
-        .modal-overlay.visible { display: flex; opacity: 1; }
-        .modal-content {
-            background: white; padding: 40px; border-radius: 16px;
-            max-width: 500px; width: 90%; text-align: center;
-            transform: scale(0.95); transition: transform 0.3s ease;
-        }
-        .modal-overlay.visible .modal-content { transform: scale(1); }
-        .modal-content .icon { font-size: 3em; color: var(--colore-accento); }
-        .modal-content h3 { font-size: 2em; color: var(--colore-primario); margin: 15px 0; }
-        .modal-content p { color: var(--colore-testo-chiaro); line-height: 1.6; }
-        #payment-button { margin-top: 20px; background: var(--colore-successo); color: white; width: 100%; height: 55px; border-radius: 8px; border: none; font-size: 1.2em; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; }
-        #close-modal { font-size: 0.9em; color: var(--colore-testo-chiaro); cursor: pointer; display: inline-block; margin-top: 15px; }
-
         @media (max-width: 900px) { #results-container { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -119,55 +63,35 @@
             <p class="message"><i class="fa-solid fa-spinner fa-spin"></i> Sto analizzando la compatibilità tra te e le nostre proposte...</p>
         </div>
         <div class="back-link-container">
-           <a href="index.html" class="back-link">Modifica la tua Ricerca</a>
+           <a href="index.html" class="back-link" id="back-link">Modifica la tua Ricerca</a>
         </div>
     </div>
-    <!-- Struttura del Modal di Pagamento (nascosto) -->
-    <div class="modal-overlay" id="payment-modal">
-        <div class="modal-content">
-            <div class="icon"><i class="fa-solid fa-ticket"></i></div>
-            <h3>Il Tuo Ticket per l'Open Day Esclusivo</h3>
-            <p>Per garantire un evento di alta qualità e confermare il tuo reale interesse, è richiesta una piccola <strong>fee di prenotazione di 2,99€</strong>.</p>
-            <p>Questo "ticket" ti assicura un posto. Dopo il pagamento, sarai reindirizzato/a a Calendly per scegliere il tuo orario.</p>
-            <a id="payment-button" href="#" target="_blank">Paga 2,99€ e Ottieni l'Accesso</a>
-            <a id="close-modal">Annulla</a>
-        </div>
-    </div>
-
+    
    <script>
     const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
     const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
     const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
     
-    let allProperties = [], allRequirements = [], allCandidates = [];
-
-    const ICONS_MAP = {
-        'situazione_lavorativa': 'fa-solid fa-briefcase',
-        'animali': 'fa-solid fa-paw',
-        'fumatore': 'fa-solid fa-smoking',
-        'sesso_utente': 'fa-solid fa-venus-mars'
-    };
-
     function csvToObjects(csv) {
-        if (!csv || typeof csv !== 'string') return [];
-        const lines = csv.trim().split('\n');
-        if (lines.length < 2) return [];
-        const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
-        const objects = [];
-        for (let i = 1; i < lines.length; i++) {
-            if (lines[i] && lines[i].trim() !== '') {
-                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                const obj = {};
-                for (let j = 0; j < headers.length; j++) {
-                    if (headers[j]) obj[headers[j]] = values[j] ? values[j].replace(/"/g, '').trim() : '';
-                }
-                if (Object.keys(obj).length > 0) objects.push(obj);
-            }
-        }
-        return objects;
+        if (!csv) return [];
+        const lines = csv.trim().split(/\r\n|\n/);
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        return lines.slice(1).map(line => {
+            if (!line) return null;
+            const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            return headers.reduce((obj, header, i) => {
+                obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
+                return obj;
+            }, {});
+        }).filter(Boolean);
     }
 
-    function displayResults(properties, userProfile) {
+    function normalizeString(str) {
+        if (!str) return '';
+        return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function displayResults(properties, userProfile, bookedPropertyIds, userToken) {
         const resultsContainer = document.getElementById('results-container');
         resultsContainer.innerHTML = '';
         if (properties.length === 0) {
@@ -176,29 +100,29 @@
         }
 
         properties.forEach(p => {
-            if (!p.ID || !p.Titolo || !p.Prezzo || !p.FotoURL || !p.StripeLink || !p.MaxPartecipanti) return;
+            if (!p.ID || !p.Titolo || !p.Prezzo) return;
             
-            let compatibilityHtml = '<div class="compatibility-icons">';
-            for (const key in userProfile) {
-                if (userProfile[key] && ICONS_MAP[key]) {
-                    compatibilityHtml += `<div class="icon-tag" title="${key.replace('_', ' ')}: ${userProfile[key]}"><i class="${ICONS_MAP[key]}"></i></div>`;
-                }
-            }
-            compatibilityHtml += '</div>';
-
             const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-            const postiTotali = parseInt(p.MaxPartecipanti);
+            const postiTotali = parseInt(p.MaxPartecipanti) || 10; // Default a 10 se non specificato
             const postiRimasti = postiTotali - prenotati;
-            let buttonHtml = (postiRimasti > 0) 
-                ? `<button class="cta-button" data-link="${p.StripeLink}">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></button>`
-                : `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+            
+            let buttonHtml;
+            const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
+
+            if (isAlreadyBooked) {
+                buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
+            } else if (postiRimasti > 0) {
+                const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}`;
+                buttonHtml = `<a href="${registrationUrl}" class="cta-button">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
+            } else {
+                buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+            }
 
             const cardDiv = document.createElement('div');
             cardDiv.className = 'property-card';
             cardDiv.innerHTML = `
-                <div class="property-card-img"><img src="${p.FotoURL}" alt="${p.Titolo}" loading="lazy"></div>
+                <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}" loading="lazy"></div>
                 <div class="property-card-info">
-                    ${compatibilityHtml}
                     <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
                     <h3>${p.Titolo}</h3>
                     <div class="price">${p.Prezzo} €/mese</div>
@@ -208,150 +132,84 @@
                 </div>`;
             resultsContainer.appendChild(cardDiv);
         });
-        document.querySelectorAll('.cta-button[data-link]').forEach(button => {
-            button.addEventListener('click', function() { openPaymentModal(this.dataset.link); });
-        });
-    }
-
-    function openPaymentModal(stripeLink) {
-        const modal = document.getElementById('payment-modal');
-        document.getElementById('payment-button').href = stripeLink;
-        modal.classList.add('visible');
-        document.getElementById('close-modal').onclick = () => modal.classList.remove('visible');
-        modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
-    }
-    
-    function normalizeString(str) {
-        if (!str) return '';
-        return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
     async function main() {
         const resultsContainer = document.getElementById('results-container');
+        const params = new URLSearchParams(window.location.search);
         
+        const userToken = params.get('token');
+        const backLink = document.getElementById('back-link');
+        if (backLink && userToken) {
+            backLink.href = `index.html?token=${userToken}`;
+        }
+        
+        let bookedPropertyIds = [];
+        let allCandidates = [];
+
         try {
             const [propsRes, reqsRes, candsRes] = await Promise.all([
                 fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
             ]);
             if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Risposta di rete non valida.');
             
-            allProperties = csvToObjects(await propsRes.text());
-            allRequirements = csvToObjects(await reqsRes.text());
+            const allProperties = csvToObjects(await propsRes.text());
+            const allRequirements = csvToObjects(await reqsRes.text());
             allCandidates = csvToObjects(await candsRes.text());
             
-            const params = new URLSearchParams(window.location.search);
+            if (userToken) {
+                const myBookings = allCandidates.filter(c => c.Token === userToken);
+                bookedPropertyIds = myBookings.map(b => b.ID_Immobile_Prenotato);
+            }
+            
             const userFilters = {
+                user_email: params.get('user_email'),
                 tipo: normalizeString(params.get('tipo')),
                 zona: normalizeString(params.get('zona')),
                 prezzoMax: parseInt(params.get('prezzo')) || Infinity,
+                data_disponibile: params.get('data_disponibile'),
+                periodo_affitto: normalizeString(params.get('periodo_affitto')),
                 situazione_lavorativa: normalizeString(params.get('situazione_lavorativa')),
                 reddito: parseInt(params.get('reddito_utente')) || 0,
                 sesso: normalizeString(params.get('sesso_utente')),
                 fumatore: normalizeString(params.get('fumatore')),
                 animali: normalizeString(params.get('animali')),
-                tipo_ricerca: normalizeString(params.get('tipo_ricerca')),
-                // === NUOVI FILTRI AGGIUNTI ===
-                data_disponibile: params.get('data_disponibile'), // Manteniamo come stringa 'AAAA-MM-DD'
-                periodo_affitto: normalizeString(params.get('periodo_affitto'))
+                tipo_ricerca: normalizeString(params.get('tipo_ricerca'))
             };
-
-            console.log("--- PROFILO UTENTE NORMALIZZATO ---", userFilters);
 
             const finalProperties = allProperties.filter(property => {
                 const propertyID = (property.ID || '').trim();
-                console.log(`\n--- ANALISI IMMOBILE ID: ${propertyID} ---`);
-
-                if ((property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
+                if (!propertyID || (property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
                 if (userFilters.tipo && normalizeString(property.Tipo) !== userFilters.tipo) return false;
                 if (userFilters.zona && normalizeString(property.Zona) !== userFilters.zona) return false;
                 if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) return false;
 
-                // === INIZIO NUOVA LOGICA DI FILTRO ===
-                
-                // Filtro per Data di Disponibilità
                 if (userFilters.data_disponibile && property.data_disponibile) {
-                    const dataUtente = new Date(userFilters.data_disponibile);
-                    const dataImmobile = new Date(property.data_disponibile);
-                    // Controlla che le date siano valide prima di confrontare
-                    if (!isNaN(dataUtente.getTime()) && !isNaN(dataImmobile.getTime())) {
-                        // Scarta l'immobile solo se la sua data di disponibilità è SUCCESSIVA a quella richiesta
-                        if (dataImmobile > dataUtente) {
-                            console.log(`SCARTATO: Data non compatibile (richiesto entro: ${userFilters.data_disponibile}, disponibile da: ${property.data_disponibile})`);
-                            return false;
-                        }
-                    }
+                    try {
+                        const dataUtente = new Date(userFilters.data_disponibile);
+                        const dataImmobile = new Date(property.data_disponibile);
+                        if (dataImmobile > dataUtente) return false;
+                    } catch (e) { console.warn("Data non valida", e); }
                 }
-
-                // Filtro per Periodo di Affitto
-                // Si attiva solo se l'utente ha scelto un'opzione specifica (non "Qualsiasi", che ha value="")
-                if (userFilters.periodo_affitto) {
-                    const periodoRichiesto = userFilters.periodo_affitto;
-                    const periodoOfferto = normalizeString(property.periodo_affitto);
-                    if (periodoOfferto !== periodoRichiesto) {
-                        console.log(`SCARTATO: Periodo affitto non compatibile (richiesto: ${periodoRichiesto}, offerto: ${periodoOfferto})`);
-                        return false;
-                    }
-                }
+                if (userFilters.periodo_affitto && normalizeString(property.periodo_affitto) !== userFilters.periodo_affitto) return false;
                 
-                // === FINE NUOVA LOGICA DI FILTRO ===
-
                 const propertyReqs = allRequirements.find(r => (r.ID_Immobile || '').trim() === propertyID);
-
-                if (!propertyReqs) {
-                    console.log("Nessun requisito specifico trovato. L'immobile passa questo blocco di filtri.");
-                } else {
-                     console.log("Requisiti trovati:", propertyReqs);
-                    
-                    if (userFilters.situazione_lavorativa) {
-                        const required = normalizeString(propertyReqs.situazione_lavorativa);
-                        if (required && required !== 'indifferente' && required !== userFilters.situazione_lavorativa) {
-                            console.log(`SCARTATO: Situazione lavorativa (richiesto: '${required}', utente: '${userFilters.situazione_lavorativa}')`);
-                            return false;
-                        }
-                    }
-                    if (userFilters.animali) {
-                        const required = normalizeString(propertyReqs.animali);
-                        if (required && required !== 'indifferente' && required !== userFilters.animali) {
-                            console.log(`SCARTATO: Animali (richiesto: '${required}', utente: '${userFilters.animali}')`);
-                            return false;
-                        }
-                    }
-                    if (userFilters.fumatore) {
-                        const required = normalizeString(propertyReqs.fumatore);
-                        if (required && required !== 'indifferente' && required !== userFilters.fumatore) {
-                            console.log(`SCARTATO: Fumatore (richiesto: '${required}', utente: '${userFilters.fumatore}')`);
-                            return false;
-                        }
-                    }
-                    if (userFilters.sesso) {
-                        const required = normalizeString(propertyReqs.sesso_accettato);
-                        if (required && required !== 'indifferente' && !required.includes(userFilters.sesso)) {
-                            console.log(`SCARTATO: Sesso (richiesto: '${required}', utente: '${userFilters.sesso}')`);
-                            return false;
-                        }
-                    }
-                    if (userFilters.tipo_ricerca) {
-                        const required = normalizeString(propertyReqs.tipo_ricerca);
-                        if (required && required !== 'indifferente' && required !== userFilters.tipo_ricerca) {
-                            console.log(`SCARTATO: Tipo ricerca (richiesto: '${required}', utente: '${userFilters.tipo_ricerca}')`);
-                            return false;
-                        }
-                    }
+                if (propertyReqs) {
+                    if (userFilters.situazione_lavorativa && normalizeString(propertyReqs.situazione_lavorativa) !== 'indifferente' && normalizeString(propertyReqs.situazione_lavorativa) !== userFilters.situazione_lavorativa) return false;
                     const redditoMinimoRichiesto = parseInt(propertyReqs.reddito_minimo) || 0;
-                    if (redditoMinimoRichiesto > 0 && userFilters.reddito < redditoMinimoRichiesto) {
-                        console.log(`SCARTATO: Reddito insufficiente (richiesto: ${redditoMinimoRichiesto}, utente: ${userFilters.reddito})`);
-                        return false;
-                    }
+                    if (redditoMinimoRichiesto > 0 && userFilters.reddito < redditoMinimoRichiesto) return false;
+                    // Aggiungere qui altri filtri sui requisiti...
                 }
-                console.log(`✅ IMMOBILE COMPATIBILE: ${propertyID}`);
                 return true;
             });
-            displayResults(finalProperties, userFilters);
+            
+            displayResults(finalProperties, userFilters, bookedPropertyIds, userToken, allCandidates);
         } catch (error) {
-            console.error("ERRORE CRITICO DURANTE IL CARICAMENTO DATI:", error);
+            console.error("ERRORE CRITICO:", error);
             resultsContainer.innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
         }
     }
+    
     document.addEventListener('DOMContentLoaded', main);
 </script>
 </body>
