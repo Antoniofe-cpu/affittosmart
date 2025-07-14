@@ -1,160 +1,201 @@
-<style>
-    :root { 
-        --colore-primario: #0D47A1; 
-        --colore-secondario: #1565C0; 
-        --colore-accento: #FFA000; 
-        --colore-testo: #212121; 
-        --colore-testo-chiaro: #616161; 
-        --colore-sfondo-pagina: #f4f6f9; 
-        --colore-bianco: #ffffff;
-        --colore-errore: #D32F2F;
-    }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trova la Tua Casa a Bologna - Affitto Smart</title>
     
-    /* SEZIONI E TITOLI */
-    .section { padding: 100px 0; }
-    .section-light { background-color: var(--colore-sfondo-pagina); }
-    .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); }
-    .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
-    .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
-    
-    /* HEADER */
-    .header { 
-        display: flex; 
-        justify-content: space-between; /* Allinea logo a sx e azioni a dx */
-        align-items: center; 
-        padding: 20px 40px; 
-        border-bottom: 1px solid #eee; 
-    }
-    .logo { font-size: 2.2em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
-    .logo span { font-weight: 400; color: var(--colore-secondario); }
-    
-    .login-link { 
-        display: inline-flex; 
-        align-items: center; 
-        gap: 8px; 
-        font-weight: 600; 
-        color: var(--colore-primario); 
-        background-color: #e3f2fd; 
-        padding: 10px 20px; 
-        border-radius: 50px; 
-        text-decoration: none; 
-        border: 1px solid transparent; 
-        transition: all 0.3s ease; 
-    }
-    .login-link:hover { 
-        background-color: var(--colore-bianco); 
-        border-color: var(--colore-primario); 
-        transform: translateY(-2px); 
-        box-shadow: 0 4px 12px rgba(13, 71, 161, 0.1); 
-    }
-    .login-link .fa-solid { font-size: 1.1em; }
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
 
-    /* HERO & FORM DI RICERCA */
-    .hero-search-wrapper { position: relative; padding: 80px 0; color: var(--colore-bianco); text-align: center; }
-    .hero-search-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200'); background-size: cover; background-position: center; z-index: 1; }
-    .hero-search-content { position: relative; z-index: 2; }
-    .hero-search-content h1 { color: var(--colore-bianco); font-size: 3.5em; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-    .hero-search-content .subtitle { color: rgba(255,255,255,0.9); font-size: 1.4em; max-width: 700px; margin: 15px auto 50px auto; }
-    
-    .unified-form { background: var(--colore-bianco); color: var(--colore-testo); padding: 40px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: left; }
-    .form-section { margin-bottom: 30px; padding-bottom: 30px; }
-    .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 30px;}
-    .form-section .icon { color: var(--colore-accento); }
-    
-    .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px 30px; }
-    .filter-group { text-align: left; }
-    .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
-    .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; background-color: white; font-family: 'Poppins', sans-serif; }
-    
-    .pill-options { display: flex; gap: 10px; height: 51px; }
-    .pill-options input { display: none; }
-    .pill-options label { flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; padding: 12px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; background-color: white; }
-    .pill-options input:checked + label { background-color: var(--colore-primario); color: white; border-color: var(--colore-primario); }
-    
-    #profile-section { max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out; border-top: none; margin-top: 0; padding-top: 0; }
-    #profile-section.visible { max-height: 1000px; opacity: 1; border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px; }
-    
-    #search-button { width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 40px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer; }
-    #search-button .fa-solid { margin-left: 10px; }
-    #search-button:disabled { background-image: none; background-color: #999; cursor: not-allowed; }
-    
-    .filter-group .input-error { border-color: var(--colore-errore); }
-    .error-message { color: var(--colore-errore); font-size: 0.85em; margin-top: 5px; height: 1.2em; visibility: hidden; }
-    .error-message.visible { visibility: visible; }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --colore-primario: #0D47A1; --colore-secondario: #1565C0; --colore-accento: #FFA000; 
+            --colore-testo: #212121; --colore-testo-chiaro: #616161; --colore-sfondo-pagina: #f4f6f9; 
+            --colore-bianco: #ffffff; --colore-errore: #D32F2F;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .section { padding: 100px 0; }
+        .section-light { background-color: var(--colore-sfondo-pagina); }
+        .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); }
+        
+        .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
+        .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
+        
+        .header { display: flex; justify-content: center; align-items: center; padding: 25px 40px; border-bottom: 1px solid #eee; }
+        .logo { font-size: 2.2em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
+        .logo span { font-weight: 400; color: var(--colore-secondario); }
 
-    /* SEZIONE PROCESSO (WHY US) */
-    .process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-top: 60px; }
-    .process-step { text-align: center; padding: 30px; background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.07); border-bottom: 5px solid var(--colore-accento); transition: transform 0.3s ease; }
-    .process-step:hover { transform: translateY(-10px); }
-    .process-step .icon { font-size: 3.5em; color: var(--colore-primario); margin-bottom: 20px; line-height: 1; }
-    .process-step h3 { font-size: 1.4em; color: var(--colore-primario); }
+        .hero-search-wrapper { position: relative; padding: 80px 0; color: var(--colore-bianco); text-align: center; }
+        .hero-search-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200'); background-size: cover; background-position: center; z-index: 1; }
+        .hero-search-content { position: relative; z-index: 2; }
+        .hero-search-content h1 { color: var(--colore-bianco); font-size: 3.5em; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .hero-search-content .subtitle { color: rgba(255,255,255,0.9); font-size: 1.4em; max-width: 700px; margin: 15px auto 50px auto; }
+        
+        .unified-form { background: var(--colore-bianco); color: var(--colore-testo); padding: 40px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: left; }
+        .form-section { margin-bottom: 30px; padding-bottom: 30px; }
+        .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 30px;}
+        .form-section .icon { color: var(--colore-accento); }
+        
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px 30px; }
+        .filter-group { text-align: left; }
+        .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
+        .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; background-color: white; font-family: 'Poppins', sans-serif; }
+        
+        .pill-options { display: flex; gap: 10px; height: 51px; }
+        .pill-options input { display: none; }
+        .pill-options label { flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; padding: 12px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; background-color: white; }
+        .pill-options input:checked + label { background-color: var(--colore-primario); color: white; border-color: var(--colore-primario); }
+        
+        #profile-section { max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out; }
+        #profile-section.visible { max-height: 1000px; opacity: 1; border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px; }
+        
+        #search-button { width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 40px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer; }
+        
+        .filter-group input.input-error { border-color: var(--colore-errore); }
+        .error-message { color: var(--colore-errore); font-size: 0.85em; margin-top: 5px; height: 1.2em; visibility: hidden; }
+        .error-message.visible { visibility: visible; }
 
-    /* SEZIONE VISUAL */
-    .visual-process { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
-    .visual-process img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-    .visual-process h3 { font-size: 2em; }
-    
-    /* SEZIONE FAQ */
-    #faq .section-title { color: var(--colore-bianco); }
-    #faq .section-subtitle { color: rgba(255,255,255,0.8); }
-    .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; margin: 0 auto; align-items: start; }
-    .faq-item { border-radius: 12px; background: rgba(255,255,255,0.1); overflow: hidden; }
-    .faq-question { width: 100%; background: transparent; border: none; padding: 20px; font-size: 1.1em; font-weight: 600; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--colore-bianco); }
-    .faq-answer { color: rgba(255,255,255,0.9); padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
-    .faq-item.active .faq-answer { max-height: 200px; padding: 0 20px 20px 20px; }
+        .process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-top: 60px; }
+        .process-step { text-align: center; padding: 30px; background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.07); border-bottom: 5px solid var(--colore-accento); transition: transform 0.3s ease; }
+        .process-step:hover { transform: translateY(-10px); }
+        .process-step .icon { font-size: 3.5em; color: var(--colore-primario); margin-bottom: 20px; line-height: 1; }
+        .process-step h3 { font-size: 1.4em; color: var(--colore-primario); }
 
-    /* FOOTER */
-    .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 50px 0; text-align: center; }
-    .main-footer .logo-container { margin-bottom: 20px; line-height: 1.2; }
-    .main-footer .logo-main { font-size: 1.8em; font-weight: 800; color: var(--colore-bianco); }
-    .main-footer .logo-main span { font-weight: 400; color: #76aae9; }
-    .main-footer .logo-tagline { font-size: 0.9em; color: #bdc3c7; letter-spacing: 0.5px; margin-top: 2px; font-weight: 600; }
-    .main-footer .legal-links { margin: 20px 0; font-size: 1em; }
-    .main-footer .legal-links a { color: var(--colore-bianco); text-decoration: none; transition: color 0.3s ease; font-weight: 600; padding: 0 15px; }
-    .main-footer .legal-links a:hover { color: var(--colore-accento); }
-    .main-footer .copyright { margin-top: 10px; font-size: 0.9em; opacity: 0.7; }
-    
-    /* SEZIONE GARANZIA */
-    .guarantee-section { padding: 100px 0; background-color: var(--colore-bianco); }
-    .guarantee-content { display: grid; grid-template-columns: 1fr 1.5fr; gap: 50px; align-items: center; }
-    .guarantee-image { width: 100%; height: 300px; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
-    .guarantee-image img { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
-    .guarantee-text h2 { font-size: 2.5em; text-align: left; margin-bottom: 20px; }
-    .guarantee-text p { font-size: 1.1em; color: var(--colore-testo-chiaro); line-height: 1.8; margin-bottom: 20px; }
-    .guarantee-points .point { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; font-weight: 600; }
-    .guarantee-points .icon { font-size: 1.5em; color: #2E7D32; }
+        .visual-process { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+        .visual-process img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .visual-process h3 { font-size: 2em; }
+        
+        #faq .section-title { color: var(--colore-bianco); }
+        #faq .section-subtitle { color: rgba(255,255,255,0.8); }
+        .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; margin: 0 auto; align-items: start; }
+        .faq-item { border-radius: 12px; background: rgba(255,255,255,0.1); overflow: hidden; }
+        .faq-question { width: 100%; background: transparent; border: none; padding: 20px; font-size: 1.1em; font-weight: 600; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--colore-bianco); }
+        .faq-answer { color: rgba(255,255,255,0.9); padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
+        .faq-item.active .faq-answer { max-height: 200px; padding: 0 20px 20px 20px; }
 
-    /* === STILI PER IL MODAL === */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 71, 161, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 5000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s 0.3s; }
-    .modal-overlay.visible { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
-    .modal-content { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 480px; text-align: center; position: relative; transform: scale(0.95) translateY(20px); transition: transform 0.3s ease; }
-    .modal-overlay.visible .modal-content { transform: scale(1) translateY(0); }
-    .modal-content h1 { font-size: 2.2em; color: var(--colore-primario); margin: 0 0 10px 0; }
-    .modal-content p { color: var(--colore-testo-chiaro); margin-bottom: 30px; line-height: 1.6; }
-    .modal-content .form-group { text-align: left; margin-bottom: 20px; }
-    .modal-content .form-group label { font-weight: 600; display: block; margin-bottom: 8px; }
-    .modal-content .form-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
-    .modal-content .login-button { width: 100%; padding: 15px; border: none; border-radius: 8px; background-color: var(--colore-primario); color: white; font-size: 1.1em; font-weight: 700; cursor: pointer; margin-top: 10px; transition: background-color 0.2s; }
-    .modal-content .login-button:disabled { background-color: #999; cursor: not-allowed; }
-    .close-modal-button { position: absolute; top: 15px; right: 15px; background: transparent; border: none; font-size: 2em; line-height: 1; color: #aaa; cursor: pointer; }
-    .modal-content input.input-error { border-color: var(--colore-errore); }
+        .main-footer { background-color: #1c2833; color: #bdc3c7; padding: 50px 0; text-align: center; }
+        .main-footer .logo-container { margin-bottom: 20px; line-height: 1.2; }
+        .main-footer .logo-main { font-size: 1.8em; font-weight: 800; color: var(--colore-bianco); }
+        .main-footer .logo-main span { font-weight: 400; color: #76aae9; }
+        .main-footer .logo-tagline { font-size: 0.9em; color: #bdc3c7; letter-spacing: 0.5px; margin-top: 2px; font-weight: 600; }
+        .main-footer .contatti-completi p { margin: 20px 0; font-size: 1em; }
+        .main-footer .legal-links { margin-bottom: 20px; font-size: 1em; }
+        .main-footer .legal-links a { color: var(--colore-bianco); text-decoration: none; transition: color 0.3s ease; font-weight: 600; padding: 0 15px; }
+        .main-footer .legal-links a:hover { color: var(--colore-accento); }
+        .main-footer .copyright { margin-top: 20px; font-size: 0.9em; opacity: 0.7; }
+        
+        .guarantee-section { padding: 100px 0; background-color: var(--colore-bianco); }
+        .guarantee-content { display: grid; grid-template-columns: 1fr 1.5fr; gap: 50px; align-items: center; }
+        .guarantee-image { width: 100%; height: 300px; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        .guarantee-image img { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
+        .guarantee-text h2 { font-size: 2.5em; text-align: left; margin-bottom: 20px; }
+        .guarantee-text p { font-size: 1.1em; color: var(--colore-testo-chiaro); line-height: 1.8; margin-bottom: 20px; }
+        .guarantee-points .point { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; font-weight: 600; }
+        .guarantee-points .icon { font-size: 1.5em; color: #2E7D32; }
+
+        /* === STILI PER IL MODAL DI RECUPERO ACCESSO === */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 71, 161, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 5000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s 0.3s; }
+        .modal-overlay.visible { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
+        .modal-content { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 480px; text-align: center; position: relative; transform: scale(0.95) translateY(20px); transition: transform 0.3s ease; }
+        .modal-overlay.visible .modal-content { transform: scale(1) translateY(0); }
+        .modal-content h1 { font-size: 2.2em; color: var(--colore-primario); margin: 0 0 10px 0; }
+        .modal-content p { color: var(--colore-testo-chiaro); margin-bottom: 30px; line-height: 1.6; }
+        .modal-content .form-group { text-align: left; margin-bottom: 20px; }
+        .modal-content .form-group label { font-weight: 600; display: block; margin-bottom: 8px; }
+        .modal-content .form-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
+        .modal-content .login-button { width: 100%; padding: 15px; border: none; border-radius: 8px; background-color: var(--colore-primario); color: white; font-size: 1.1em; font-weight: 700; cursor: pointer; margin-top: 10px; transition: background-color 0.2s; }
+        .modal-content .login-button:disabled { background-color: #999; cursor: not-allowed; }
+        .close-modal-button { position: absolute; top: 15px; right: 15px; background: transparent; border: none; font-size: 2em; line-height: 1; color: #aaa; cursor: pointer; }
+        .modal-content .form-message { margin-top: 20px; padding: 15px; border-radius: 8px; font-weight: 600; display: none; }
+        .modal-content .form-message.success { display: block; background-color: #e0f2f1; color: #00796b; }
+        .modal-content .form-message.error { display: block; background-color: #ffebee; color: #c0392b; }
+        <!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trova la Tua Casa a Bologna - Affitto Smart</title>
     
-    @media (max-width: 1100px) { .process-grid { grid-template-columns: repeat(2, 1fr); } .faq-grid { grid-template-columns: 1fr; } }
-    @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 768px) { .guarantee-content, .visual-process { grid-template-columns: 1fr; } }
-    @media (max-width: 600px) { .process-grid, .filter-grid { grid-template-columns: 1fr; } .header { flex-direction: column; gap: 20px; } }
-</style>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --colore-primario: #0D47A1; --colore-secondario: #1565C0; --colore-accento: #FFA000; 
+            --colore-testo: #212121; --colore-testo-chiaro: #616161; --colore-sfondo-pagina: #f4f6f9; 
+            --colore-bianco: #ffffff; --colore-errore: #D32F2F;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-bianco); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .section { padding: 100px 0; }
+        .section-light { background-color: var(--colore-sfondo-pagina); }
+        .section-dark { background-color: var(--colore-primario); color: var(--colore-bianco); }
+        
+        .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
+        .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
+        
+        .header { display: flex; justify-content: center; align-items: center; padding: 25px 40px; border-bottom: 1px solid #eee; }
+        .logo { font-size: 2.2em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
+        .logo span { font-weight: 400; color: var(--colore-secondario); }
+
+        .hero-search-wrapper { position: relative; padding: 80px 0; color: var(--colore-bianco); text-align: center; }
+        .hero-search-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200'); background-size: cover; background-position: center; z-index: 1; }
+        .hero-search-content { position: relative; z-index: 2; }
+        .hero-search-content h1 { color: var(--colore-bianco); font-size: 3.5em; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .hero-search-content .subtitle { color: rgba(255,255,255,0.9); font-size: 1.4em; max-width: 700px; margin: 15px auto 50px auto; }
+        
+        .unified-form { background: var(--colore-bianco); color: var(--colore-testo); padding: 40px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: left; }
+        .form-section { margin-bottom: 30px; padding-bottom: 30px; }
+        .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .form-section h2 { font-size: 1.8em; margin-top: 0; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 30px;}
+        .form-section .icon { color: var(--colore-accento); }
+        
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px 30px; }
+        .filter-group { text-align: left; }
+        .filter-group label { font-weight: 600; display: block; margin-bottom: 10px; }
+        .filter-group select, .filter-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; background-color: white; font-family: 'Poppins', sans-serif; }
+        
+        .pill-options { display: flex; gap: 10px; height: 51px; }
+        .pill-options input { display: none; }
+        .pill-options label { flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; padding: 12px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; background-color: white; }
+        .pill-options input:checked + label { background-color: var(--colore-primario); color: white; border-color: var(--colore-primario); }
+        
+        #profile-section { max-height: 0; overflow: hidden; opacity: 0; transition: all 0.6s ease-in-out; }
+        #profile-section.visible { max-height: 1000px; opacity: 1; border-top: 2px dashed #d0d0d0; margin-top: 30px; padding-top: 30px; }
+        
+        #search-button { width: 100%; height: 60px; border-radius: 12px; border: none; margin-top: 40px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-size: 1.4em; font-weight: 700; cursor: pointer; }
+
+        @media (max-width: 1100px) { .process-grid { grid-template-columns: repeat(2, 1fr); } .faq-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 768px) { .guarantee-content, .visual-process { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .process-grid, .filter-grid { grid-template-columns: 1fr; } .header { flex-direction: column; gap: 15px; } }
+    </style>
 </head>
 <body>
     <header class="header">
         <a href="index.html" class="logo">Affitto <span>Smart</span></a>
         <div class="header-actions">
             <a href="#" id="open-recover-modal" class="login-link">
-                <i class="fa-solid fa-user-circle"></i> La Mia Area
+                <i class="fa-solid fa-ticket"></i> La Mia Area
             </a>
         </div>
     </header>
@@ -164,7 +205,7 @@
             <section class="hero-search-wrapper">
                 <div class="hero-search-content container">
                     <h1>La casa giusta, senza compromessi.</h1>
-                    <p class="subtitle">Compila le tue preferenze. <br>Ti guideremo passo dopo passo per trovare le tue opportunità.</p>
+                    <p class="subtitle">Compila le tue preferenze. <br>Ti chiederemo l'email solo alla fine per mostrarti i risultati.</p>
                     <div class="unified-form">
                         <div class="form-section" id="preferences-section">
                             <h2><i class="fa-solid fa-map-location-dot icon"></i>Le tue preferenze</h2>
@@ -179,15 +220,15 @@
                         <div class="form-section" id="profile-section">
                             <h2><i class="fa-solid fa-user-check icon"></i>Il tuo profilo</h2>
                             <div class="filter-grid">
-                                <div class="filter-group"> <label>Situazione Lavorativa</label> <select name="situazione_lavorativa" id="situazione_lavorativa" required> <option value="" disabled selected>Seleziona...</option> <option>Dipendente a tempo indeterminato</option> <option>Studente/ssa con garante</option> <option>Lavoratore Autonomo / P.IVA</option> </select> <p class="error-message" id="error-lavoro">Campo obbligatorio</p> </div>
-                                <div class="filter-group"> <label>Reddito Netto Mensile</label> <select name="reddito_utente" id="reddito_utente" required> <option value="" disabled selected>Seleziona fascia...</option> <option value="1500">Meno di 1.500 €</option> <option value="2000">1.501-2.000 €</option> <option value="2500">2.001-2.500 €</option> <option value="3000">Oltre 2.500 €</option> </select> <p class="error-message" id="error-reddito">Campo obbligatorio</p> </div>
+                                <div class="filter-group"> <label>Situazione Lavorativa</label> <select name="situazione_lavorativa" id="situazione_lavorativa" required> <option value="" disabled selected>Seleziona...</option> <option>Dipendente a tempo indeterminato</option> <option>Studente/ssa con garante</option> <option>Lavoratore Autonomo / P.IVA</option> </select> </div>
+                                <div class="filter-group"> <label>Reddito Netto Mensile</label> <select name="reddito_utente" id="reddito_utente" required> <option value="" disabled selected>Seleziona fascia...</option> <option value="1500">Meno di 1.500 €</option> <option value="2000">1.501-2.000 €</option> <option value="2500">2.001-2.500 €</option> <option value="3000">Oltre 2.500 €</option> </select> </div>
                                 <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
                                 <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
                                 <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
                                 <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
                             </div>
                         </div>
-                        <button type="submit" id="search-button">Avanti <i class="fa-solid fa-arrow-right"></i></button>
+                        <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                     </div>
                 </div>
             </section>
@@ -268,7 +309,22 @@
             <p class="copyright">© 2025 Affitto Smart. Tutti i diritti riservati.</p>
         </div>
     </footer>
-    
+    <!-- MODAL RICHIESTA EMAIL -->
+    <div class="modal-overlay" id="email-request-modal">
+        <div class="modal-content">
+            <button class="close-modal-button" aria-label="Chiudi modal">×</button>
+            <h1>Un Ultimo Passo...</h1>
+            <p>Inserisci la tua email per vedere gli annunci compatibili. Se sei già nostro cliente, ti riconosceremo!</p>
+            <form id="email-modal-form" novalidate>
+                <div class="form-group">
+                    <label for="modal-user-email">Il tuo indirizzo email</label>
+                    <input type="email" id="modal-user-email" name="user_email" required placeholder="mario.rossi@email.com">
+                    <p class="error-message" id="modal-error-email"></p>
+                </div>
+                <button type="submit" id="modal-submit-button" class="login-button">Vedi i Risultati</button>
+            </form>
+        </div>
+    </div>
 
     <!-- === INIZIO MODAL DI RECUPERO ACCESSO === -->
     <div class="modal-overlay" id="recover-access-modal">
@@ -287,37 +343,21 @@
         </div>
     </div>
     <!-- === FINE MODAL DI RECUPERO ACCESSO === -->
-     <!-- MODAL RICHIESTA EMAIL -->
-    <div class="modal-overlay" id="email-request-modal">
-        <div class="modal-content">
-            <button class="close-modal-button" aria-label="Chiudi modal">×</button>
-            <h1>Un Ultimo Passo...</h1>
-            <p>Inserisci la tua email per vedere gli annunci compatibili. Se sei già nostro cliente, ti riconosceremo!</p>
-            <form id="email-modal-form" novalidate>
-                <div class="form-group">
-                    <label for="modal-user-email">Il tuo indirizzo email</label>
-                    <input type="email" id="modal-user-email" name="user_email" required placeholder="mario.rossi@email.com">
-                    <p class="error-message" id="modal-error-email"></p>
-                </div>
-                <button type="submit" id="modal-submit-button" class="login-button">Vedi i Risultati</button>
-            </form>
-        </div>
-    </div>
 
-      <script>
+     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
             
-            const form = document.getElementById('unified-search-form');
-            const searchButton = document.getElementById('search-button');
+            const mainSearchForm = document.getElementById('unified-search-form');
             const profileSection = document.getElementById('profile-section');
-            
             const emailModal = document.getElementById('email-request-modal');
             const closeModalButton = emailModal.querySelector('.close-modal-button');
             const emailModalForm = document.getElementById('email-modal-form');
             const modalSubmitButton = document.getElementById('modal-submit-button');
 
-            let formPhase = 1;
+            document.getElementById('preferences-section').addEventListener('change', () => {
+                profileSection.classList.add('visible');
+            });
 
             function csvToObjects(csv) {
                 if (!csv) return [];
@@ -332,44 +372,10 @@
                     }, {});
                 }).filter(Boolean);
             }
-
-            form.addEventListener('submit', function(e) {
+            
+            mainSearchForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-
-                if (formPhase === 1) {
-                    profileSection.classList.add('visible');
-                    formPhase = 2;
-                    searchButton.innerHTML = 'Cerca Le Tue Opportunità <i class="fa-solid fa-arrow-right"></i>';
-                    profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else if (formPhase === 2) {
-                    const lavoroSelect = document.getElementById('situazione_lavorativa');
-                    const redditoSelect = document.getElementById('reddito_utente');
-                    const errorLavoro = document.getElementById('error-lavoro');
-                    const errorReddito = document.getElementById('error-reddito');
-                    let isProfileValid = true;
-
-                    lavoroSelect.classList.remove('input-error');
-                    errorLavoro.classList.remove('visible');
-                    redditoSelect.classList.remove('input-error');
-                    errorReddito.classList.remove('visible');
-
-                    if (lavoroSelect.value === '') {
-                        isProfileValid = false;
-                        lavoroSelect.classList.add('input-error');
-                        errorLavoro.classList.add('visible');
-                    }
-                    if (redditoSelect.value === '') {
-                        isProfileValid = false;
-                        redditoSelect.classList.add('input-error');
-                        errorReddito.classList.add('visible');
-                    }
-
-                    if (isProfileValid) {
-                        emailModal.classList.add('visible');
-                    } else {
-                        lavoroSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }
+                emailModal.classList.add('visible');
             });
 
             function closeModal() {
@@ -408,8 +414,8 @@
                     const candidates = csvToObjects(csvText);
                     const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
 
-                    const mainFormData = new FormData(form);
-                    mainFormData.append('user_email', email);
+                    const mainFormData = new FormData(mainSearchForm);
+                    mainFormData.append('user_email', email); // Aggiunge l'email dal modal
                     
                     const queryString = new URLSearchParams(mainFormData).toString();
                     let finalUrl = `risultati.html?${queryString}`;
@@ -427,7 +433,7 @@
                     modalSubmitButton.innerHTML = 'Vedi i Risultati';
                 }
             });
-
+            
             document.querySelectorAll('.faq-question').forEach(button => {
                 const faqItem = button.parentElement;
                 button.addEventListener('click', () => {
@@ -438,7 +444,5 @@
             });
         });
     </script>
-</body>
-</html>
 </body>
 </html>
