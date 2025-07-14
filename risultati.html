@@ -71,6 +71,10 @@
     const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
     const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
     const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+
+       // === MODIFICA CHIAVE: Dichiarazione a livello globale ===
+    // In questo modo, la variabile è accessibile da TUTTE le funzioni in questo script.
+    let allCandidates = [];
     
     function csvToObjects(csv) {
         if (!csv) return [];
@@ -91,8 +95,8 @@
         return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
-    // === MODIFICA 1: La funzione ora ACCETTA allCandidates ===
-    function displayResults(properties, userProfile, bookedPropertyIds, userToken, allCandidates) {
+    // La funzione displayResults ora può accedere a 'allCandidates' perché è globale
+    function displayResults(properties, userProfile, bookedPropertyIds, userToken) {
         const resultsContainer = document.getElementById('results-container');
         resultsContainer.innerHTML = '';
         if (properties.length === 0) {
@@ -103,7 +107,7 @@
         properties.forEach(p => {
             if (!p.ID || !p.Titolo || !p.Prezzo) return;
             
-            // Ora 'allCandidates' è visibile qui e non darà errore
+            // ORA QUESTA LINEA FUNZIONA CORRETTAMENTE
             const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
             const postiTotali = parseInt(p.MaxPartecipanti) || 10;
             const postiRimasti = postiTotali - prenotati;
@@ -156,7 +160,8 @@
             
             const allProperties = csvToObjects(await propsRes.text());
             const allRequirements = csvToObjects(await reqsRes.text());
-            const allCandidates = csvToObjects(await candsRes.text()); // 'allCandidates' è creata qui
+            // Popoliamo la variabile globale
+            allCandidates = csvToObjects(await candsRes.text());
             
             if (userToken) {
                 const myBookings = allCandidates.filter(c => c.Token === userToken);
