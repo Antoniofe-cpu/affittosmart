@@ -43,7 +43,11 @@
         .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 15px; }
         .property-card-info p { flex-grow: 1; font-size: 0.95em; margin-top: 0; color: #444; }
         .open-day-info { font-weight: 700; color: var(--colore-primario); margin-bottom: 20px; }
-        .booking-action { margin-top: auto; }
+        .booking-action {
+    margin-top: auto; /* Mantiene il pulsante in fondo alla card */
+    display: flex; /* Attiva flexbox */
+    justify-content: center; /* Centra orizzontalmente il suo contenuto */
+}
         .property-card .cta-button { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; padding: 14px; font-size: 1em; text-decoration: none; border-radius: 8px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; }
         .property-card .cta-button:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(255, 160, 0, 0.4); }
         .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; transform: none; }
