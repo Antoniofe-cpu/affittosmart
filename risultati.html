@@ -134,6 +134,150 @@
         @media (max-width: 900px) { #results-container { grid-template-columns: 1fr; } }
     </style>
 </head>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Tue Opportunità Esclusive - Affitto Smart</title>
+    
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+    :root { 
+        --colore-primario: #0D47A1; 
+        --colore-secondario: #1565C0;
+        --colore-accento: #FFA000; 
+        --colore-testo: #212121; 
+        --colore-testo-chiaro: #5f6368; 
+        --colore-sfondo-pagina: #f4f6f9; 
+        --colore-successo: #2E7D32; 
+        --colore-bianco: #ffffff;
+    }
+    body { 
+        font-family: 'Poppins', sans-serif; 
+        margin: 0; 
+        background-color: var(--colore-sfondo-pagina);
+        color: var(--colore-testo);
+    }
+    
+    /* === STILI HEADER DI NAVIGAZIONE (BIANCO) === */
+    .main-header {
+        display: flex;
+        justify-content: space-between; /* Spazio tra logo e azioni */
+        align-items: center;
+        padding: 20px 40px;
+        background-color: var(--colore-bianco);
+        border-bottom: 1px solid #eee;
+    }
+    .main-header .logo {
+        /* Per centrare il logo, lo lasciamo a sinistra e usiamo un trucco */
+        /* Questo elemento occupa lo spazio a sinistra */
+    }
+    .main-header .logo-center-wrapper {
+        /* Questo elemento spinge il logo al centro assoluto dell'header */
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .main-header .logo-center-wrapper .logo {
+        font-size: 2.2em;
+        font-weight: 800;
+        color: var(--colore-primario);
+        text-decoration: none;
+    }
+    .main-header .logo span { 
+        font-weight: 400; 
+        color: var(--colore-secondario);
+    }
+    .header-actions {
+        /* Il pulsante si allineerà naturalmente a destra grazie a space-between */
+    }
+    .login-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        color: var(--colore-primario);
+        background-color: #e3f2fd;
+        padding: 10px 20px;
+        border-radius: 50px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: all 0.3s ease;
+    }
+    .login-link:hover {
+        background-color: var(--colore-bianco);
+        border-color: var(--colore-primario);
+    }
+    /* === FINE STILI HEADER DI NAVIGAZIONE === */
+
+    /* HEADER DI CONTESTO (BLU) - STILE ORIGINALE RIPRISTINATO */
+    .page-header-wrapper {
+        background-color: var(--colore-primario);
+        color: var(--colore-bianco);
+        padding: 60px 20px;
+        border-radius: 0 0 24px 24px;
+        box-shadow: 0 4px 12px rgba(13, 71, 161, 0.2);
+    }
+    .page-header { 
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center; 
+    }
+    .page-header h1 { 
+        font-size: 3em; 
+        color: var(--colore-bianco); 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2); 
+        margin: 0; 
+    }
+    .page-header p { 
+        font-size: 1.2em; 
+        color: rgba(255,255,255,0.85); 
+        margin-top: 10px; 
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* CONTENUTO PRINCIPALE */
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+    
+    .back-link-container { text-align: center; padding: 20px 0 40px 0; }
+    .back-link { font-weight: 600; color: var(--colore-primario); text-decoration: none; font-size: 1.1em; }
+    
+    #results-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    .property-card { background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; }
+    .property-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+    .property-card-img { width: 100%; height: 220px; background-color: #eee; position: relative; }
+    .property-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+    .property-card:hover .property-card-img img { transform: scale(1.05); }
+    .property-card-info { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
+    .property-card-info .type-zone { font-weight: 600; color: var(--colore-testo-chiaro); text-transform: capitalize; }
+    .property-card-info h3 { margin: 5px 0 10px 0; font-size: 1.4em; }
+    .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 15px; }
+    .property-card-info p { flex-grow: 1; font-size: 0.95em; margin-top: 0; color: #444; }
+    .open-day-info { font-weight: 700; color: var(--colore-primario); margin-bottom: 20px; }
+    .booking-action { margin-top: auto; display: flex; justify-content: center; }
+    .property-card .cta-button { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; max-width: 320px; padding: 14px; font-size: 1em; text-decoration: none; border-radius: 8px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; }
+    .property-card .cta-button:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(255, 160, 0, 0.4); }
+    .property-card .cta-button.disabled { background-image: none; background-color: #ccc; cursor: not-allowed; box-shadow: none; transform: none; }
+    .property-card .cta-button.booked { background-image: none; background-color: var(--colore-successo); color: white; }
+    .property-card .cta-button.booked:hover { background-color: #1e8223; }
+    .message { grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 1.2em; color: var(--colore-testo-chiaro); }
+    
+    @media (max-width: 900px) { #results-container { grid-template-columns: 1fr; } }
+</style>
+</head>
 <body>
     <header class="main-header">
         <a href="index.html" class="logo">Affitto <span>Smart</span></a>
