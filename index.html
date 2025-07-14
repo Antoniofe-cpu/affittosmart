@@ -15,7 +15,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { 
@@ -40,36 +40,12 @@
         .section-title { font-size: 3em; font-weight: 800; color: var(--colore-primario); margin-bottom: 20px; text-align: center; }
         .section-subtitle { font-size: 1.3em; color: var(--colore-testo-chiaro); max-width: 700px; margin: 0 auto 60px auto; text-align: center; }
         
-        /* === HEADER MODIFICATO === */
-        .header { 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            border-bottom: 1px solid #eee;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid #eee; }
         .logo { font-size: 2.2em; font-weight: 800; color: var(--colore-primario); text-decoration: none; }
         .logo span { font-weight: 400; color: var(--colore-secondario); }
-        .login-link {
-            font-weight: 600;
-            color: var(--colore-primario);
-            background-color: #e3f2fd;
-            padding: 10px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-        }
-        .login-link:hover {
-            background-color: var(--colore-bianco);
-            border-color: var(--colore-primario);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .login-link .fa-solid {
-            margin-right: 8px;
-        }
-        /* === FINE MODIFICHE HEADER === */
+        .login-link { font-weight: 600; color: var(--colore-primario); background-color: #e3f2fd; padding: 10px 20px; border-radius: 50px; text-decoration: none; transition: all 0.3s ease; border: 1px solid transparent; }
+        .login-link:hover { background-color: var(--colore-bianco); border-color: var(--colore-primario); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .login-link .fa-solid { margin-right: 8px; }
 
         .hero-search-wrapper { position: relative; padding: 80px 0; color: var(--colore-bianco); text-align: center; }
         .hero-search-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.85)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200'); background-size: cover; background-position: center; z-index: 1; }
@@ -135,6 +111,23 @@
         .guarantee-points .point { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; font-weight: 600; }
         .guarantee-points .icon { font-size: 1.5em; color: #2E7D32; }
 
+        /* === STILI PER IL MODAL DI RECUPERO ACCESSO === */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 71, 161, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 5000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s 0.3s; }
+        .modal-overlay.visible { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
+        .modal-content { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 480px; text-align: center; position: relative; transform: scale(0.95) translateY(20px); transition: transform 0.3s ease; }
+        .modal-overlay.visible .modal-content { transform: scale(1) translateY(0); }
+        .modal-content h1 { font-size: 2.2em; color: var(--colore-primario); margin: 0 0 10px 0; }
+        .modal-content p { color: var(--colore-testo-chiaro); margin-bottom: 30px; line-height: 1.6; }
+        .modal-content .form-group { text-align: left; margin-bottom: 20px; }
+        .modal-content .form-group label { font-weight: 600; display: block; margin-bottom: 8px; }
+        .modal-content .form-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
+        .modal-content .login-button { width: 100%; padding: 15px; border: none; border-radius: 8px; background-color: var(--colore-primario); color: white; font-size: 1.1em; font-weight: 700; cursor: pointer; margin-top: 10px; transition: background-color 0.2s; }
+        .modal-content .login-button:disabled { background-color: #999; cursor: not-allowed; }
+        .close-modal-button { position: absolute; top: 15px; right: 15px; background: transparent; border: none; font-size: 2em; line-height: 1; color: #aaa; cursor: pointer; }
+        .modal-content .form-message { margin-top: 20px; padding: 15px; border-radius: 8px; font-weight: 600; display: none; }
+        .modal-content .form-message.success { display: block; background-color: #e0f2f1; color: #00796b; }
+        .modal-content .form-message.error { display: block; background-color: #ffebee; color: #c0392b; }
+
         @media (max-width: 1100px) { .process-grid { grid-template-columns: repeat(2, 1fr); } .faq-grid { grid-template-columns: 1fr; } }
         @media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 768px) { .guarantee-content, .visual-process { grid-template-columns: 1fr; } }
@@ -145,7 +138,7 @@
     <header class="header">
         <a href="index.html" class="logo">Affitto <span>Smart</span></a>
         <div class="header-actions">
-            <a href="recupera-accesso.html" class="login-link">
+            <a href="#" id="open-recover-modal" class="login-link">
                 <i class="fa-solid fa-ticket"></i> La Mia Area
             </a>
         </div>
@@ -157,7 +150,6 @@
                 <div class="hero-search-content container">
                     <h1>La casa giusta, senza compromessi.</h1>
                     <p class="subtitle">Dicci chi sei e cosa cerchi. <br>Il nostro sistema intelligente ti mostrerà solo le opportunità a Bologna per cui sei perfettamente compatibile.</p>
-                    
                     <div class="unified-form">
                         <div class="form-section" id="preferences-section">
                             <h2><i class="fa-solid fa-map-location-dot icon"></i>Cosa cerchi?</h2>
@@ -169,98 +161,79 @@
                                 <div class="filter-group"><label>Periodo di Affitto</label><select name="periodo_affitto"><option value="">Qualsiasi</option><option>Breve (meno di 6 mesi)</option><option>Standard (1-3 anni)</option><option>Lungo (più di 3 anni)</option></select></div>
                             </div>
                         </div>
-
                         <div class="form-section" id="profile-section">
-                        <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
-                        <div class="filter-grid">
-                            <div class="filter-group">
-                                <label>Situazione Lavorativa</label>
-                                <select name="situazione_lavorativa" id="situazione_lavorativa">
-                                    <option value="" disabled selected>Seleziona...</option>
-                                    <option>Dipendente a tempo indeterminato</option>
-                                    <option>Studente/ssa con garante</option>
-                                    <option>Lavoratore Autonomo / P.IVA</option>
-                                </select>
-                                <p class="error-message" id="error-lavoro">Campo obbligatorio</p>
+                            <h2><i class="fa-solid fa-user-check icon"></i>Perfetto! Completa il tuo profilo.</h2>
+                            <div class="filter-grid">
+                                <div class="filter-group"> <label>Situazione Lavorativa</label> <select name="situazione_lavorativa" id="situazione_lavorativa"> <option value="" disabled selected>Seleziona...</option> <option>Dipendente a tempo indeterminato</option> <option>Studente/ssa con garante</option> <option>Lavoratore Autonomo / P.IVA</option> </select> <p class="error-message" id="error-lavoro">Campo obbligatorio</p> </div>
+                                <div class="filter-group"> <label>Reddito Netto Mensile</label> <select name="reddito_utente" id="reddito_utente"> <option value="" disabled selected>Seleziona fascia...</option> <option value="1500">Meno di 1.500 €</option> <option value="2000">1.501-2.000 €</option> <option value="2500">2.001-2.500 €</option> <option value="3000">Oltre 2.500 €</option> </select> <p class="error-message" id="error-reddito">Campo obbligatorio</p> </div>
+                                <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
+                                <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
+                                <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
+                                <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
                             </div>
-                            <div class="filter-group">
-                                <label>Reddito Netto Mensile</label>
-                                <select name="reddito_utente" id="reddito_utente">
-                                    <option value="" disabled selected>Seleziona fascia...</option>
-                                    <option value="1500">Meno di 1.500 €</option>
-                                    <option value="2000">1.501-2.000 €</option>
-                                    <option value="2500">2.001-2.500 €</option>
-                                    <option value="3000">Oltre 2.500 €</option>
-                                </select>
-                                <p class="error-message" id="error-reddito">Campo obbligatorio</p>
-                            </div>
-                            <div class="filter-group"><label>Stai cercando</label><div class="pill-options"><input type="radio" id="solo" name="tipo_ricerca" value="Da solo/a" checked><label for="solo">Da solo/a</label><input type="radio" id="coppia" name="tipo_ricerca" value="In coppia"><label for="coppia">In coppia</label></div></div>
-                            <div class="filter-group"><label>Il tuo sesso</label><div class="pill-options"><input type="radio" id="sesso_m" name="sesso_utente" value="M" checked><label for="sesso_m">M</label><input type="radio" id="sesso_f" name="sesso_utente" value="F"><label for="sesso_f">F</label></div></div>
-                            <div class="filter-group"><label>Fumatore?</label><div class="pill-options"><input type="radio" id="fumatore_no" name="fumatore" value="No" checked><label for="fumatore_no">No</label><input type="radio" id="fumatore_si" name="fumatore" value="Sì"><label for="fumatore_si">Sì</label></div></div>
-                            <div class="filter-group"><label>Animali?</label><div class="pill-options"><input type="radio" id="animali_no" name="animali" value="No" checked><label for="animali_no">No</label><input type="radio" id="animali_si" name="animali" value="Sì"><label for="animali_si">Sì</label></div></div>
                         </div>
+                        <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                     </div>
-                    <button type="submit" id="search-button">Scopri le Tue Opportunità</button>
                 </div>
             </section>
         </form>
               
-    <section class="why-us section-light">
-        <div class="container text-center">
-            <h2 class="section-title">Il nostro non è un semplice annuncio.<br>È un invito a un evento esclusivo.</h2>
-            <p class="section-subtitle">Capire il nostro metodo significa capire perché avrai più chance di trovare la casa che desideri, senza stress.</p>
-            <div class="process-grid">
-                <div class="process-step"> <div class="icon"><i class="fa-solid fa-users-slash"></i></div> <h3>Basta Caos, Solo Qualità</h3> <p>Sui portali gratuiti la tua candidatura è una goccia nell'oceano. Qui entri in un canale esclusivo dove competi solo con profili compatibili come il tuo.</p> </div>
-                <div class="process-step" style="background-color: var(--colore-primario); color: white; border-color: var(--colore-accento);"> <div class="icon" style="color: var(--colore-accento);"><i class="fa-solid fa-crown"></i></div> <h3 style="color: white;">Il Canale Preferenziale</h3> <p style="color: rgba(255,255,255,0.9);">Mentre gli altri perdono tempo, tu investi in un accesso diretto. Noi facciamo il lavoro sporco, tu arrivi dritto all'opportunità.</p> </div>
-                <div class="process-step"> <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div> <h3>Il Pass per l'Esclusività</h3> <p>Il tuo pass da 2,99€ non è un costo, è la chiave. Garantisce Open Day a numero chiuso e, se non vieni scelto, è valido per altre 2 opportunità.</p> </div>
-                <div class="process-step"> <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div> <h3>L'Open Day Vincente</h3> <p>Un evento rilassato e professionale dove hai tutto il tempo per vedere la casa e fare la differenza. La tua migliore occasione per essere scelto.</p> </div>
+        <section class="why-us section-light">
+            <div class="container text-center">
+                <h2 class="section-title">Il nostro non è un semplice annuncio.<br>È un invito a un evento esclusivo.</h2>
+                <p class="section-subtitle">Capire il nostro metodo significa capire perché avrai più chance di trovare la casa che desideri, senza stress.</p>
+                <div class="process-grid">
+                    <div class="process-step"> <div class="icon"><i class="fa-solid fa-users-slash"></i></div> <h3>Basta Caos, Solo Qualità</h3> <p>Sui portali gratuiti la tua candidatura è una goccia nell'oceano. Qui entri in un canale esclusivo dove competi solo con profili compatibili come il tuo.</p> </div>
+                    <div class="process-step" style="background-color: var(--colore-primario); color: white; border-color: var(--colore-accento);"> <div class="icon" style="color: var(--colore-accento);"><i class="fa-solid fa-crown"></i></div> <h3 style="color: white;">Il Canale Preferenziale</h3> <p style="color: rgba(255,255,255,0.9);">Mentre gli altri perdono tempo, tu investi in un accesso diretto. Noi facciamo il lavoro sporco, tu arrivi dritto all'opportunità.</p> </div>
+                    <div class="process-step"> <div class="icon"><i class="fa-solid fa-ticket-simple"></i></div> <h3>Il Pass per l'Esclusività</h3> <p>Il tuo pass da 2,99€ non è un costo, è la chiave. Garantisce Open Day a numero chiuso e, se non vieni scelto, è valido per altre 2 opportunità.</p> </div>
+                    <div class="process-step"> <div class="icon"><i class="fa-solid fa-handshake-simple"></i></div> <h3>L'Open Day Vincente</h3> <p>Un evento rilassato e professionale dove hai tutto il tempo per vedere la casa e fare la differenza. La tua migliore occasione per essere scelto.</p> </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="guarantee-section">
-        <div class="container">
-            <div class="guarantee-content">
-                <div class="guarantee-image"> <img src="https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Il nostro team verifica ogni immobile"> </div>
-                <div class="guarantee-text">
-                    <h2>Annunci Verificati, Opportunità Reali.</h2>
-                    <p>Sappiamo quanto sia frustrante il mercato degli affitti. <br>Annunci che spariscono, foto ingannevoli, appuntamenti a vuoto.<br>Noi abbiamo eliminato tutto questo.<br>Il nostro impegno è la tua tranquillità.</p>
-                    <div class="guarantee-points">
-                        <div class="point"> <i class="fa-solid fa-house-circle-check icon"></i> <span>Ogni immobile è verificato di persona dal nostro team.</span> </div>
-                        <div class="point"> <i class="fa-solid fa-calendar-check icon"></i> <span>Gli Open Day sono eventi reali e confermati.</span> </div>
-                        <div class="point"> <i class="fa-solid fa-shield-halved icon"></i> <span>La piccola fee è la tua assicurazione contro i perditempo.</span> </div>
+        <section class="guarantee-section">
+            <div class="container">
+                <div class="guarantee-content">
+                    <div class="guarantee-image"> <img src="https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Il nostro team verifica ogni immobile"> </div>
+                    <div class="guarantee-text">
+                        <h2>Annunci Verificati, Opportunità Reali.</h2>
+                        <p>Sappiamo quanto sia frustrante il mercato degli affitti. <br>Annunci che spariscono, foto ingannevoli, appuntamenti a vuoto.<br>Noi abbiamo eliminato tutto questo.<br>Il nostro impegno è la tua tranquillità.</p>
+                        <div class="guarantee-points">
+                            <div class="point"> <i class="fa-solid fa-house-circle-check icon"></i> <span>Ogni immobile è verificato di persona dal nostro team.</span> </div>
+                            <div class="point"> <i class="fa-solid fa-calendar-check icon"></i> <span>Gli Open Day sono eventi reali e confermati.</span> </div>
+                            <div class="point"> <i class="fa-solid fa-shield-halved icon"></i> <span>La piccola fee è la tua assicurazione contro i perditempo.</span> </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <section class="section-white">
-        <div class="container">
-            <div class="visual-process">
-                <div>
-                    <h3>Il Controllo è nelle Tue Mani.</h3>
-                    <p class="section-subtitle" style="text-align: left; margin: 20px 0; max-width: 100%;">Dopo aver acquistato il tuo ticket, il passo finale è semplice. Verrai reindirizzato alla nostra agenda privata dove potrai scegliere, con un solo click, lo slot orario che preferisci per l'Open Day. <br>Niente telefonate, niente attese. <br>Solo tu, il tuo calendario e la tua prossima casa.</p>
-                </div>
-                <div> <img src="assets/calendly-esempio.png" alt="Esempio di prenotazione orario su Calendly"> </div>
-            </div>
-        </div>
-    </section>
+        </section>
         
-    <section id="faq" class="section-dark">
-        <div class="container">
-            <h2 class="section-title text-center">Hai Ancora Dubbi? È Normale!</h2>
-            <p class="section-subtitle text-center">La nostra trasparenza è la tua prima garanzia.</p>
-            <div class="faq-grid">
-                <div class="faq-item"> <button class="faq-question"><span>Perché devo pagare 2,99€?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>La piccola fee è un filtro di serietà. Ci permette di garantire che solo persone realmente interessate partecipino, creando un'esperienza di visita di alta qualità per tutti. È il tuo modo per dire "Io ci sono e faccio sul serio".</p></div> </div>
-                <div class="faq-item"> <button class="faq-question"><span>Cosa succede al mio pass se non vengo scelto?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Questa è la parte migliore. Il tuo pass non è legato a un singolo immobile. Se non vieni scelto, resta valido per accedere ai prossimi 3 Open Day per cui risulterai compatibile. È la nostra garanzia per non farti mai sprecare un'opportunità.</p></div> </div>
-                <div class="faq-item"> <button class="faq-question"><span>Se pago, ho più chance di ottenere la casa?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Pagare ti dà l'accesso esclusivo all'Open Day, un vantaggio enorme. Non garantisce l'assegnazione, ma ti mette in una posizione privilegiata per fare un'ottima impressione sul proprietario, che farà la sua scelta finale.</p></div> </div>
-                <div class="faq-item"> <button class="faq-question"><span>Cosa succede dopo l'Open Day?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Dopo la visita, potrai formalizzare il tuo interesse. Raccoglieremo le proposte e le presenteremo al proprietario. Ti garantiamo un feedback rapido, qualunque sia l'esito.</p></div> </div>
-                <div class="faq-item"> <button class="faq-question"><span>Chi si occupa del contratto d'affitto?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Una volta che il proprietario ha scelto e tu hai accettato, vi metteremo in contatto diretto per finalizzare l'accordo. Possiamo fornirvi modelli di contratto standard e consigliarvi professionisti per la stesura e la registrazione.</p></div> </div>
-                <div class="faq-item"> <button class="faq-question"><span>E per la consegna delle chiavi?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>La consegna delle chiavi avviene direttamente tra te e il proprietario al momento della firma del contratto o nella data di inizio locazione concordata. Il nostro ruolo termina con il matching perfetto.</p></div> </div>
+        <section class="section-white">
+            <div class="container">
+                <div class="visual-process">
+                    <div>
+                        <h3>Il Controllo è nelle Tue Mani.</h3>
+                        <p class="section-subtitle" style="text-align: left; margin: 20px 0; max-width: 100%;">Dopo aver acquistato il tuo ticket, il passo finale è semplice. Verrai reindirizzato alla nostra agenda privata dove potrai scegliere, con un solo click, lo slot orario che preferisci per l'Open Day. <br>Niente telefonate, niente attese. <br>Solo tu, il tuo calendario e la tua prossima casa.</p>
+                    </div>
+                    <div> <img src="assets/calendly-esempio.png" alt="Esempio di prenotazione orario su Calendly"> </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+            
+        <section id="faq" class="section-dark">
+            <div class="container">
+                <h2 class="section-title text-center">Hai Ancora Dubbi? È Normale!</h2>
+                <p class="section-subtitle text-center">La nostra trasparenza è la tua prima garanzia.</p>
+                <div class="faq-grid">
+                    <div class="faq-item"> <button class="faq-question"><span>Perché devo pagare 2,99€?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>La piccola fee è un filtro di serietà. Ci permette di garantire che solo persone realmente interessate partecipino, creando un'esperienza di visita di alta qualità per tutti. È il tuo modo per dire "Io ci sono e faccio sul serio".</p></div> </div>
+                    <div class="faq-item"> <button class="faq-question"><span>Cosa succede al mio pass se non vengo scelto?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Questa è la parte migliore. Il tuo pass non è legato a un singolo immobile. Se non vieni scelto, resta valido per accedere ai prossimi 3 Open Day per cui risulterai compatibile. È la nostra garanzia per non farti mai sprecare un'opportunità.</p></div> </div>
+                    <div class="faq-item"> <button class="faq-question"><span>Se pago, ho più chance di ottenere la casa?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Pagare ti dà l'accesso esclusivo all'Open Day, un vantaggio enorme. Non garantisce l'assegnazione, ma ti mette in una posizione privilegiata per fare un'ottima impressione sul proprietario, che farà la sua scelta finale.</p></div> </div>
+                    <div class="faq-item"> <button class="faq-question"><span>Cosa succede dopo l'Open Day?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Dopo la visita, potrai formalizzare il tuo interesse. Raccoglieremo le proposte e le presenteremo al proprietario. Ti garantiamo un feedback rapido, qualunque sia l'esito.</p></div> </div>
+                    <div class="faq-item"> <button class="faq-question"><span>Chi si occupa del contratto d'affitto?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>Una volta che il proprietario ha scelto e tu hai accettato, vi metteremo in contatto diretto per finalizzare l'accordo. Possiamo fornirvi modelli di contratto standard e consigliarvi professionisti per la stesura e la registrazione.</p></div> </div>
+                    <div class="faq-item"> <button class="faq-question"><span>E per la consegna delle chiavi?</span><i class="fa-solid fa-chevron-down"></i></button> <div class="faq-answer"><p>La consegna delle chiavi avviene direttamente tra te e il proprietario al momento della firma del contratto o nella data di inizio locazione concordata. Il nostro ruolo termina con il matching perfetto.</p></div> </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer class="main-footer">
@@ -281,8 +254,27 @@
         </div>
     </footer>
 
+    <!-- === INIZIO MODAL DI RECUPERO ACCESSO === -->
+    <div class="modal-overlay" id="recover-access-modal">
+        <div class="modal-content">
+            <button class="close-modal-button" aria-label="Chiudi modal">×</button>
+            <h1>Accedi alla Tua Area</h1>
+            <p>Inserisci l'email che hai usato per la prenotazione. Ti invieremo un link personale per accedere alla tua dashboard.</p>
+            <form id="recover-form-modal">
+                <div class="form-group">
+                    <label for="modal-email">La tua Email</label>
+                    <input type="email" id="modal-email" name="email" required>
+                </div>
+                <button type="submit" class="login-button">Inviami il Link</button>
+            </form>
+            <div id="modal-form-message" class="form-message"></div>
+        </div>
+    </div>
+    <!-- === FINE MODAL DI RECUPERO ACCESSO === -->
+
      <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // === LOGICA FORM PRINCIPALE ===
             const form = document.getElementById('unified-search-form');
             const preferencesSection = document.getElementById('preferences-section');
             const profileSection = document.getElementById('profile-section');
@@ -300,21 +292,17 @@
                     profileSection.classList.add('visible');
                 }
             }
-
             preferenceInputs.forEach(input => {
                 input.addEventListener('change', checkPreferences);
                 input.addEventListener('keyup', checkPreferences);
             });
-
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
                 if (!profileSection.classList.contains('visible')) {
                     profileSection.classList.add('visible');
                     profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     return;
                 }
-                
                 const lavoroSelect = document.getElementById('situazione_lavorativa');
                 const redditoSelect = document.getElementById('reddito_utente');
                 const errorLavoro = document.getElementById('error-lavoro');
@@ -324,16 +312,8 @@
                 errorLavoro.classList.remove('visible');
                 redditoSelect.classList.remove('input-error');
                 errorReddito.classList.remove('visible');
-                if (lavoroSelect.value === '') {
-                    isValid = false;
-                    lavoroSelect.classList.add('input-error');
-                    errorLavoro.classList.add('visible');
-                }
-                if (redditoSelect.value === '') {
-                    isValid = false;
-                    redditoSelect.classList.add('input-error');
-                    errorReddito.classList.add('visible');
-                }
+                if (lavoroSelect.value === '') { isValid = false; lavoroSelect.classList.add('input-error'); errorLavoro.classList.add('visible'); }
+                if (redditoSelect.value === '') { isValid = false; redditoSelect.classList.add('input-error'); errorReddito.classList.add('visible'); }
                 if (isValid) {
                     const formData = new FormData(form);
                     const queryString = new URLSearchParams(formData).toString();
@@ -343,6 +323,7 @@
                 }
             });
 
+            // === LOGICA FAQ ===
             document.querySelectorAll('.faq-question').forEach(button => {
                 const faqItem = button.parentElement;
                 button.addEventListener('click', () => {
@@ -352,6 +333,64 @@
                         faqItem.classList.add('active');
                     }
                 });
+            });
+
+            // === LOGICA PER IL MODAL DI RECUPERO ACCESSO ===
+            const openModalButton = document.getElementById('open-recover-modal');
+            const modalOverlay = document.getElementById('recover-access-modal');
+            const closeModalButton = modalOverlay.querySelector('.close-modal-button');
+            const recoverForm = document.getElementById('recover-form-modal');
+            const modalMessageDiv = document.getElementById('modal-form-message');
+
+            openModalButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                modalOverlay.classList.add('visible');
+            });
+
+            function closeModal() {
+                modalOverlay.classList.remove('visible');
+            }
+
+            closeModalButton.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+
+            recoverForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('modal-email').value;
+                const button = e.target.querySelector('button');
+
+                button.disabled = true;
+                button.textContent = 'Invio in corso...';
+                modalMessageDiv.textContent = '';
+                modalMessageDiv.className = 'form-message'; 
+
+                // URL dello script Google Apps
+                const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec';
+                const urlWithParams = `${WEB_APP_URL}?action=sendMagicLink&email=${encodeURIComponent(email)}`;
+
+                try {
+                    const response = await fetch(urlWithParams);
+                    const result = await response.json();
+
+                    if (result.result === 'success') {
+                        modalMessageDiv.textContent = 'Fatto! Se l\'email è corretta, riceverai a breve un link per accedere. Controlla anche la cartella spam.';
+                        modalMessageDiv.classList.add('success');
+                        recoverForm.reset();
+                    } else {
+                        modalMessageDiv.textContent = 'Se l\'email è presente nel nostro sistema, abbiamo inviato il link. Controlla la posta.';
+                        modalMessageDiv.classList.add('success');
+                    }
+                } catch (error) {
+                    modalMessageDiv.textContent = 'Si è verificato un errore di rete. Riprova più tardi.';
+                    modalMessageDiv.classList.add('error');
+                } finally {
+                    button.disabled = false;
+                    button.textContent = 'Inviami il Link';
+                }
             });
         });
     </script>
