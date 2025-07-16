@@ -2,96 +2,172 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Registrazione in corso...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completamento Registrazione - Affitto Smart</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
-        .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #0D47A1; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f6f9;
+            color: #5f6368;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+        }
+        .spinner {
+            border: 8px solid #e0e0e0;
+            border-top: 8px solid #0D47A1;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1.2s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #message-container {
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            line-height: 1.6;
+        }
+        #message-container.error {
+            color: #c0392b;
+            border-left: 5px solid #c0392b;
+        }
+        #message-container a {
+            color: #0D47A1;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 2px solid #FFA000;
+        }
     </style>
 </head>
 <body>
-    <div class="spinner"></div>
+    <div class="container">
+        <div id="loading-container">
+            <div class="spinner"></div>
+            <p>Stiamo finalizzando la tua prenotazione, un istante...</p>
+        </div>
+        <div id="message-container" style="display: none;"></div>
+    </div>
 
     <script>
         // URL dello script di Google Apps Script che scrive sul foglio
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec'; // <-- SOSTITUISCI QUESTO!
+         const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
-        // Funzione per generare un token casuale e sicuro
-        function generateToken() {
-            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-            );
-        }
-
-        async function registerAndRedirect() {
-            const params = new URLSearchParams(window.location.search);
-            const email = params.get('email');
-            const propertyId = params.get('propertyId');
-
-            if (!email || !propertyId) {
-                alert("Dati mancanti per la registrazione. Contatta l'assistenza.");
-                // window.location.href = 'index.html'; // Ritorna alla home
-                return;
-            }
-
-            // Dobbiamo prima recuperare i dati esistenti per vedere se l'utente ha già un token
-            const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
-            const response = await fetch(CANDIDATES_URL);
-            const csvText = await response.text();
-            const candidates = csvToObjects(csvText); // Usa la tua funzione csvToObjects
-
-            let userToken;
-            const existingUser = candidates.find(c => c.Email === email);
-
-            if (existingUser && existingUser.Token) {
-                userToken = existingUser.Token; // L'utente esiste, usiamo il suo token
-            } else {
-                userToken = generateToken(); // Nuovo utente, generiamo un nuovo token
-            }
-
-            // Ora prepariamo i dati da inviare al nostro Google Apps Script per scrivere la nuova riga
-            const dataToSave = {
-                timestamp: new Date().toISOString(),
-                email: email,
-                propertyId: propertyId,
-                token: userToken
+        // === 2. FUNZIONI HELPER ===
+            const generateToken = () => {
+                return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => 
+                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+                );
+            };
+            
+            const csvToObjects = (csv) => {
+                if (!csv) return [];
+                const lines = csv.trim().split(/\r\n|\n/);
+                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                return lines.slice(1).map(line => {
+                    if (!line) return null;
+                    const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    return headers.reduce((obj, header, i) => {
+                        obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
+                        return obj;
+                    }, {});
+                }).filter(Boolean);
             };
 
-            try {
-                // Invia i dati al Google Apps Script per la scrittura
-                await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Necessario per questo tipo di richiesta
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSave)
-                });
+            const showMessage = (message, isError = false) => {
+                const loadingDiv = document.getElementById('loading-container');
+                const messageContainer = document.getElementById('message-container');
+                if (loadingDiv) loadingDiv.style.display = 'none';
+                if (messageContainer) {
+                    messageContainer.innerHTML = `<p>${message}</p>`;
+                    messageContainer.className = isError ? 'message-container error' : 'message-container';
+                    messageContainer.style.display = 'block';
+                }
+            };
 
-                // Attendi un istante per dare tempo a Google Sheets di aggiornarsi (opzionale ma consigliato)
-                setTimeout(() => {
-                    // Reindirizza alla dashboard con il token corretto
-                    window.location.href = `dashboard.html?token=${userToken}`;
-                }, 1000);
+            // === 3. FUNZIONE PRINCIPALE ===
+            const completeBooking = async () => {
+                const pendingDataString = localStorage.getItem('pendingBookingData');
+                
+                if (!pendingDataString) {
+                    showMessage("Dati di prenotazione non trovati o sessione scaduta. Questo può accadere se hai bloccato i cookie o usi la navigazione in incognito. <a href='index.html'>Torna alla ricerca</a> e riprova.", true);
+                    return;
+                }
+                
+                localStorage.removeItem('pendingBookingData'); // Pulisci subito per sicurezza
+                
+                const pendingData = JSON.parse(pendingDataString);
+                const { email, propertyId, calendlyLink } = pendingData;
 
-            } catch (error) {
-                console.error('Errore durante la scrittura su Google Sheets:', error);
-                alert('Si è verificato un errore durante la registrazione della prenotazione.');
-            }
-        }
-        
-        // Funzione helper da includere
-        function csvToObjects(csv) {
-            const lines = csv.trim().split('\n');
-            const headers = lines[0].split(',').map(h => h.trim());
-            return lines.slice(1).map(line => {
-                const values = line.split(',');
-                return headers.reduce((obj, header, i) => {
-                    obj[header] = values[i] ? values[i].trim() : '';
-                    return obj;
-                }, {});
-            });
-        }
+                if (!email || !propertyId) {
+                    showMessage("Dati essenziali mancanti. <a href='index.html'>Torna alla ricerca</a> e riprova.", true);
+                    return;
+                }
 
-        window.onload = registerAndRedirect;
+                try {
+                    const response = await fetch(CANDIDATES_URL);
+                    const candidates = csvToObjects(await response.text());
+                    
+                    let userToken;
+                    const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+                    userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
+                    
+                    const dataToSave = { 
+                        timestamp: new Date().toISOString(), 
+                        email: email, 
+                        propertyId: propertyId, 
+                        token: userToken
+                    };
+
+                    const writeResponse = await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dataToSave)
+                    });
+                    
+                    if (!writeResponse.ok) throw new Error(`Errore di comunicazione con il server.`);
+                    
+                    const result = await writeResponse.json();
+
+                    if (result.result === 'success') {
+                        // Reindirizza alla dashboard passando i dati per la visualizzazione istantanea
+                        const dashboardUrl = `dashboard.html?token=${userToken}&newBookingId=${propertyId}`;
+                        window.location.href = dashboardUrl;
+                    } else if (result.code === 'DUPLICATE_BOOKING') {
+                        showMessage(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a> per vederlo.`, true);
+                    } else {
+                        showMessage(`Si è verificato un errore durante la registrazione: ${result.message || 'Errore sconosciuto'}.`, true);
+                    }
+
+                } catch (error) {
+                    showMessage("Si è verificato un errore critico di connessione. Contatta l'assistenza se il problema persiste.", true);
+                    console.error('Errore durante il completamento della prenotazione:', error);
+                }
+            };
+
+            // Avvia il processo al caricamento della pagina
+            completeBooking();
+        });
     </script>
 </body>
 </html>
