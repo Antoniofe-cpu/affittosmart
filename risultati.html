@@ -209,16 +209,23 @@
                 const postiRimasti = postiTotali - prenotati;
                 
                 let buttonHtml;
-                const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
+        const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
 
-                if (isAlreadyBooked) {
-                    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
-                } else if (postiRimasti > 0) {
-                    const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}`;
-                    buttonHtml = `<a href="${registrationUrl}" class="cta-button">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
-                } else {
-                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
-                }
+        if (isAlreadyBooked) {
+            buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
+        } else if (postiRimasti > 0) {
+            // === MODIFICA CHIAVE QUI ===
+            // Il link ora punta direttamente a Calendly.
+            if (p.CalendlyLink) {
+                // Passiamo l'email dell'utente come pre-compilazione a Calendly
+                const calendlyUrl = `${p.CalendlyLink}?email=${encodeURIComponent(userProfile.user_email || '')}`;
+                buttonHtml = `<a href="${calendlyUrl}" target="_blank" class="cta-button">Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
+            } else {
+                buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
+            }
+        } else {
+            buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+        }
 
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'property-card';
