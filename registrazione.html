@@ -48,65 +48,43 @@
         }
     }
 
-    async function processBookingAndRedirect() {
+    async function buildUrlAndRedirect() {
         const params = new URLSearchParams(window.location.search);
         const email = params.get('email');
         const propertyId = params.get('propertyId');
         const calendlyLink = params.get('calendlyLink');
 
         if (!email || !propertyId || !calendlyLink) {
-            showError("Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a>.");
+            document.body.innerHTML = "Dati mancanti. Torna indietro e riprova.";
             return;
         }
 
         try {
-            // 1. Controlla utente esistente
+            // Controlla se l'utente esiste per ottenere/creare il token
             const response = await fetch(CANDIDATES_URL);
             const candidates = csvToObjects(await response.text());
             let userToken;
             const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
             userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
             
-            const dataToSave = { 
-                timestamp: new Date().toISOString(), 
-                email: email, 
-                propertyId: propertyId, 
-                token: userToken
-            };
-
-            // 2. Invia i dati a Google Script per la registrazione (SENZA no-cors)
-            const writeResponse = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSave)
-            });
+            // Costruisci l'URL per lo script di Google con TUTTI i dati
+            const scriptUrl = new URL(WEB_APP_URL);
+            scriptUrl.searchParams.append('email', email);
+            scriptUrl.searchParams.append('propertyId', propertyId);
+            scriptUrl.searchParams.append('token', userToken);
+            scriptUrl.searchParams.append('timestamp', new Date().toISOString());
+            scriptUrl.searchParams.append('calendlyLink', calendlyLink);
             
-            if (!writeResponse.ok) {
-                 throw new Error(`Errore dal server: ${writeResponse.statusText}`);
-            }
-
-            const result = await writeResponse.json();
-            
-            // 3. Gestisci la risposta del server
-            if (result.result === 'success') {
-                // TUTTO OK! L'email è stata inviata. Ora reindirizza a Calendly.
-                const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
-                window.location.href = finalCalendlyUrl;
-            } else if (result.code === 'DUPLICATE_BOOKING') {
-                // L'utente ha già questo ticket
-                showError(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a> per vederlo.`);
-            } else {
-                // Altri errori dal server
-                showError("Si è verificato un errore durante la registrazione. Contatta l'assistenza.");
-            }
+            // Reindirizza l'utente a questo URL. Sarà Google a fare il resto.
+            window.location.href = scriptUrl.href;
 
         } catch (error) {
-            showError("Si è verificato un errore di connessione. Riprova.");
-            console.error('Errore:', error);
+            document.body.innerHTML = "Errore di connessione. Riprova.";
+            console.error(error);
         }
     }
 
-    window.onload = processBookingAndRedirect;
+    window.onload = buildUrlAndRedirect;
 </script>
 </body>
 </html>
