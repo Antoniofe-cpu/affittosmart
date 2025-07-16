@@ -280,7 +280,8 @@ const confirmationUrl = `conferma.html?email=${encodeURIComponent(userProfile.us
                             <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
                             <div class="info-item open-day">
                                 <i class="fa-solid fa-calendar-check"></i> 
-                                <div><strong>Open Day:</strong> ${formatDate(p.DataOpenDay)}</div>
+                                // NUOVA RIGA CORRETTA
+                            <div><strong>Open Day:</strong> ${formatDate(p.DataOpenDay)} | <strong>Orario:</strong> ${p.OrarioOpenDay || 'Vedi link'}</div>
                             </div>
                             <div class="info-item availability">
                                 <i class="fa-solid fa-key"></i> 
