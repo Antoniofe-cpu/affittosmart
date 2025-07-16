@@ -255,8 +255,10 @@
         } else if (postiRimasti > 0) {
             // Controlla che entrambi i link esistano
             if (p.StripePaymentLink && p.CalendlyLink) {
-                const registrationUrl = `conferma.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink)}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
-                buttonHtml = `<a href="${registrationUrl}" class="cta-button available">Ottieni Ticket e Prenota <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></a>`;
+                // RIGA CORRETTA
+const confirmationUrl = `conferma.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink || '')}&calendlyLink=${encodeURIComponent(p.CalendlyLink || '')}`;
+               // RIGA CORRETTA
+buttonHtml = `<a href="${confirmationUrl}" class="cta-button available">Ottieni Ticket e Prenota ...</a>`;
             } else {
                 buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
             }
