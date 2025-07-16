@@ -3,152 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <title>Registrazione in corso...</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-    body {
-        font-family: 'Poppins', sans-serif; /* Usa lo stesso font del sito principale */
-        display: flex;
-        justify-content: center; /* Centra orizzontalmente */
-        align-items: center;     /* Centra verticalmente */
-        min-height: 100vh;       /* Assicura che il body occupi tutta l'altezza dello schermo */
-        margin: 0;               /* Rimuove i margini di default */
-        background-color: #f4f6f9; /* Usa lo stesso sfondo delle altre pagine */
-        color: #5f6368;          /* Usa il colore testo chiaro */
-    }
-
-    #loading {
-        text-align: center; /* Centra il testo sotto lo spinner */
-    }
-
-    .spinner {
-        border: 8px solid #e0e0e0; /* Bordo grigio chiaro */
-        border-top: 8px solid #0D47A1; /* Colore primario per l'effetto rotazione */
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        animation: spin 1.2s linear infinite;
-        margin: 0 auto 20px auto; /* Centra lo spinner e dà spazio sotto */
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    #message-container {
-        font-size: 1.2em;
-        font-weight: bold;
-        padding: 20px;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    #message-container.error { color: #c0392b; }
-    #message-container a { color: #0D47A1; text-decoration: none; font-weight: bold; }
-</style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f6f9;
+            color: #5f6368;
+        }
+        #loading-container, #message-container {
+            text-align: center;
+            padding: 30px;
+        }
+        .spinner {
+            border: 8px solid #e0e0e0;
+            border-top: 8px solid #0D47A1;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1.2s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #message-container {
+            font-size: 1.2em;
+            font-weight: bold;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        #message-container.error { color: #c0392b; }
+        #message-container a { color: #0D47A1; text-decoration: none; font-weight: bold; }
+    </style>
 </head>
 <body>
-    <div id="loading">
+    <div id="loading-container">
         <div class="spinner"></div>
-        <p>Stiamo registrando il tuo ticket e ti stiamo reindirizzando alla pagina di prenotazione...</p>
+        <p>Stiamo verificando la tua richiesta...</p>
     </div>
-    
-    <form id="booking-form" action="https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec" method="POST">
-        <input type="text" name="email" id="form-email">
-        <input type="text" name="propertyId" id="form-propertyId">
-        <input type="text" name="token" id="form-token">
-        <input type="text" name="timestamp" id="form-timestamp">
-        <input type="text" name="calendlyLink" id="form-calendlyLink">
-    </form>
+    <div id="message-container" style="display: none;"></div>
+
 
     <script>
+         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec';
          const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
+         // === FUNZIONI HELPER ===
         function generateToken() {
-        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
-    }
-    
-    function csvToObjects(csv) {
-        if (!csv) return [];
-        const lines = csv.trim().split(/\r\n|\n/);
-        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-        return lines.slice(1).map(line => {
-            if (!line) return null;
-            const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            return headers.reduce((obj, header, i) => {
-                obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
-                return obj;
-            }, {});
-        }).filter(Boolean);
-    }
-    
-    // === FUNZIONE MANCANTE DA AGGIUNGERE ===
-    function showMessage(message, isError = false) {
-        const loadingDiv = document.getElementById('loading');
-        const messageContainer = document.getElementById('message-container');
-        if (loadingDiv) loadingDiv.style.display = 'none';
-        if (messageContainer) {
-            messageContainer.innerHTML = message;
-            messageContainer.className = isError ? 'message-container error' : 'message-container';
-            messageContainer.style.display = 'block';
-        } else {
-            // Fallback se il div del messaggio non esiste
-            document.body.innerHTML = `<div class="message-container ${isError ? 'error' : ''}">${message}</div>`;
+            return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => 
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
         }
-    }
-    // === FINE FUNZIONE MANCANTE ===
-
-    async function processBooking() {
-        const params = new URLSearchParams(window.location.search);
-        const email = params.get('email');
-        const propertyId = params.get('propertyId');
-        const calendlyLink = params.get('calendlyLink');
-
-        if (!email || !propertyId || !calendlyLink) {
-            showMessage("Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a>.", true);
-            return;
+        
+        function csvToObjects(csv) {
+            if (!csv) return [];
+            const lines = csv.trim().split(/\r\n|\n/);
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            return lines.slice(1).map(line => {
+                if (!line) return null;
+                const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                return headers.reduce((obj, header, i) => {
+                    obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
+                    return obj;
+                }, {});
+            }).filter(Boolean);
         }
 
-        try {
-            const response = await fetch(CANDIDATES_URL);
-            const candidates = csvToObjects(await response.text());
-            let userToken;
-            const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-            userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-            
-            const dataToSave = { 
-                timestamp: new Date().toISOString(), 
-                email: email, 
-                propertyId: propertyId, 
-                token: userToken
-            };
+        function showMessage(message, isError = false) {
+            const loadingDiv = document.getElementById('loading');
+            const messageContainer = document.getElementById('message-container');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+            if (messageContainer) {
+                messageContainer.innerHTML = message;
+                messageContainer.className = isError ? 'message-container error' : 'message-container';
+                messageContainer.style.display = 'block';
+            }
+        }
 
-            const writeResponse = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSave),
-                redirect: 'follow'
-            });
-            
-            if (!writeResponse.ok) throw new Error(`Risposta non valida dal server: ${writeResponse.status}`);
-            
-            const result = await writeResponse.json();
+        // === FUNZIONE PRINCIPALE ===
+        async function processBooking() {
+            const params = new URLSearchParams(window.location.search);
+            const email = params.get('email');
+            const propertyId = params.get('propertyId');
+            const calendlyLink = params.get('calendlyLink');
 
-            if (result.result === 'success') {
-                const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
-                window.location.href = finalCalendlyUrl;
-            } else if (result.code === 'DUPLICATE_BOOKING') {
-                showMessage(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a>.`, true);
-            } else {
-                showMessage("Errore durante la registrazione: " + (result.message || "Sconosciuto"), true);
+            if (!email || !propertyId || !calendlyLink) {
+                showMessage("Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a>.", true);
+                return;
             }
 
-        } catch (error) {
-            showMessage("Si è verificato un errore di connessione. Riprova.", true);
-            console.error('Errore:', error);
-        }
-    }
+            try {
+                const response = await fetch(CANDIDATES_URL);
+                const candidates = csvToObjects(await response.text());
+                let userToken;
+                const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+                userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
+                
+                const dataToSave = { 
+                    timestamp: new Date().toISOString(), 
+                    email: email, 
+                    propertyId: propertyId, 
+                    token: userToken
+                };
 
-    window.onload = processBooking;
+                const writeResponse = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSave),
+                    redirect: 'follow'
+                });
+                
+                if (!writeResponse.ok) {
+                    throw new Error(`Errore dal server: ${writeResponse.status} ${writeResponse.statusText}`);
+                }
+                
+                const result = await writeResponse.json();
+
+                if (result.result === 'success') {
+                    const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
+                    window.location.href = finalCalendlyUrl;
+                } else if (result.code === 'DUPLICATE_BOOKING') {
+                    showMessage(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a>.`, true);
+                } else {
+                    showMessage("Si è verificato un errore durante la registrazione: " + (result.message || "Errore sconosciuto"), true);
+                }
+
+            } catch (error) {
+                showMessage("Si è verificato un errore critico di connessione. Riprova.", true);
+                console.error('Errore durante il processo di prenotazione:', error);
+            }
+        }
+
+        // Avvia il processo quando la pagina è caricata
+        processBooking();
+    });
 </script>
 
 
