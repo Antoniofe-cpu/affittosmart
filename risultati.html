@@ -215,16 +215,20 @@
             buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
         } else if (postiRimasti > 0) {
             if (p.CalendlyLink) {
-                // MODIFICA CHIAVE: Il link punta a Calendly SENZA parametri.
-                // Aggiungiamo dei "data-attributes" per memorizzare le informazioni.
+                // === LA SOLUZIONE DEFINITIVA È QUI ===
                 const userEmail = userProfile.user_email || '';
-                buttonHtml = `<a href="${p.CalendlyLink}" class="cta-button calendly-link" 
-                                 data-email="${userEmail}" 
-                                 data-property-id="${p.ID}">
-                                 Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span>
-                              </a>`;
+                
+                // Costruiamo l'URL di Calendly con parametri di pre-compilazione
+                // 'email=' pre-compila il campo email
+                // 'a1=' è una "risposta personalizzata" che usiamo per passare l'ID dell'immobile
+                const calendlyUrl = new URL(p.CalendlyLink);
+                calendlyUrl.searchParams.append('email', userEmail);
+                calendlyUrl.searchParams.append('a1', p.ID); // Passiamo l'ID immobile come "answer 1"
+                
+                // Apriamo Calendly nella stessa scheda per evitare l'avviso "Vuoi uscire?"
+                buttonHtml = `<a href="${calendlyUrl.href}" class="cta-button">Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
             } else {
-                buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
+                buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non aperte</button>`;
             }
         } else {
             buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
@@ -316,35 +320,7 @@
                 document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
             }
         }
-        // === AGGIUNGI QUESTO NUOVO BLOCCO DI CODICE ALLA FINE DELLO SCRIPT ===
-document.body.addEventListener('click', function(e) {
-    // Cerca un elemento con la classe 'calendly-link' o un suo figlio
-    const calendlyButton = e.target.closest('.calendly-link');
-    
-    if (calendlyButton) {
-        // Impedisce al link di aprirsi immediatamente
-        e.preventDefault(); 
-        
-        const userEmail = calendlyButton.dataset.email;
-        const propertyId = calendlyButton.dataset.propertyId;
-        const calendlyUrl = calendlyButton.href;
-
-        if (userEmail && propertyId) {
-            // Salva i dati nel localStorage
-            localStorage.setItem('pendingBookingData', JSON.stringify({
-                email: userEmail,
-                propertyId: propertyId
-            }));
-            console.log('Dati salvati nel localStorage:', localStorage.getItem('pendingBookingData'));
-            
-            // SOLO ORA, reindirizza a Calendly
-            window.location.href = calendlyUrl;
-        } else {
-            // Se manca l'email, avvisa l'utente
-            alert("Per favore, torna indietro ed effettua una ricerca inserendo la tua email per poter prenotare.");
-        }
-    }
-});
+ 
     
 
         document.addEventListener('DOMContentLoaded', main);
