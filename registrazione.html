@@ -121,119 +121,59 @@
         }
     };
 
-        // === FUNZIONE PRINCIPALE ===
         const processBooking = async () => {
-            const params = new URLSearchParams(window.location.search);
-            const email = params.get('email');
-            const propertyId = params.get('propertyId');
-            const calendlyLink = params.get('calendlyLink');
-    // === 3. FUNZIONE PRINCIPALE ===
-    const processBooking = async () => {
-        const params = new URLSearchParams(window.location.search);
-        const email = params.get('email');
-        const propertyId = params.get('propertyId');
-        const calendlyLink = params.get('calendlyLink');
+                const params = new URLSearchParams(window.location.search);
+                const email = params.get('email');
+                const propertyId = params.get('propertyId');
+                const calendlyLink = params.get('calendlyLink');
 
-            if (!email || !propertyId || !calendlyLink) {
-                showMessage("Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a>.", true);
-                return;
-            }
-
-            try {
-                const response = await fetch(CANDIDATES_URL);
-                if (!response.ok) throw new Error('Errore nel caricare la lista candidati.');
-                
-                const candidates = csvToObjects(await response.text());
-                let userToken;
-                const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-                userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-                
-                const dataToSave = { 
-                    timestamp: new Date().toISOString(), 
-                    email: email, 
-                    propertyId: propertyId, 
-                    token: userToken
-                };
-        if (!email || !propertyId || !calendlyLink) {
-            showMessage("Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a>.", true);
-            return;
-        }
-
-                const writeResponse = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSave),
-                    redirect: 'follow'
-                });
-                
-                if (!writeResponse.ok) {
-                    throw new Error(`Errore dal server: ${writeResponse.status} ${writeResponse.statusText}`);
+                if (!email || !propertyId || !calendlyLink) {
+                    showMessage("Dati insufficienti.", true);
+                    return;
                 }
-                
-                const result = await writeResponse.json();
-        try {
-            const response = await fetch(CANDIDATES_URL);
-            const candidates = csvToObjects(await response.text());
-            let userToken;
-            const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-            userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-            
-            const dataToSave = { 
-                timestamp: new Date().toISOString(), 
-                email: email, 
-                propertyId: propertyId, 
-                token: userToken
+
+                try {
+                    const response = await fetch(CANDIDATES_URL);
+                    const candidates = csvToObjects(await response.text());
+                    let userToken;
+                    const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+                    userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
+                    
+                    const dataToSave = { 
+                        timestamp: new Date().toISOString(), 
+                        email: email, 
+                        propertyId: propertyId, 
+                        token: userToken
+                    };
+
+                    const writeResponse = await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dataToSave)
+                    });
+                    
+                    if (!writeResponse.ok) throw new Error(`Errore dal server.`);
+                    
+                    const result = await writeResponse.json();
+
+                    if (result.result === 'success') {
+                        const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
+                        window.location.href = finalCalendlyUrl;
+                    } else if (result.code === 'DUPLICATE_BOOKING') {
+                        showMessage(`Risulta che hai già un ticket. <a href="dashboard.html?token=${userToken}">Vai alla dashboard</a>.`, true);
+                    } else {
+                        showMessage(`Errore: ${result.message || 'Sconosciuto'}`, true);
+                    }
+
+                } catch (error) {
+                    showMessage("Errore di connessione.", true);
+                    console.error('Errore:', error);
+                }
             };
 
-                if (result.result === 'success') {
-                    const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
-                    window.location.href = finalCalendlyUrl;
-                } else if (result.code === 'DUPLICATE_BOOKING') {
-                    showMessage(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a>.`, true);
-                } else {
-                    showMessage("Si è verificato un errore durante la registrazione: " + (result.message || "Sconosciuto"), true);
-                }
-            const writeResponse = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSave),
-                redirect: 'follow'
-            });
-            
-            if (!writeResponse.ok) {
-                throw new Error(`Errore dal server: ${writeResponse.status} ${writeResponse.statusText}`);
-            }
-            
-            const result = await writeResponse.json();
-
-            } catch (error) {
-                showMessage("Si è verificato un errore critico di connessione. Riprova.", true);
-                console.error('Errore durante il processo di prenotazione:', error);
-            if (result.result === 'success') {
-                const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
-                window.location.href = finalCalendlyUrl;
-            } else if (result.code === 'DUPLICATE_BOOKING') {
-                showMessage(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a>.`, true);
-            } else {
-                showMessage("Si è verificato un errore durante la registrazione: " + (result.message || "Errore sconosciuto"), true);
-            }
-        };
-
-        // Avvia il processo
-        processBooking();
-        
-    });
-        } catch (error) {
-            showMessage("Si è verificato un errore critico di connessione. Riprova.", true);
-            console.error('Errore durante il processo di prenotazione:', error);
-        }
-    };
-
-    // === 4. ESECUZIONE ===
-    // Avvia il processo quando la pagina è caricata
-    processBooking();
-
-</script>
+            processBooking();
+        });
+    </script>
 
 </body>
 </html>
