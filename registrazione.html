@@ -55,11 +55,11 @@ async function registerAndRedirect() {
     const pendingDataString = localStorage.getItem('pendingBookingData');
     
     if (!pendingDataString) {
-        showError("Dati di registrazione non trovati. La sessione potrebbe essere scaduta. <a href='index.html'>Torna alla ricerca</a> e riprova.");
+        showError("Dati di registrazione non trovati o sessione scaduta. <a href='index.html'>Torna alla ricerca</a> e riprova.");
         return;
     }
 
-    // Pulisci subito il localStorage per evitare registrazioni multiple accidentali
+    // Una volta letti, pulisci subito il localStorage per evitare registrazioni multiple
     localStorage.removeItem('pendingBookingData');
 
     const pendingData = JSON.parse(pendingDataString);
