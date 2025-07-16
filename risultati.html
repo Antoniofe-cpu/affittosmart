@@ -221,7 +221,7 @@ if (isAlreadyBooked) {
         const userEmail = userProfile.user_email || '';
         const calendlyUrl = `${p.CalendlyLink}?email=${encodeURIComponent(userEmail)}&a1=${p.ID}`;
         
-        buttonHtml = `<a href="${calendlyUrl}" target="_blank" class="cta-button">Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
+        buttonHtml = `<a href="${calendlyUrl}" class="cta-button">Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
     } else {
         buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
     }
