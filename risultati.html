@@ -196,6 +196,7 @@
 
           let allCandidates = [];
 
+            // === 2. FUNZIONI HELPER ===
             const csvToObjects = (csv) => {
                 if (!csv) return [];
                 const lines = csv.trim().split(/\r\n|\n/);
@@ -214,7 +215,28 @@
                 if (!str) return '';
                 return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             };
+            
+            // === FUNZIONE FORMATTAZIONE DATA (ROBUSTA) ===
+            const formatDate = (dateString) => {
+                if (!dateString) return 'Da Definire';
+                try {
+                    const dateObj = new Date(dateString);
+                    if (isNaN(dateObj.getTime())) {
+                        // Se la data non è valida, prova a gestire formati diversi se necessario
+                        // o restituisci la stringa originale
+                        return dateString;
+                    }
+                    const day = String(dateObj.getDate()).padStart(2, '0');
+                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                    const year = dateObj.getFullYear();
+                    return `${day}/${month}/${year}`;
+                } catch (e) {
+                    console.warn("Errore formattazione data:", dateString, e);
+                    return dateString;
+                }
+            };
 
+            // === 3. FUNZIONE PER VISUALIZZARE I RISULTATI ===
             const displayResults = (properties, userProfile, bookedPropertyIds, userToken) => {
                 const resultsContainer = document.getElementById('results-container');
                 resultsContainer.innerHTML = '';
@@ -236,9 +258,8 @@
                     if (isAlreadyBooked) {
                         buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
                     } else if (postiRimasti > 0) {
-                        // MODIFICA CHIAVE: Controlla StripePaymentLink, ma il link punta a registrazione.html
-                        if (p.StripePaymentLink && p.CalendlyLink) {
-                            const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink)}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
+                        if (p.StripePaymentLink || p.CalendlyLink) {
+                            const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink || '')}&calendlyLink=${encodeURIComponent(p.CalendlyLink || '')}`;
                             buttonHtml = `<a href="${registrationUrl}" class="cta-button available">Ottieni Ticket e Prenota <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></a>`;
                         } else {
                             buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
@@ -246,14 +267,6 @@
                     } else {
                         buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
                     }
-
-                    const formatDate = (dateString) => {
-                        if (!dateString || dateString.length < 10) return 'Da Definire';
-                        try {
-                            const [year, month, day] = dateString.split('-');
-                            return `${day}/${month}/${year}`;
-                        } catch (e) { return dateString; }
-                    };
 
                     const cardDiv = document.createElement('div');
                     cardDiv.className = 'property-card';
@@ -278,6 +291,7 @@
                 });
             };
 
+            // === 4. FUNZIONE PRINCIPALE (MAIN) ===
             const main = async () => {
                 const params = new URLSearchParams(window.location.search);
                 const userToken = params.get('token');
@@ -321,31 +335,32 @@
                         tipo_ricerca: normalizeString(params.get('tipo_ricerca'))
                     };
 
-                const finalProperties = allProperties.filter(property => {
-                    const propertyID = (property.ID || '').trim();
-                    if (!propertyID || (property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
-                    if (userFilters.tipo && normalizeString(property.Tipo) !== userFilters.tipo) return false;
-                    if (userFilters.zona && normalizeString(property.Zona) !== userFilters.zona) return false;
-                    if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) return false;
-                    if (userFilters.data_disponibile && property.data_disponibile) { try { if (new Date(property.data_disponibile) > new Date(userFilters.data_disponibile)) return false; } catch (e) {} }
-                    if (userFilters.periodo_affitto && normalizeString(property.periodo_affitto) !== userFilters.periodo_affitto) return false;
+                    const finalProperties = allProperties.filter(property => {
+                        const propertyID = (property.ID || '').trim();
+                        if (!propertyID || (property.Stato || '').toLowerCase() !== 'disponibile') return false;
+                        if (userFilters.tipo && normalizeString(property.Tipo) !== userFilters.tipo) return false;
+                        if (userFilters.zona && normalizeString(property.Zona) !== userFilters.zona) return false;
+                        if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) return false;
+                        if (userFilters.data_disponibile && property.data_disponibile) { try { if (new Date(property.data_disponibile) > new Date(userFilters.data_disponibile)) return false; } catch (e) {} }
+                        if (userFilters.periodo_affitto && normalizeString(property.periodo_affitto) !== userFilters.periodo_affitto) return false;
+                        
+                        const propertyReqs = allRequirements.find(r => (r.ID_Immobile || '').trim() === propertyID);
+                        if (propertyReqs) {
+                            if (userFilters.situazione_lavorativa && normalizeString(propertyReqs.situazione_lavorativa) !== 'indifferente' && normalizeString(propertyReqs.situazione_lavorativa) !== userFilters.situazione_lavorativa) return false;
+                            const redditoMinimoRichiesto = parseInt(propertyReqs.reddito_minimo) || 0;
+                            if (redditoMinimoRichiesto > 0 && userFilters.reddito < redditoMinimoRichiesto) return false;
+                        }
+                        return true;
+                    });
                     
-                    const propertyReqs = allRequirements.find(r => (r.ID_Immobile || '').trim() === propertyID);
-                    if (propertyReqs) {
-                        if (userFilters.situazione_lavorativa && normalizeString(propertyReqs.situazione_lavorativa) !== 'indifferente' && normalizeString(propertyReqs.situazione_lavorativa) !== userFilters.situazione_lavorativa) return false;
-                        const redditoMinimoRichiesto = parseInt(propertyReqs.reddito_minimo) || 0;
-                        if (redditoMinimoRichiesto > 0 && userFilters.reddito < redditoMinimoRichiesto) return false;
-                    }
-                    return true;
-                });
-                
-                displayResults(finalProperties, userFilters, bookedPropertyIds, userToken);
+                    displayResults(finalProperties, userFilters, bookedPropertyIds, userToken);
                 } catch (error) {
                     console.error("ERRORE CRITICO:", error);
                     document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore. Riprova.</p>`;
                 }
             };
             
+            // === 5. ESECUZIONE ===
             main();
         });
     </script>
