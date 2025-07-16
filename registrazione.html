@@ -50,14 +50,25 @@
     
     // === FUNZIONE PRINCIPALE ===
     async function registerAndRedirect() {
-        const params = new URLSearchParams(window.location.search);
-        const email = params.get('email');
-        const propertyId = params.get('propertyId');
+    // Leggi i dati salvati dal localStorage
+    const pendingDataString = localStorage.getItem('pendingBookingData');
+    
+    if (!pendingDataString) {
+        showError("Dati di registrazione non trovati. La sessione potrebbe essere scaduta. <a href='index.html'>Torna alla ricerca</a> e riprova.");
+        return;
+    }
 
-        if (!email || !propertyId) {
-            showError("Dati mancanti per completare la registrazione. <a href='index.html'>Torna alla ricerca</a> e riprova.");
-            return;
-        }
+    // Una volta letti, pulisci subito il localStorage per evitare registrazioni multiple
+    localStorage.removeItem('pendingBookingData');
+
+    const pendingData = JSON.parse(pendingDataString);
+    const email = pendingData.email;
+    const propertyId = pendingData.propertyId;
+
+    if (!email || !propertyId) {
+        showError("Dati mancanti per completare la registrazione. <a href='index.html'>Torna alla ricerca</a>.");
+        return;
+    }
 
         try {
             const response = await fetch(CANDIDATES_URL);
