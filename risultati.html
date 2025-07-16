@@ -233,58 +233,71 @@
         // === FINE MODIFICA ===
 
         const displayResults = (properties, userProfile, bookedPropertyIds, userToken) => {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '';
-            if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile compatibile.<br>Prova a modificare la ricerca!</p>';
-                return;
+    const resultsContainer = document.getElementById('results-container');
+    resultsContainer.innerHTML = '';
+    if (properties.length === 0) {
+        resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
+        return;
+    }
+
+    properties.forEach(p => {
+        if (!p.ID || !p.Titolo) return;
+        
+        const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+        const postiTotali = parseInt(p.MaxPartecipanti) || 10;
+        const postiRimasti = postiTotali - prenotati;
+        
+        let buttonHtml;
+        const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
+
+        if (isAlreadyBooked) {
+            buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
+        } else if (postiRimasti > 0) {
+            // Controlla che entrambi i link esistano
+            if (p.StripePaymentLink && p.CalendlyLink) {
+                const registrationUrl = `conferma.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink)}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
+                buttonHtml = `<a href="${registrationUrl}" class="cta-button available">Ottieni Ticket e Prenota <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></a>`;
+            } else {
+                buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
             }
+        } else {
+            buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+        }
 
-            properties.forEach(p => {
-                if (!p.ID || !p.Titolo) return;
-                
-                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-                const postiTotali = parseInt(p.MaxPartecipanti) || 10;
-                const postiRimasti = postiTotali - prenotati;
-                
-                let buttonHtml;
-                const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
-
-                if (isAlreadyBooked) {
-                    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
-                } else if (postiRimasti > 0) {
-                    if (p.StripePaymentLink && p.CalendlyLink) {
-                        const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink)}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
-                        buttonHtml = `<a href="${registrationUrl}" class="cta-button available">Ottieni Ticket e Prenota <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></a>`;
-                    } else {
-                        buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
-                    }
-                } else {
-                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
-                }
-
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'property-card';
-                cardDiv.innerHTML = `
-                    <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}"></div>
-                    <div class="property-card-info">
-                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                        <h3>${p.Titolo}</h3>
-                        <div class="price">${p.Prezzo || 'N.D.'} €/mese</div>
-                        <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
-                        <div class="info-item open-day">
-                            <i class="fa-solid fa-calendar-check"></i> 
-                            <div><strong>Open Day:</strong> ${formatDate(p.DataOpenDay)} | <strong>Orario:</strong> ${p.OrarioOpenDay || 'Vedi Calendario'}</div>
-                        </div>
-                        <div class="info-item availability">
-                            <i class="fa-solid fa-key"></i> 
-                            <div><strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}</div>
-                        </div>
-                        <div class="booking-action">${buttonHtml}</div>
-                    </div>`;
-                resultsContainer.appendChild(cardDiv);
-            });
+        const formatDate = (dateString) => {
+            if (!dateString) return 'Da Definire';
+            try {
+                const dateObj = new Date(dateString);
+                if (isNaN(dateObj.getTime())) return dateString;
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const year = dateObj.getFullYear();
+                return `${day}/${month}/${year}`;
+            } catch (e) { return dateString; }
         };
+
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'property-card';
+        cardDiv.innerHTML = `
+            <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}"></div>
+            <div class="property-card-info">
+                <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                <h3>${p.Titolo}</h3>
+                <div class="price">${p.Prezzo || 'N.D.'} €/mese</div>
+                <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+                <div class="info-item open-day">
+                    <i class="fa-solid fa-calendar-check"></i> 
+                    <div><strong>Open Day:</strong> ${formatDate(p.DataOpenDay)} | <strong>Orario:</strong> ${p.OrarioOpenDay || 'Vedi Calendario'}</div>
+                </div>
+                <div class="info-item availability">
+                    <i class="fa-solid fa-key"></i> 
+                    <div><strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}</div>
+                </div>
+                <div class="booking-action">${buttonHtml}</div>
+            </div>`;
+        resultsContainer.appendChild(cardDiv);
+    });
+};
 
             // === 4. FUNZIONE PRINCIPALE (MAIN) ===
             const main = async () => {
