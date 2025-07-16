@@ -174,6 +174,7 @@
 
          let allCandidates = [];
     
+        // === 2. FUNZIONI HELPER ===
         function csvToObjects(csv) {
             if (!csv) return [];
             const lines = csv.trim().split(/\r\n|\n/);
@@ -208,25 +209,29 @@
                 const postiTotali = parseInt(p.MaxPartecipanti) || 10;
                 const postiRimasti = postiTotali - prenotati;
                 
-              let buttonHtml;
-const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
+                let buttonHtml;
+                const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
 
-if (isAlreadyBooked) {
-    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
-} else if (postiRimasti > 0) {
-    if (p.CalendlyLink) {
-        // === MODIFICA CHIAVE ===
-        // Il link ora punta a registrazione.html passando tutti i dati necessari
-        const userEmail = userProfile.user_email || '';
-        const registrationUrl = `registrazione.html?email=${encodeURIComponent(userEmail)}&propertyId=${p.ID}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
-        
-        buttonHtml = `<a href="${registrationUrl}" class="cta-button">Ottieni il Tuo Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
-    } else {
-                buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
-            }
-        } else {
-            buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
-        }
+                if (isAlreadyBooked) {
+                    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
+                } else if (postiRimasti > 0) {
+                    // WORKAROUND CORRETTO PER CALENDLY (PIANO GRATUITO)
+                    if (p.CalendlyLink) {
+                        // Il link punta a Calendly, ma i dati vengono salvati al click tramite data-attributes
+                        const userEmail = userProfile.user_email || '';
+                        buttonHtml = `<a href="${p.CalendlyLink}" target="_blank" class="cta-button calendly-link" 
+                                         data-email="${userEmail}" 
+                                         data-property-id="${p.ID}"
+                                         data-calendly-link="${p.CalendlyLink}">
+                                         Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span>
+                                      </a>`;
+                    } else {
+                        buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
+                    }
+                } else {
+                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+                }
+
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'property-card';
                 cardDiv.innerHTML = `
@@ -243,6 +248,7 @@ if (isAlreadyBooked) {
             });
         }
 
+        // === 3. FUNZIONE PRINCIPALE (main) ===
         async function main() {
             const params = new URLSearchParams(window.location.search);
             const userToken = params.get('token');
@@ -267,7 +273,7 @@ if (isAlreadyBooked) {
                 ]);
                 const allProperties = csvToObjects(await propsRes.text());
                 const allRequirements = csvToObjects(await reqsRes.text());
-                allCandidates = csvToObjects(await candsRes.text());
+                allCandidates = csvToObjects(await candsRes.text()); // Popola la variabile globale
                 
                 let bookedPropertyIds = [];
                 if (userToken) {
@@ -314,35 +320,30 @@ if (isAlreadyBooked) {
                 document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
             }
         }
-        // === AGGIUNGI QUESTO NUOVO BLOCCO ALLA FINE DELLO SCRIPT, DENTRO A DOMContentLoaded ===
-document.body.addEventListener('click', function(e) {
-    // Cerca un elemento con la classe 'calendly-link' o un suo figlio
-    const calendlyButton = e.target.closest('.calendly-link');
-    
-    if (calendlyButton) {
-        // Questa volta NON usiamo e.preventDefault(), lasciamo che il link si apra
+      // === 4. LISTENER PER SALVARE I DATI PRIMA DI ANDARE SU CALENDLY ===
+        document.body.addEventListener('click', function(e) {
+            const calendlyButton = e.target.closest('.calendly-link');
+            if (calendlyButton) {
+                const userEmail = calendlyButton.dataset.email;
+                const propertyId = calendlyButton.dataset.propertyId;
+                const calendlyLink = calendlyButton.dataset.calendlyLink;
+
+                if (userEmail && propertyId && calendlyLink) {
+                    localStorage.setItem('pendingBookingData', JSON.stringify({
+                        email: userEmail,
+                        propertyId: propertyId,
+                        calendlyLink: calendlyLink
+                    }));
+                } else {
+                    e.preventDefault();
+                    alert("Per favore, torna indietro ed effettua una ricerca inserendo la tua email per poter prenotare.");
+                }
+            }
+        });
         
-        const userEmail = calendlyButton.dataset.email;
-        const propertyId = calendlyButton.dataset.propertyId;
-
-        if (userEmail && propertyId) {
-            // Salva i dati nel localStorage PRIMA che la nuova scheda si apra
-            localStorage.setItem('pendingBookingData', JSON.stringify({
-                email: userEmail,
-                propertyId: propertyId
-            }));
-            console.log('Dati salvati nel localStorage:', localStorage.getItem('pendingBookingData'));
-        } else {
-            // Se manca l'email, avvisa l'utente
-            e.preventDefault(); // Blocca l'apertura di Calendly
-            alert("Per favore, torna indietro ed effettua una ricerca inserendo la tua email per poter prenotare.");
-        }
-    }
-});
- 
-    
-
-        document.addEventListener('DOMContentLoaded', main);
-    </script>
+        // === 5. ESECUZIONE ===
+        main();
+    });
+</script>
 </body>
 </html>
