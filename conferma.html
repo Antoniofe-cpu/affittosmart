@@ -3,22 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prenotazione Confermata - Affitto Smart</title>
+    <title>Registrazione in corso... - Affitto Smart</title>
     
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        :root { 
-            --colore-primario: #0D47A1; 
-            --colore-accento: #FFA000; 
-            --colore-successo: #2E7D32;
-            --colore-testo: #212121;
-            --colore-testo-chiaro: #5f6368;
-        }
         body {
             font-family: 'Poppins', sans-serif;
             display: flex;
@@ -27,76 +19,64 @@
             min-height: 100vh;
             margin: 0;
             background-color: #f4f6f9;
+            color: #5f6368;
             text-align: center;
             padding: 20px;
         }
-        .confirmation-box {
-            background: white;
-            padding: 40px 50px;
-            border-radius: 16px;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.1);
-            max-width: 550px;
-            width: 100%;
+        .container {
+            max-width: 500px;
         }
-        .icon {
-            font-size: 4em;
-            color: var(--colore-successo);
-            margin-bottom: 15px;
+        .spinner {
+            border: 8px solid #e0e0e0;
+            border-top: 8px solid #0D47A1;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1.2s linear infinite;
+            margin: 0 auto 20px auto;
         }
-        h1 {
-            color: var(--colore-primario);
-            font-size: 2.5em;
-            margin: 0 0 15px 0;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        p {
-            color: var(--colore-testo-chiaro);
-            line-height: 1.7;
-            font-size: 1.1em;
-        }
-        p.subtle {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-top: 25px;
-        }
-        .cta-button {
-            display: inline-block;
-            background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00);
-            color: var(--colore-testo);
-            padding: 14px 35px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            margin-top: 30px;
-            transition: transform 0.2s ease;
-        }
-        .cta-button:hover {
-            transform: scale(1.05);
-        }
-        .cta-button.loading {
-            background-image: none;
-            background-color: #ccc;
-            cursor: not-allowed;
+        /* Il form è e deve rimanere invisibile */
+        form {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="confirmation-box">
-        <div class="icon"><i class="fa-solid fa-circle-check"></i></div>
-        <h1>Tutto Pronto!</h1>
-        <p>Grazie, la tua prenotazione per l'Open Day è stata confermata. Stiamo registrando il tuo ticket.</p>
-        <div id="action-area">
-             <a href="#" id="dashboard-link" class="cta-button loading">Caricamento...</a>
+    <div class="container">
+        <div id="loading-container">
+            <div class="spinner"></div>
+            <p>Stiamo creando il tuo ticket e reindirizzando al pagamento sicuro...</p>
         </div>
-        <p class="subtle">(Potrebbero volerci fino a 5 minuti perché la nuova prenotazione appaia nella tua area personale, a causa dei tempi di aggiornamento.)</p>
+        <div id="message-container" style="display: none; font-size: 1.2em; font-weight: bold; color: #c0392b;"></div>
     </div>
+    
+    <!-- Form invisibile che verrà inviato automaticamente a Google Script -->
+    <form id="booking-form" action="https://script.google.com/macros/s/AKfycbzHoWjqFMOV2Jip3My7OvJz6pP2ST_EofdsV7NJD-WlWZZxvWBHKTv15RNYZJoHUe1N/exec" method="POST">
+        <input type="hidden" name="email" id="form-email">
+        <input type="hidden" name="propertyId" id="form-propertyId">
+        <input type="hidden" name="token" id="form-token">
+        <input type="hidden" name="timestamp" id="form-timestamp">
+        <input type="hidden" name="stripeLink" id="form-stripeLink">
+        <input type="hidden" name="calendlyLink" id="form-calendlyLink">
+    </form>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-    
-            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzHoWjqFMOV2Jip3My7OvJz6pP2ST_EofdsV7NJD-WlWZZxvWBHKTv15RNYZJoHUe1N/exec';
+        // Funzione eseguita al caricamento della pagina
+        window.onload = async () => {
+
+            // === 1. CONFIGURAZIONE ===
             const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
-            const generateToken = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+            // === 2. FUNZIONI HELPER ===
+            const generateToken = () => {
+                return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => 
+                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+                );
+            };
             
             const csvToObjects = (csv) => {
                 if (!csv) return [];
@@ -105,67 +85,61 @@
                 return lines.slice(1).map(line => {
                     if (!line) return null;
                     const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    return headers.reduce((obj, header, i) => { obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : ''; return obj; }, {});
+                    return headers.reduce((obj, header, i) => {
+                        obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
+                        return obj;
+                    }, {});
                 }).filter(Boolean);
             };
 
-            const dashboardLink = document.getElementById('dashboard-link');
-
-            const finalizeBooking = async () => {
-                const pendingDataString = localStorage.getItem('pendingBookingData');
-                if (!pendingDataString) {
-                    console.error("Nessun dato di prenotazione trovato in localStorage.");
-                    dashboardLink.textContent = "Torna alla Home";
-                    dashboardLink.href = "index.html";
-                    dashboardLink.classList.remove('loading');
-                    return;
+            const showMessage = (message) => {
+                const loadingDiv = document.getElementById('loading-container');
+                const messageContainer = document.getElementById('message-container');
+                if (loadingDiv) loadingDiv.style.display = 'none';
+                if (messageContainer) {
+                    messageContainer.innerHTML = `<p>${message}</p>`;
+                    messageContainer.style.display = 'block';
                 }
-                
-                localStorage.removeItem('pendingBookingData');
-                
-                const pendingData = JSON.parse(pendingDataString);
-                const { email, propertyId } = pendingData;
-                
-                if (!email || !propertyId) return;
-
-                let userToken = "";
-                try {
-                    const response = await fetch(CANDIDATES_URL);
-                    const candidates = csvToObjects(await response.text());
-                    const existingUser = candidates.find(c => c.Email?.toLowerCase() === email.toLowerCase());
-                    userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-                } catch (e) {
-                    userToken = generateToken();
-                }
-                
-                dashboardLink.href = `dashboard.html?token=${userToken}&newBookingId=${propertyId}`;
-                dashboardLink.textContent = "Vai alla Mia Area";
-                dashboardLink.classList.remove('loading');
-
-                const dataToSave = { 
-                    timestamp: new Date().toISOString(), 
-                    email, propertyId, token: userToken
-                };
-
-                // Invia i dati a Google Script in background senza bloccare l'utente
-                fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSave)
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if(result.result !== 'success') {
-                        console.error("Errore nella scrittura in background:", result);
-                    } else {
-                        console.log("Ticket registrato con successo in background.");
-                    }
-                })
-                .catch(error => console.error("Errore nell'invio dei dati in background:", error));
             };
 
-            finalizeBooking();
-        });
+            // === 3. LOGICA PRINCIPALE ===
+            const params = new URLSearchParams(window.location.search);
+            const email = params.get('email');
+            const propertyId = params.get('propertyId');
+            const stripeLink = params.get('stripeLink');
+            const calendlyLink = params.get('calendlyLink');
+
+            if (!email || !propertyId || !stripeLink || !calendlyLink) {
+                showMessage("Errore: Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a> e riprova.");
+                return;
+            }
+
+            try {
+                // Controlla utente esistente per ottenere/creare il token
+                const response = await fetch(CANDIDATES_URL);
+                if (!response.ok) throw new Error('Impossibile caricare la lista dei candidati.');
+
+                const candidates = csvToObjects(await response.text());
+                let userToken;
+                const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+                userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
+                
+                // Popola i campi del form invisibile
+                document.getElementById('form-email').value = email;
+                document.getElementById('form-propertyId').value = propertyId;
+                document.getElementById('form-token').value = userToken;
+                document.getElementById('form-timestamp').value = new Date().toISOString();
+                document.getElementById('form-stripeLink').value = stripeLink;
+                document.getElementById('form-calendlyLink').value = calendlyLink;
+                
+                // Invia il form. Il browser gestirà la richiesta e il successivo reindirizzamento.
+                document.getElementById('booking-form').submit();
+
+            } catch (error) {
+                showMessage("Si è verificato un errore di connessione. Per favore, ricarica la pagina e riprova.");
+                console.error("Errore nel processo di preparazione:", error);
+            }
+        };
     </script>
 </body>
 </html>
