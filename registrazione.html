@@ -2,144 +2,96 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrazione in corso... - Affitto Smart</title>
-    
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
+    <title>Registrazione in corso...</title>
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f4f6f9;
-            color: #5f6368;
-            text-align: center;
-            padding: 20px;
-        }
-        .container {
-            max-width: 500px;
-        }
-        .spinner {
-            border: 8px solid #e0e0e0;
-            border-top: 8px solid #0D47A1;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1.2s linear infinite;
-            margin: 0 auto 20px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        /* Il form è e deve rimanere invisibile */
-        form {
-            display: none;
-        }
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
+        .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #0D47A1; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="loading-container">
-            <div class="spinner"></div>
-            <p>Stiamo creando il tuo ticket e reindirizzando al pagamento sicuro...</p>
-        </div>
-        <div id="message-container" style="display: none; font-size: 1.2em; font-weight: bold; color: #c0392b;"></div>
-    </div>
-    
-    <!-- Form invisibile che verrà inviato automaticamente a Google Script -->
-    <form id="booking-form" action="https://script.google.com/macros/s/AKfycbzHoWjqFMOV2Jip3My7OvJz6pP2ST_EofdsV7NJD-WlWZZxvWBHKTv15RNYZJoHUe1N/exec" method="POST">
-        <input type="hidden" name="email" id="form-email">
-        <input type="hidden" name="propertyId" id="form-propertyId">
-        <input type="hidden" name="token" id="form-token">
-        <input type="hidden" name="timestamp" id="form-timestamp">
-        <input type="hidden" name="stripeLink" id="form-stripeLink">
-        <input type="hidden" name="calendlyLink" id="form-calendlyLink">
-    </form>
+    <div class="spinner"></div>
 
     <script>
-        // Funzione eseguita al caricamento della pagina
-        window.onload = async () => {
+        // URL dello script di Google Apps Script che scrive sul foglio
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec'; // <-- SOSTITUISCI QUESTO!
 
-            // === 1. CONFIGURAZIONE ===
-            const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+        // Funzione per generare un token casuale e sicuro
+        function generateToken() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
 
-            // === 2. FUNZIONI HELPER ===
-            const generateToken = () => {
-                return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => 
-                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-                );
-            };
-            
-            const csvToObjects = (csv) => {
-                if (!csv) return [];
-                const lines = csv.trim().split(/\r\n|\n/);
-                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-                return lines.slice(1).map(line => {
-                    if (!line) return null;
-                    const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    return headers.reduce((obj, header, i) => {
-                        obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
-                        return obj;
-                    }, {});
-                }).filter(Boolean);
-            };
-
-            const showMessage = (message) => {
-                const loadingDiv = document.getElementById('loading-container');
-                const messageContainer = document.getElementById('message-container');
-                if (loadingDiv) loadingDiv.style.display = 'none';
-                if (messageContainer) {
-                    messageContainer.innerHTML = `<p>${message}</p>`;
-                    messageContainer.style.display = 'block';
-                }
-            };
-
-            // === 3. LOGICA PRINCIPALE ===
+        async function registerAndRedirect() {
             const params = new URLSearchParams(window.location.search);
             const email = params.get('email');
             const propertyId = params.get('propertyId');
-            const stripeLink = params.get('stripeLink');
-            const calendlyLink = params.get('calendlyLink');
 
-            if (!email || !propertyId || !stripeLink || !calendlyLink) {
-                showMessage("Errore: Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a> e riprova.");
+            if (!email || !propertyId) {
+                alert("Dati mancanti per la registrazione. Contatta l'assistenza.");
+                // window.location.href = 'index.html'; // Ritorna alla home
                 return;
             }
 
-            try {
-                // Controlla utente esistente per ottenere/creare il token
-                const response = await fetch(CANDIDATES_URL);
-                if (!response.ok) throw new Error('Impossibile caricare la lista dei candidati.');
+            // Dobbiamo prima recuperare i dati esistenti per vedere se l'utente ha già un token
+            const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+            const response = await fetch(CANDIDATES_URL);
+            const csvText = await response.text();
+            const candidates = csvToObjects(csvText); // Usa la tua funzione csvToObjects
 
-                const candidates = csvToObjects(await response.text());
-                let userToken;
-                const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-                userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-                
-                // Popola i campi del form invisibile
-                document.getElementById('form-email').value = email;
-                document.getElementById('form-propertyId').value = propertyId;
-                document.getElementById('form-token').value = userToken;
-                document.getElementById('form-timestamp').value = new Date().toISOString();
-                document.getElementById('form-stripeLink').value = stripeLink;
-                document.getElementById('form-calendlyLink').value = calendlyLink;
-                
-                // Invia il form. Il browser gestirà la richiesta e il successivo reindirizzamento.
-                document.getElementById('booking-form').submit();
+            let userToken;
+            const existingUser = candidates.find(c => c.Email === email);
+
+            if (existingUser && existingUser.Token) {
+                userToken = existingUser.Token; // L'utente esiste, usiamo il suo token
+            } else {
+                userToken = generateToken(); // Nuovo utente, generiamo un nuovo token
+            }
+
+            // Ora prepariamo i dati da inviare al nostro Google Apps Script per scrivere la nuova riga
+            const dataToSave = {
+                timestamp: new Date().toISOString(),
+                email: email,
+                propertyId: propertyId,
+                token: userToken
+            };
+
+            try {
+                // Invia i dati al Google Apps Script per la scrittura
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Necessario per questo tipo di richiesta
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSave)
+                });
+
+                // Attendi un istante per dare tempo a Google Sheets di aggiornarsi (opzionale ma consigliato)
+                setTimeout(() => {
+                    // Reindirizza alla dashboard con il token corretto
+                    window.location.href = `dashboard.html?token=${userToken}`;
+                }, 1000);
 
             } catch (error) {
-                showMessage("Si è verificato un errore di connessione. Per favore, ricarica la pagina e riprova.");
-                console.error("Errore nel processo di preparazione:", error);
+                console.error('Errore durante la scrittura su Google Sheets:', error);
+                alert('Si è verificato un errore durante la registrazione della prenotazione.');
             }
-        };
+        }
+        
+        // Funzione helper da includere
+        function csvToObjects(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).map(line => {
+                const values = line.split(',');
+                return headers.reduce((obj, header, i) => {
+                    obj[header] = values[i] ? values[i].trim() : '';
+                    return obj;
+                }, {});
+            });
+        }
+
+        window.onload = registerAndRedirect;
     </script>
 </body>
 </html>
