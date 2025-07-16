@@ -1,21 +1,33 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <script src="https://www.google.com/recaptcha/api.js?render=6LdxHoUrAAAAAArmVqB1L4sHpph6RjNX5n6TnmFm"></script>
     <meta charset="UTF-8">
     <title>Registrazione in corso...</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
         .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #0D47A1; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        form { display: none; } /* Il form è invisibile */
     </style>
 </head>
 <body>
-    <div class="spinner"></div>
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>Stiamo verificando la tua richiesta e preparando la prenotazione...</p>
+    </div>
+    
+    <!-- Form invisibile che verrà inviato automaticamente -->
+    <form id="redirect-form" action="INCOLLA_QUI_IL_TUO_URL_DELLO_SCRIPT_GOOGLE_APPS" method="POST">
+        <input type="text" name="email" id="form-email">
+        <input type="text" name="propertyId" id="form-propertyId">
+        <input type="text" name="token" id="form-token">
+        <input type="text" name="timestamp" id="form-timestamp">
+        <input type="text" name="calendlyLink" id="form-calendlyLink">
+    </form>
 
     <script>
     // === CONFIGURAZIONE ===
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec';
+   
     const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
     // Non serve la chiave reCAPTCHA qui, perché la fiducia è data da Calendly
 
@@ -48,43 +60,42 @@
         }
     }
 
-    async function buildUrlAndRedirect() {
-        const params = new URLSearchParams(window.location.search);
-        const email = params.get('email');
-        const propertyId = params.get('propertyId');
-        const calendlyLink = params.get('calendlyLink');
+    async function prepareAndSubmitForm() {
+            const params = new URLSearchParams(window.location.search);
+            const email = params.get('email');
+            const propertyId = params.get('propertyId');
+            const calendlyLink = params.get('calendlyLink');
 
-        if (!email || !propertyId || !calendlyLink) {
-            document.body.innerHTML = "Dati mancanti. Torna indietro e riprova.";
-            return;
+            if (!email || !propertyId || !calendlyLink) {
+                document.body.innerHTML = "Dati mancanti. Torna indietro e riprova.";
+                return;
+            }
+
+            try {
+                // Controlla utente esistente per ottenere/creare il token
+                const response = await fetch(CANDIDATES_URL);
+                const candidates = csvToObjects(await response.text());
+                let userToken;
+                const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+                userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
+                
+                // Popola i campi del form invisibile
+                document.getElementById('form-email').value = email;
+                document.getElementById('form-propertyId').value = propertyId;
+                document.getElementById('form-token').value = userToken;
+                document.getElementById('form-timestamp').value = new Date().toISOString();
+                document.getElementById('form-calendlyLink').value = calendlyLink;
+                
+                // Invia il form
+                document.getElementById('redirect-form').submit();
+
+            } catch (error) {
+                document.body.innerHTML = "Errore di connessione. Riprova.";
+                console.error(error);
+            }
         }
 
-        try {
-            // Controlla se l'utente esiste per ottenere/creare il token
-            const response = await fetch(CANDIDATES_URL);
-            const candidates = csvToObjects(await response.text());
-            let userToken;
-            const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-            userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-            
-            // Costruisci l'URL per lo script di Google con TUTTI i dati
-            const scriptUrl = new URL(WEB_APP_URL);
-            scriptUrl.searchParams.append('email', email);
-            scriptUrl.searchParams.append('propertyId', propertyId);
-            scriptUrl.searchParams.append('token', userToken);
-            scriptUrl.searchParams.append('timestamp', new Date().toISOString());
-            scriptUrl.searchParams.append('calendlyLink', calendlyLink);
-            
-            // Reindirizza l'utente a questo URL. Sarà Google a fare il resto.
-            window.location.href = scriptUrl.href;
-
-        } catch (error) {
-            document.body.innerHTML = "Errore di connessione. Riprova.";
-            console.error(error);
-        }
-    }
-
-    window.onload = buildUrlAndRedirect;
-</script>
+        window.onload = prepareAndSubmitForm;
+    </script>
 </body>
 </html>
