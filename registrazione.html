@@ -39,97 +39,72 @@
     function showError(message) {
         const loadingDiv = document.getElementById('loading');
         const errorContainer = document.getElementById('error-container');
-        if (loadingDiv) loadingDiv.style.display = 'none'; // Nasconde lo spinner
+        if (loadingDiv) loadingDiv.style.display = 'none';
         if (errorContainer) {
-            errorContainer.innerHTML = `<p class="error-message">${message}</p>`;
+            errorContainer.innerHTML = `<p style="color:#c0392b; font-weight:bold;">${message}</p>`;
             errorContainer.style.display = 'block';
         } else {
-            document.body.innerHTML = `<p class="error-message">${message}</p>`; // Fallback
+            document.body.innerHTML = `<p style="color:#c0392b; font-weight:bold;">${message}</p>`;
         }
     }
-    
-   // In registrazione.html
 
-async function processBookingAndRedirect() {
-    const params = new URLSearchParams(window.location.search);
-    const email = params.get('email');
-    const propertyId = params.get('propertyId');
-    const calendlyLink = params.get('calendlyLink');
+    async function processBookingAndRedirect() {
+        const params = new URLSearchParams(window.location.search);
+        const email = params.get('email');
+        const propertyId = params.get('propertyId');
+        const calendlyLink = params.get('calendlyLink');
 
-    if (!email || !propertyId || !calendlyLink) {
-        showError("Dati insufficienti. <a href='index.html'>Torna alla ricerca</a>.");
-        return;
-    }
+        if (!email || !propertyId || !calendlyLink) {
+            showError("Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a>.");
+            return;
+        }
 
-    try {
-        // 1. Controlla utente esistente (questo fetch funziona perché è una richiesta GET a un URL pubblico)
-        const response = await fetch(CANDIDATES_URL);
-        const candidates = csvToObjects(await response.text());
-        let userToken;
-        const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-        userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-        
-        const dataToSave = { 
-            timestamp: new Date().toISOString(), 
-            email: email, 
-            propertyId: propertyId, 
-            token: userToken
-        };
+        try {
+            // 1. Controlla utente esistente
+            const response = await fetch(CANDIDATES_URL);
+            const candidates = csvToObjects(await response.text());
+            let userToken;
+            const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+            userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
+            
+            const dataToSave = { 
+                timestamp: new Date().toISOString(), 
+                email: email, 
+                propertyId: propertyId, 
+                token: userToken
+            };
 
-        // 2. Prepara la richiesta JSONP
-        const callbackName = 'handleGoogleScriptResponse';
-        
-        // Definisci la funzione di callback a livello globale
-        window[callbackName] = function(result) {
-            // Rimuovi lo script una volta eseguito
-            document.body.removeChild(document.getElementById('jsonp-script'));
-            delete window[callbackName];
+            // 2. Invia i dati a Google Script per la registrazione (SENZA no-cors)
+            const writeResponse = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSave)
+            });
+            
+            if (!writeResponse.ok) {
+                 throw new Error(`Errore dal server: ${writeResponse.statusText}`);
+            }
 
-            // 3. Gestisci la risposta
+            const result = await writeResponse.json();
+            
+            // 3. Gestisci la risposta del server
             if (result.result === 'success') {
+                // TUTTO OK! L'email è stata inviata. Ora reindirizza a Calendly.
                 const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
                 window.location.href = finalCalendlyUrl;
             } else if (result.code === 'DUPLICATE_BOOKING') {
-                showError(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a>.`);
+                // L'utente ha già questo ticket
+                showError(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a> per vederlo.`);
             } else {
+                // Altri errori dal server
                 showError("Si è verificato un errore durante la registrazione. Contatta l'assistenza.");
             }
-        };
 
-        // 4. Crea e aggiungi dinamicamente lo script tag per la richiesta POST simulata
-        const script = document.createElement('script');
-        script.id = 'jsonp-script';
-        // Costruiamo l'URL per una richiesta GET che lo script di Google intercetterà come se fosse POST
-        // Usiamo una forma "ibrida"
-        const postData = encodeURIComponent(JSON.stringify(dataToSave));
-        // Questo non è un vero JSONP per POST, quindi torniamo al fetch con un fix
-        
-        // CORREZIONE FINALE: la logica sopra è troppo complessa. Usiamo fetch ma gestiamo la risposta.
-        // La causa dell'errore CORS è spesso il reindirizzamento dello script di Google.
-        // Lo script doPost che ti ho dato ora gestisce il callback, quindi non serve più no-cors.
-        
-        // === LA VERA SOLUZIONE SEMPLIFICATA ===
-        
-        const writeResponse = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            // mode: 'no-cors', // RIMUOVIAMO QUESTO, era la causa del problema
-            headers: {
-              'Content-Type': 'text/plain;charset=utf-8', // Usiamo text/plain per aggirare il preflight
-            },
-            body: JSON.stringify(dataToSave)
-        });
-
-        // Ora possiamo leggere la risposta!
-        const result = await writeResponse.json();
-        
-        // Chiamiamo la funzione di callback definita sopra
-        window[callbackName](result);
-
-    } catch (error) {
-        showError("Si è verificato un errore di connessione. Riprova.");
-        console.error('Errore:', error);
+        } catch (error) {
+            showError("Si è verificato un errore di connessione. Riprova.");
+            console.error('Errore:', error);
+        }
     }
-}
 
     window.onload = processBookingAndRedirect;
 </script>
