@@ -266,14 +266,16 @@
                             <h3>${p.Titolo}</h3>
                             <div class="price">${p.Prezzo || 'N.D.'} €/mese</div>
                              <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
-    <div class="open-day-info">
+    
+    <div class="info-item open-day">
         <i class="fa-solid fa-calendar-check"></i> 
-        <strong>Open Day:</strong> ${p.DataOpenDay || 'Da Definire'}
+        <div><strong>Open Day:</strong> ${formatDate(p.DataOpenDay)}</div>
     </div>
-    <div class="open-day-info" style="color: var(--colore-secondario);">
+    <div class="info-item availability">
         <i class="fa-solid fa-key"></i> 
-        <strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}
+        <div><strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}</div>
     </div>
+
     <div class="booking-action">${buttonHtml}</div>
                         </div>`;
                     resultsContainer.appendChild(cardDiv);
