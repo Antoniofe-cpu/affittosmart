@@ -168,133 +168,123 @@
     </div>
     
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
         const PROPERTIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=0&single=true&output=csv';
         const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
         const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
          let allCandidates = [];
-    
-        // === 2. FUNZIONI HELPER ===
-        function csvToObjects(csv) {
-            if (!csv) return [];
-            const lines = csv.trim().split(/\r\n|\n/);
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-            return lines.slice(1).map(line => {
-                if (!line) return null;
-                const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                return headers.reduce((obj, header, i) => {
-                    obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
-                    return obj;
-                }, {});
-            }).filter(Boolean);
-        }
 
-        function normalizeString(str) {
-            if (!str) return '';
-            return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        }
+            const csvToObjects = (csv) => {
+                if (!csv) return [];
+                const lines = csv.trim().split(/\r\n|\n/);
+                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                return lines.slice(1).map(line => {
+                    if (!line) return null;
+                    const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    return headers.reduce((obj, header, i) => {
+                        obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
+                        return obj;
+                    }, {});
+                }).filter(Boolean);
+            };
 
-        function displayResults(properties, userProfile, bookedPropertyIds, userToken) {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '';
-            if (properties.length === 0) {
-                resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
-                return;
-            }
+            const normalizeString = (str) => {
+                if (!str) return '';
+                return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            };
 
-            properties.forEach(p => {
-                if (!p.ID || !p.Titolo || !p.Prezzo) return;
-                
-                const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
-                const postiTotali = parseInt(p.MaxPartecipanti) || 10;
-                const postiRimasti = postiTotali - prenotati;
-                
-                let buttonHtml;
-                const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
-
-                if (isAlreadyBooked) {
-                    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
-                } else if (postiRimasti > 0) {
-                    // WORKAROUND CORRETTO PER CALENDLY (PIANO GRATUITO)
-                    if (p.CalendlyLink) {
-                        // Il link punta a Calendly, ma i dati vengono salvati al click tramite data-attributes
-                        const userEmail = userProfile.user_email || '';
-                        buttonHtml = `<a href="${p.CalendlyLink}" target="_blank" class="cta-button calendly-link" 
-                                         data-email="${userEmail}" 
-                                         data-property-id="${p.ID}"
-                                         data-calendly-link="${p.CalendlyLink}">
-                                         Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span>
-                                      </a>`;
-                    } else {
-                        buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
-                    }
-                } else {
-                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+            const displayResults = (properties, userProfile, bookedPropertyIds, userToken) => {
+                const resultsContainer = document.getElementById('results-container');
+                resultsContainer.innerHTML = '';
+                if (properties.length === 0) {
+                    resultsContainer.innerHTML = '<p class="message">Nessun immobile è risultato 100% compatibile.<br>Prova a modificare la ricerca!</p>';
+                    return;
                 }
 
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'property-card';
-                cardDiv.innerHTML = `
-                    <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}" loading="lazy"></div>
-                    <div class="property-card-info">
-                        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                        <h3>${p.Titolo}</h3>
-                        <div class="price">${p.Prezzo} €/mese</div>
-                        <p>${p.Descrizione || 'Nessuna descrizione disponibile.'}</p>
-                        <div class="open-day-info"><i class="fa-solid fa-calendar-check"></i> Open Day: ${p.DataOpenDay || 'Da Definire'}</div>
-                        <div class="booking-action">${buttonHtml}</div>
-                    </div>`;
-                resultsContainer.appendChild(cardDiv);
-            });
-        }
+                properties.forEach(p => {
+                    if (!p.ID || !p.Titolo) return;
 
-        // === 3. FUNZIONE PRINCIPALE (main) ===
-        async function main() {
-            const params = new URLSearchParams(window.location.search);
-            const userToken = params.get('token');
-            const dashboardLink = document.getElementById('dashboard-link');
-            const backLink = document.getElementById('back-link');
+                    const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
+                    const postiTotali = parseInt(p.MaxPartecipanti) || 10;
+                    const postiRimasti = postiTotali - prenotati;
+                    
+                    let buttonHtml;
+                    const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
 
-            if (userToken) {
-                if (dashboardLink) {
+                    if (isAlreadyBooked) {
+                        buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
+                    } else if (postiRimasti > 0) {
+                        if (p.CalendlyLink) {
+                            const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
+                            buttonHtml = `<a href="${registrationUrl}" class="cta-button available">Ottieni Ticket e Prenota <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></a>`;
+                        } else {
+                            buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non aperte</button>`;
+                        }
+                    } else {
+                        buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+                    }
+
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'property-card';
+                    cardDiv.innerHTML = `
+                        <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}"></div>
+                        <div class="property-card-info">
+                            <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                            <h3>${p.Titolo}</h3>
+                            <div class="price">${p.Prezzo || 'N.D.'} €/mese</div>
+                            <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+                            <div class="open-day-info"><i class="fa-solid fa-calendar-check"></i> Open Day: ${p.DataOpenDay || 'Da Definire'}</div>
+                            <div class="booking-action">${buttonHtml}</div>
+                        </div>`;
+                    resultsContainer.appendChild(cardDiv);
+                });
+            };
+
+            const main = async () => {
+                const params = new URLSearchParams(window.location.search);
+                const userToken = params.get('token');
+                
+                const dashboardLink = document.getElementById('dashboard-link');
+                if (userToken && dashboardLink) {
                     dashboardLink.href = `dashboard.html?token=${userToken}`;
                     dashboardLink.style.display = 'inline-flex';
                 }
+
+                const backLink = document.getElementById('back-link');
                 if (backLink) {
-                    backLink.href = `index.html?token=${userToken}`;
+                    backLink.href = userToken ? `index.html?token=${userToken}` : 'index.html';
                 }
-            } else if (backLink) {
-                backLink.href = 'index.html';
-            }
-            
-            try {
-                const [propsRes, reqsRes, candsRes] = await Promise.all([
-                    fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
-                ]);
-                const allProperties = csvToObjects(await propsRes.text());
-                const allRequirements = csvToObjects(await reqsRes.text());
-                allCandidates = csvToObjects(await candsRes.text()); // Popola la variabile globale
-                
-                let bookedPropertyIds = [];
-                if (userToken) {
-                    const myBookings = allCandidates.filter(c => c.Token === userToken);
-                    bookedPropertyIds = myBookings.map(b => b.ID_Immobile_Prenotato);
-                }
-                
-                const userFilters = {
-                    user_email: params.get('user_email'),
-                    tipo: normalizeString(params.get('tipo')),
-                    zona: normalizeString(params.get('zona')),
-                    prezzoMax: parseInt(params.get('prezzo')) || Infinity,
-                    data_disponibile: params.get('data_disponibile'),
-                    periodo_affitto: normalizeString(params.get('periodo_affitto')),
-                    situazione_lavorativa: normalizeString(params.get('situazione_lavorativa')),
-                    reddito: parseInt(params.get('reddito_utente')) || 0,
-                    sesso: normalizeString(params.get('sesso_utente')),
-                    fumatore: normalizeString(params.get('fumatore')),
-                    animali: normalizeString(params.get('animali')),
-                    tipo_ricerca: normalizeString(params.get('tipo_ricerca'))
-                };
+
+                try {
+                    const [propsRes, reqsRes, candsRes] = await Promise.all([
+                        fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
+                    ]);
+                    const allProperties = csvToObjects(await propsRes.text());
+                    const allRequirements = csvToObjects(await reqsRes.text());
+                    allCandidates = csvToObjects(await candsRes.text());
+                    
+                    let bookedPropertyIds = [];
+                    if (userToken) {
+                        bookedPropertyIds = allCandidates
+                            .filter(c => c.Token === userToken)
+                            .map(b => b.ID_Immobile_Prenotato);
+                    }
+                    
+                    const userFilters = {
+                        user_email: params.get('user_email'),
+                        tipo: normalizeString(params.get('tipo')),
+                        zona: normalizeString(params.get('zona')),
+                        prezzoMax: parseInt(params.get('prezzo')) || Infinity,
+                        data_disponibile: params.get('data_disponibile'),
+                        periodo_affitto: normalizeString(params.get('periodo_affitto')),
+                        situazione_lavorativa: normalizeString(params.get('situazione_lavorativa')),
+                        reddito: parseInt(params.get('reddito_utente')) || 0,
+                        sesso: normalizeString(params.get('sesso_utente')),
+                        fumatore: normalizeString(params.get('fumatore')),
+                        animali: normalizeString(params.get('animali')),
+                        tipo_ricerca: normalizeString(params.get('tipo_ricerca'))
+                    };
 
                 const finalProperties = allProperties.filter(property => {
                     const propertyID = (property.ID || '').trim();
@@ -315,35 +305,14 @@
                 });
                 
                 displayResults(finalProperties, userFilters, bookedPropertyIds, userToken);
-            } catch (error) {
-                console.error("ERRORE CRITICO:", error);
-                document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
-            }
-        }
-      // === 4. LISTENER PER SALVARE I DATI PRIMA DI ANDARE SU CALENDLY ===
-        document.body.addEventListener('click', function(e) {
-            const calendlyButton = e.target.closest('.calendly-link');
-            if (calendlyButton) {
-                const userEmail = calendlyButton.dataset.email;
-                const propertyId = calendlyButton.dataset.propertyId;
-                const calendlyLink = calendlyButton.dataset.calendlyLink;
-
-                if (userEmail && propertyId && calendlyLink) {
-                    localStorage.setItem('pendingBookingData', JSON.stringify({
-                        email: userEmail,
-                        propertyId: propertyId,
-                        calendlyLink: calendlyLink
-                    }));
-                } else {
-                    e.preventDefault();
-                    alert("Per favore, torna indietro ed effettua una ricerca inserendo la tua email per poter prenotare.");
+                } catch (error) {
+                    console.error("ERRORE CRITICO:", error);
+                    document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore. Riprova.</p>`;
                 }
-            }
+            };
+            
+            main();
         });
-        
-        // === 5. ESECUZIONE ===
-        main();
-    });
-</script>
+    </script>
 </body>
 </html>
