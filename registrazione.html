@@ -80,7 +80,7 @@
             }).filter(Boolean);
         }
         
-         async function processBooking() {
+        async function processBooking() {
             const params = new URLSearchParams(window.location.search);
             const email = params.get('email');
             const propertyId = params.get('propertyId');
@@ -92,7 +92,6 @@
             }
 
             try {
-                // Controlla utente esistente
                 const response = await fetch(CANDIDATES_URL);
                 const candidates = csvToObjects(await response.text());
                 let userToken;
@@ -106,34 +105,38 @@
                     token: userToken
                 };
 
-                // === CHIAMATA FETCH CORRETTA ===
+                // Chiamata fetch standard
                 const writeResponse = await fetch(WEB_APP_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSave),
-                    redirect: 'follow'
+                    body: JSON.stringify(dataToSave)
                 });
                 
-                if (!writeResponse.ok) throw new Error(`Errore di rete: ${writeResponse.statusText}`);
+                if (!writeResponse.ok) {
+                    throw new Error(`Errore di rete: ${writeResponse.statusText}`);
+                }
                 
                 const result = await writeResponse.json();
 
                 if (result.result === 'success') {
+                    // SUCCESSO! Ora reindirizziamo a Calendly con l'email pre-compilata.
                     const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
-                    window.location.href = finalUrl;
+                    window.location.href = finalCalendlyUrl;
                 } else if (result.code === 'DUPLICATE_BOOKING') {
-                    showMessage(`Già prenotato. <a href="dashboard.html?token=${userToken}">Vedi dashboard</a>.`, true);
+                    showMessage(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a>.`, true);
                 } else {
-                    showMessage("Errore registrazione: " + (result.message || "Sconosciuto"), true);
+                    showMessage(`Errore dal server: ${result.message || 'Sconosciuto'}`, true);
                 }
 
             } catch (error) {
-                showMessage("Errore di connessione. Riprova.", true);
+                showMessage("Si è verificato un errore di connessione. Riprova.", true);
                 console.error('Errore:', error);
             }
         }
 
         window.onload = processBooking;
     </script>
+
+
 </body>
 </html>
