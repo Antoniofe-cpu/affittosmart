@@ -4,11 +4,47 @@
     <meta charset="UTF-8">
     <title>Registrazione in corso...</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
-        .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #0D47A1; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        form { display: none; }
-    </style>
+    body {
+        font-family: 'Poppins', sans-serif; /* Usa lo stesso font del sito principale */
+        display: flex;
+        justify-content: center; /* Centra orizzontalmente */
+        align-items: center;     /* Centra verticalmente */
+        min-height: 100vh;       /* Assicura che il body occupi tutta l'altezza dello schermo */
+        margin: 0;               /* Rimuove i margini di default */
+        background-color: #f4f6f9; /* Usa lo stesso sfondo delle altre pagine */
+        color: #5f6368;          /* Usa il colore testo chiaro */
+    }
+
+    #loading {
+        text-align: center; /* Centra il testo sotto lo spinner */
+    }
+
+    .spinner {
+        border: 8px solid #e0e0e0; /* Bordo grigio chiaro */
+        border-top: 8px solid #0D47A1; /* Colore primario per l'effetto rotazione */
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1.2s linear infinite;
+        margin: 0 auto 20px auto; /* Centra lo spinner e dà spazio sotto */
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    #message-container {
+        font-size: 1.2em;
+        font-weight: bold;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    #message-container.error { color: #c0392b; }
+    #message-container a { color: #0D47A1; text-decoration: none; font-weight: bold; }
+</style>
 </head>
 <body>
     <div id="loading">
