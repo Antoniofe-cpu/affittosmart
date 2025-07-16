@@ -17,15 +17,12 @@
     // === CONFIGURAZIONE ===
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec';
     const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
-    const RECAPTCHA_SITE_KEY = '6LdxHoUrAAAAAArmVqB1L4sHpph6RjNX5n6TnmFm';
+    // Non serve la chiave reCAPTCHA qui, perché la fiducia è data da Calendly
 
     // === FUNZIONI HELPER ===
     function generateToken() {
-        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-        );
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
     }
-    
     function csvToObjects(csv) {
         if (!csv) return [];
         const lines = csv.trim().split(/\r\n|\n/);
@@ -39,15 +36,15 @@
             }, {});
         }).filter(Boolean);
     }
-
     function showError(message) {
-        document.getElementById('loading').style.display = 'none';
+        const loadingDiv = document.getElementById('loading');
         const errorContainer = document.getElementById('error-container');
+        if (loadingDiv) loadingDiv.style.display = 'none'; // Nasconde lo spinner
         if (errorContainer) {
-            errorContainer.innerHTML = `<p style="color: #c0392b; font-weight: bold;">${message}</p>`;
+            errorContainer.innerHTML = `<p class="error-message">${message}</p>`;
             errorContainer.style.display = 'block';
         } else {
-            alert(message);
+            document.body.innerHTML = `<p class="error-message">${message}</p>`; // Fallback
         }
     }
     
@@ -58,60 +55,52 @@
         const propertyId = params.get('propertyId');
 
         if (!email || !propertyId) {
-            showError("Dati mancanti per la registrazione. Torna alla ricerca e riprova.");
+            showError("Dati mancanti per completare la registrazione. <a href='index.html'>Torna alla ricerca</a> e riprova.");
             return;
         }
 
-        // 1. ESEGUI RECAPTCHA
-        grecaptcha.ready(function() {
-            grecaptcha.execute(RECAPTCHA_SITE_KEY, {action: 'register'}).then(async function(recaptchaToken) {
-                
-                try {
-                    // 2. Controlla se l'utente esiste già per recuperare/creare il token
-                    const response = await fetch(CANDIDATES_URL);
-                    const csvText = await response.text();
-                    const candidates = csvToObjects(csvText);
-                    
-                    let userToken;
-                    const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-                    userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-                    
-                    // 3. Prepara i dati da inviare, includendo il token reCAPTCHA
-                    const dataToSave = {
-                        timestamp: new Date().toISOString(),
-                        email: email,
-                        propertyId: propertyId,
-                        token: userToken,
-                        recaptchaToken: recaptchaToken // <-- Il token di sicurezza è qui
-                    };
+        try {
+            const response = await fetch(CANDIDATES_URL);
+            const csvText = await response.text();
+            const candidates = csvToObjects(csvText);
+            
+            let userToken;
+            const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+            userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
+            
+            const dataToSave = { 
+                timestamp: new Date().toISOString(), 
+                email: email, 
+                propertyId: propertyId, 
+                token: userToken
+            };
 
-                    // 4. Invia i dati al Google Apps Script per la scrittura e la validazione
-                    const writeResponse = await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        body: JSON.stringify(dataToSave)
-                    });
-                    
-                    const result = await writeResponse.json();
-
-                    // 5. Gestisci la risposta del backend
-                    if (result.result === 'success') {
-                        // Successo! Reindirizza alla dashboard.
-                        window.location.href = `dashboard.html?token=${userToken}`;
-                    } else if (result.code === 'DUPLICATE_BOOKING') {
-                        showError(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a> per vederlo.`);
-                    } else if (result.code === 'RECAPTCHA_FAILED') {
-                        showError("Verifica di sicurezza fallita. Questo potrebbe accadere se sei un bot. Se non lo sei, per favore, contatta l'assistenza.");
-                    } else {
-                        showError("Si è verificato un errore sconosciuto durante la registrazione.");
-                        console.error('Errore dal server:', result.error || result.message);
-                    }
-
-                } catch (error) {
-                    showError("Si è verificato un errore di connessione. Riprova più tardi.");
-                    console.error('Errore durante il processo di registrazione:', error);
-                }
+            const writeResponse = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                // Rimosso mode: 'no-cors' che può causare problemi
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSave)
             });
-        });
+            
+            // Gestione della risposta
+            if (!writeResponse.ok) { // Controlla lo stato HTTP
+                 throw new Error(`Errore dal server: ${writeResponse.statusText}`);
+            }
+
+            const result = await writeResponse.json();
+
+            if (result.result === 'success') {
+                window.location.href = `dashboard.html?token=${userToken}`;
+            } else if (result.code === 'DUPLICATE_BOOKING') {
+                showError(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a> per vederlo.`);
+            } else {
+                showError("Si è verificato un errore durante la registrazione. Contatta l'assistenza.");
+            }
+
+        } catch (error) {
+            showError("Si è verificato un errore di connessione. Riprova più tardi.");
+            console.error('Errore durante il processo:', error);
+        }
     }
 
     window.onload = registerAndRedirect;
