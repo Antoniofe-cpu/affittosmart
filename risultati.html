@@ -254,12 +254,11 @@
             buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
         } else if (postiRimasti > 0) {
             // Controlla che entrambi i link esistano
-            if (p.StripePaymentLink && p.CalendlyLink) {
-                // RIGA CORRETTA
-const confirmationUrl = `conferma.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink || '')}&calendlyLink=${encodeURIComponent(p.CalendlyLink || '')}`;
-               // RIGA CORRETTA
-buttonHtml = `<a href="${confirmationUrl}" class="cta-button available">Ottieni Ticket e Prenota ...</a>`;
-            } else {
+            // In risultati.html, dentro displayResults
+if (p.StripePaymentLink && p.CalendlyLink) {
+    const prepUrl = `preparazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink)}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
+    buttonHtml = `<a href="${prepUrl}" class="cta-button available">Ottieni Ticket e Prenota...</a>`;
+} else {
                 buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
             }
         } else {
