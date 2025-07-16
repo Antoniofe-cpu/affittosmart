@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Prepara la tua Prenotazione</title>
+    <!-- Stili simili a quelli di registrazione.html, ma per una pagina visibile -->
+    <style>
+        body { font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f4f6f9; text-align: center; }
+        .box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); max-width: 550px; }
+        h1 { color: #0D47A1; }
+        p { color: #5f6368; line-height: 1.6; }
+        .cta-button { display: inline-block; background-image: linear-gradient(45deg, #FFA000, #FF8F00); color: #212121; padding: 14px 35px; border-radius: 50px; text-decoration: none; font-weight: 700; margin-top: 20px; }
+        .cta-button.loading { background: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Stai per ottenere il tuo ticket!</h1>
+        <p>Stiamo preparando il tuo accesso esclusivo all'Open Day. Una volta pronto, clicca il pulsante qui sotto per procedere al pagamento e alla scelta dell'orario.</p>
+        <div id="action-area">
+            <a href="#" id="proceed-link" class="cta-button loading">Attendere...</a>
+        </div>
+        <p id="error-message" style="color: #c0392b; display: none;"></p>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', async function() {
+    
+            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzHoWjqFMOV2Jip3My7OvJz6pP2ST_EofdsV7NJD-WlWZZxvWBHKTv15RNYZJoHUe1N/exec';
+            const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+
+            const generateToken = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+            
+            const csvToObjects = (csv) => {
+                if (!csv) return [];
+                const lines = csv.trim().split(/\r\n|\n/);
+                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                return lines.slice(1).map(line => {
+                    if (!line) return null;
+                    const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    return headers.reduce((obj, header, i) => { obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : ''; return obj; }, {});
+                }).filter(Boolean);
+            };
+const params = new URLSearchParams(window.location.search);
+            const email = params.get('email');
+            const propertyId = params.get('propertyId');
+            const stripeLink = params.get('stripeLink');
+            const calendlyLink = params.get('calendlyLink');
+            
+            const proceedButton = document.getElementById('proceed-link');
+
+            if (!email || !propertyId || !stripeLink) {
+                document.querySelector('.box').innerHTML = "<h1>Errore</h1><p>Dati mancanti. <a href='index.html'>Torna alla ricerca</a>.</p>";
+                return;
+            }
+            
+            // Imposta subito il link di destinazione
+            proceedButton.href = stripeLink;
+
+            try {
+                // Esegui la scrittura in background
+                const response = await fetch(CANDIDATES_URL);
+                const candidates = csvToObjects(await response.text());
+                const userToken = (candidates.find(c => c.Email?.toLowerCase() === email.toLowerCase())?.Token) || generateToken();
+
+                const isDuplicate = candidates.some(c => c.Email?.toLowerCase() === email.toLowerCase() && c.ID_Immobile_Prenotato == propertyId);
+                if (isDuplicate) {
+                    document.querySelector('.box').innerHTML = `<h1>Attenzione</h1><p>Risulta che hai già un ticket per questo immobile. <a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a> per vederlo.</p>`;
+                    return;
+                }
+
+                const dataToSave = { timestamp: new Date().toISOString(), email, propertyId, token: userToken };
+
+                const writeResponse = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSave)
+                });
+
+                if (!writeResponse.ok) throw new Error('Errore server durante la registrazione.');
+                
+                const result = await writeResponse.json();
+                if (result.result !== 'success') throw new Error(result.message || 'Errore sconosciuto.');
+
+                // Se tutto va bene, attiva il pulsante
+                proceedButton.textContent = "Procedi al Pagamento";
+                proceedButton.classList.remove('loading');
+
+            } catch (error) {
+                document.getElementById('error-message').textContent = `Si è verificato un errore: ${error.message}. Riprova.`;
+                document.getElementById('error-message').style.display = 'block';
+                proceedButton.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
