@@ -64,78 +64,92 @@
          const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
         function generateToken() {
-             return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+    }
+    
+    function csvToObjects(csv) {
+        if (!csv) return [];
+        const lines = csv.trim().split(/\r\n|\n/);
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        return lines.slice(1).map(line => {
+            if (!line) return null;
+            const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            return headers.reduce((obj, header, i) => {
+                obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
+                return obj;
+            }, {});
+        }).filter(Boolean);
+    }
+    
+    // === FUNZIONE MANCANTE DA AGGIUNGERE ===
+    function showMessage(message, isError = false) {
+        const loadingDiv = document.getElementById('loading');
+        const messageContainer = document.getElementById('message-container');
+        if (loadingDiv) loadingDiv.style.display = 'none';
+        if (messageContainer) {
+            messageContainer.innerHTML = message;
+            messageContainer.className = isError ? 'message-container error' : 'message-container';
+            messageContainer.style.display = 'block';
+        } else {
+            // Fallback se il div del messaggio non esiste
+            document.body.innerHTML = `<div class="message-container ${isError ? 'error' : ''}">${message}</div>`;
         }
-        function csvToObjects(csv) {
-            if (!csv) return [];
-            const lines = csv.trim().split(/\r\n|\n/);
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-            return lines.slice(1).map(line => {
-                if (!line) return null;
-                const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                return headers.reduce((obj, header, i) => {
-                    obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
-                    return obj;
-                }, {});
-            }).filter(Boolean);
-        }
-        
-        async function processBooking() {
-            const params = new URLSearchParams(window.location.search);
-            const email = params.get('email');
-            const propertyId = params.get('propertyId');
-            const calendlyLink = params.get('calendlyLink');
+    }
+    // === FINE FUNZIONE MANCANTE ===
 
-            if (!email || !propertyId || !calendlyLink) {
-                showMessage("Dati insufficienti.", true);
-                return;
+    async function processBooking() {
+        const params = new URLSearchParams(window.location.search);
+        const email = params.get('email');
+        const propertyId = params.get('propertyId');
+        const calendlyLink = params.get('calendlyLink');
+
+        if (!email || !propertyId || !calendlyLink) {
+            showMessage("Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a>.", true);
+            return;
+        }
+
+        try {
+            const response = await fetch(CANDIDATES_URL);
+            const candidates = csvToObjects(await response.text());
+            let userToken;
+            const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+            userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
+            
+            const dataToSave = { 
+                timestamp: new Date().toISOString(), 
+                email: email, 
+                propertyId: propertyId, 
+                token: userToken
+            };
+
+            const writeResponse = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSave),
+                redirect: 'follow'
+            });
+            
+            if (!writeResponse.ok) throw new Error(`Risposta non valida dal server: ${writeResponse.status}`);
+            
+            const result = await writeResponse.json();
+
+            if (result.result === 'success') {
+                const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
+                window.location.href = finalCalendlyUrl;
+            } else if (result.code === 'DUPLICATE_BOOKING') {
+                showMessage(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a>.`, true);
+            } else {
+                showMessage("Errore durante la registrazione: " + (result.message || "Sconosciuto"), true);
             }
 
-            try {
-                const response = await fetch(CANDIDATES_URL);
-                const candidates = csvToObjects(await response.text());
-                let userToken;
-                const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-                userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-                
-                const dataToSave = { 
-                    timestamp: new Date().toISOString(), 
-                    email: email, 
-                    propertyId: propertyId, 
-                    token: userToken
-                };
-
-                // Chiamata fetch standard
-                const writeResponse = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSave)
-                });
-                
-                if (!writeResponse.ok) {
-                    throw new Error(`Errore di rete: ${writeResponse.statusText}`);
-                }
-                
-                const result = await writeResponse.json();
-
-                if (result.result === 'success') {
-                    // SUCCESSO! Ora reindirizziamo a Calendly con l'email pre-compilata.
-                    const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
-                    window.location.href = finalCalendlyUrl;
-                } else if (result.code === 'DUPLICATE_BOOKING') {
-                    showMessage(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a>.`, true);
-                } else {
-                    showMessage(`Errore dal server: ${result.message || 'Sconosciuto'}`, true);
-                }
-
-            } catch (error) {
-                showMessage("Si è verificato un errore di connessione. Riprova.", true);
-                console.error('Errore:', error);
-            }
+        } catch (error) {
+            showMessage("Si è verificato un errore di connessione. Riprova.", true);
+            console.error('Errore:', error);
         }
+    }
 
-        window.onload = processBooking;
-    </script>
+    window.onload = processBooking;
+</script>
 
 
 </body>
