@@ -236,8 +236,9 @@
                     if (isAlreadyBooked) {
                         buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
                     } else if (postiRimasti > 0) {
-                        if (p.CalendlyLink) {
-                            const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&calendlyLink=${encodeURIComponent(p.CalendlyLink || '')}`;
+                        // MODIFICA CHIAVE: Controlla StripePaymentLink, ma il link punta a registrazione.html
+                        if (p.StripePaymentLink && p.CalendlyLink) {
+                            const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink)}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
                             buttonHtml = `<a href="${registrationUrl}" class="cta-button available">Ottieni Ticket e Prenota <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></a>`;
                         } else {
                             buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
@@ -246,15 +247,12 @@
                         buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
                     }
 
-                    // Funzione helper per formattare la data
                     const formatDate = (dateString) => {
                         if (!dateString || dateString.length < 10) return 'Da Definire';
                         try {
                             const [year, month, day] = dateString.split('-');
                             return `${day}/${month}/${year}`;
-                        } catch (e) {
-                            return dateString; // Restituisci la stringa originale se il formato non è valido
-                        }
+                        } catch (e) { return dateString; }
                     };
 
                     const cardDiv = document.createElement('div');
@@ -265,18 +263,16 @@
                             <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
                             <h3>${p.Titolo}</h3>
                             <div class="price">${p.Prezzo || 'N.D.'} €/mese</div>
-                             <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
-    
-    <div class="info-item open-day">
-        <i class="fa-solid fa-calendar-check"></i> 
-        <div><strong>Open Day:</strong> ${formatDate(p.DataOpenDay)}</div>
-    </div>
-    <div class="info-item availability">
-        <i class="fa-solid fa-key"></i> 
-        <div><strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}</div>
-    </div>
-
-    <div class="booking-action">${buttonHtml}</div>
+                            <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+                            <div class="info-item open-day">
+                                <i class="fa-solid fa-calendar-check"></i> 
+                                <div><strong>Open Day:</strong> ${formatDate(p.DataOpenDay)}</div>
+                            </div>
+                            <div class="info-item availability">
+                                <i class="fa-solid fa-key"></i> 
+                                <div><strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}</div>
+                            </div>
+                            <div class="booking-action">${buttonHtml}</div>
                         </div>`;
                     resultsContainer.appendChild(cardDiv);
                 });
