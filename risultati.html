@@ -172,7 +172,7 @@
         const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
         const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
-        let allCandidates = [];
+         let allCandidates = [];
     
         function csvToObjects(csv) {
             if (!csv) return [];
@@ -209,23 +209,21 @@
                 const postiRimasti = postiTotali - prenotati;
                 
                 let buttonHtml;
-        const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
+                const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
 
-        if (isAlreadyBooked) {
-            buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
-        } else if (postiRimasti > 0) {
-            // === MODIFICA CHIAVE QUI ===
-            // Il link ora punta direttamente a Calendly.
-            if (p.CalendlyLink) {
-                // Passiamo l'email dell'utente come pre-compilazione a Calendly
-                const calendlyUrl = `${p.CalendlyLink}?email=${encodeURIComponent(userProfile.user_email || '')}`;
-                buttonHtml = `<a href="${calendlyUrl}" target="_blank" class="cta-button">Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
-            } else {
-                buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
-            }
-        } else {
-            buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
-        }
+                if (isAlreadyBooked) {
+                    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
+                } else if (postiRimasti > 0) {
+                    // WORKAROUND PER CALENDLY (PIANO GRATUITO)
+                    if (p.CalendlyLink) {
+                        const calendlyUrl = p.CalendlyLink;
+                        buttonHtml = `<a href="${calendlyUrl}" target="_blank" class="cta-button calendly-link" data-email="${userProfile.user_email || ''}">Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
+                    } else {
+                        buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
+                    }
+                } else {
+                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+                }
 
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'property-card';
@@ -246,7 +244,6 @@
         async function main() {
             const params = new URLSearchParams(window.location.search);
             const userToken = params.get('token');
-            
             const dashboardLink = document.getElementById('dashboard-link');
             const backLink = document.getElementById('back-link');
 
@@ -262,18 +259,15 @@
                 backLink.href = 'index.html';
             }
             
-            let bookedPropertyIds = [];
-            
             try {
                 const [propsRes, reqsRes, candsRes] = await Promise.all([
                     fetch(PROPERTIES_URL), fetch(REQUIREMENTS_URL), fetch(CANDIDATES_URL)
                 ]);
-                if (!propsRes.ok || !reqsRes.ok || !candsRes.ok) throw new Error('Risposta di rete non valida.');
-                
                 const allProperties = csvToObjects(await propsRes.text());
                 const allRequirements = csvToObjects(await reqsRes.text());
                 allCandidates = csvToObjects(await candsRes.text());
                 
+                let bookedPropertyIds = [];
                 if (userToken) {
                     const myBookings = allCandidates.filter(c => c.Token === userToken);
                     bookedPropertyIds = myBookings.map(b => b.ID_Immobile_Prenotato);
@@ -294,41 +288,41 @@
                     tipo_ricerca: normalizeString(params.get('tipo_ricerca'))
                 };
 
-            const finalProperties = allProperties.filter(property => {
-                const propertyID = (property.ID || '').trim();
-                if (!propertyID || (property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
-                if (userFilters.tipo && normalizeString(property.Tipo) !== userFilters.tipo) return false;
-                if (userFilters.zona && normalizeString(property.Zona) !== userFilters.zona) return false;
-                if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) return false;
-
-                if (userFilters.data_disponibile && property.data_disponibile) {
-                    try {
-                        const dataUtente = new Date(userFilters.data_disponibile);
-                        const dataImmobile = new Date(property.data_disponibile);
-                        if (dataImmobile > dataUtente) return false;
-                    } catch (e) { console.warn("Data non valida", e); }
-                }
-                if (userFilters.periodo_affitto && normalizeString(property.periodo_affitto) !== userFilters.periodo_affitto) return false;
+                const finalProperties = allProperties.filter(property => {
+                    const propertyID = (property.ID || '').trim();
+                    if (!propertyID || (property.Stato || '').toLowerCase().trim() !== 'disponibile') return false;
+                    if (userFilters.tipo && normalizeString(property.Tipo) !== userFilters.tipo) return false;
+                    if (userFilters.zona && normalizeString(property.Zona) !== userFilters.zona) return false;
+                    if ((parseInt(property.Prezzo) || 0) > userFilters.prezzoMax) return false;
+                    if (userFilters.data_disponibile && property.data_disponibile) { try { if (new Date(property.data_disponibile) > new Date(userFilters.data_disponibile)) return false; } catch (e) {} }
+                    if (userFilters.periodo_affitto && normalizeString(property.periodo_affitto) !== userFilters.periodo_affitto) return false;
+                    
+                    const propertyReqs = allRequirements.find(r => (r.ID_Immobile || '').trim() === propertyID);
+                    if (propertyReqs) {
+                        if (userFilters.situazione_lavorativa && normalizeString(propertyReqs.situazione_lavorativa) !== 'indifferente' && normalizeString(propertyReqs.situazione_lavorativa) !== userFilters.situazione_lavorativa) return false;
+                        const redditoMinimoRichiesto = parseInt(propertyReqs.reddito_minimo) || 0;
+                        if (redditoMinimoRichiesto > 0 && userFilters.reddito < redditoMinimoRichiesto) return false;
+                    }
+                    return true;
+                });
                 
-                const propertyReqs = allRequirements.find(r => (r.ID_Immobile || '').trim() === propertyID);
-                if (propertyReqs) {
-                    if (userFilters.situazione_lavorativa && normalizeString(propertyReqs.situazione_lavorativa) !== 'indifferente' && normalizeString(propertyReqs.situazione_lavorativa) !== userFilters.situazione_lavorativa) return false;
-                    const redditoMinimoRichiesto = parseInt(propertyReqs.reddito_minimo) || 0;
-                    if (redditoMinimoRichiesto > 0 && userFilters.reddito < redditoMinimoRichiesto) return false;
-                    // Aggiungere qui altri filtri sui requisiti...
-                }
-                return true;
-            });
-            
-            // === MODIFICA 2: La chiamata ora PASSA allCandidates ===
-            displayResults(finalProperties, userFilters, bookedPropertyIds, userToken);
-
+                displayResults(finalProperties, userFilters, bookedPropertyIds, userToken);
             } catch (error) {
                 console.error("ERRORE CRITICO:", error);
                 document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
             }
         }
         
+        // Listener per salvare l'email nel localStorage prima di andare su Calendly
+        document.body.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('calendly-link')) {
+                const userEmail = e.target.dataset.email;
+                if (userEmail) {
+                    localStorage.setItem('pendingUserEmail', userEmail);
+                }
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', main);
     </script>
 </body>
