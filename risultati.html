@@ -173,7 +173,7 @@
         const REQUIREMENTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=1003729734&single=true&output=csv';
         const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
-         let allCandidates = [];
+          let allCandidates = [];
 
             const csvToObjects = (csv) => {
                 if (!csv) return [];
@@ -204,7 +204,7 @@
 
                 properties.forEach(p => {
                     if (!p.ID || !p.Titolo) return;
-
+                    
                     const prenotati = allCandidates.filter(c => c.ID_Immobile_Prenotato === p.ID).length;
                     const postiTotali = parseInt(p.MaxPartecipanti) || 10;
                     const postiRimasti = postiTotali - prenotati;
@@ -215,43 +215,46 @@
                     if (isAlreadyBooked) {
                         buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
                     } else if (postiRimasti > 0) {
-                        if (p.CalendlyLink) {
-                            const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
+                        if (p.StripePaymentLink) {
+                            const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&calendlyLink=${encodeURIComponent(p.CalendlyLink || '')}`;
                             buttonHtml = `<a href="${registrationUrl}" class="cta-button available">Ottieni Ticket e Prenota <span class="spots-counter">(${postiRimasti}/${postiTotali})</span></a>`;
                         } else {
-                            buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non aperte</button>`;
+                            buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
                         }
                     } else {
                         buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
                     }
+
+                    // Funzione helper per formattare la data
                     const formatDate = (dateString) => {
-    if (!dateString) return 'Da Definire';
-    // Converte AAAA-MM-GG in GG/MM/AAAA
-    const [year, month, day] = dateString.split('-');
-    return `${day}/${month}/${year}`;
-};
+                        if (!dateString || dateString.length < 10) return 'Da Definire';
+                        try {
+                            const [year, month, day] = dateString.split('-');
+                            return `${day}/${month}/${year}`;
+                        } catch (e) {
+                            return dateString; // Restituisci la stringa originale se il formato non è valido
+                        }
+                    };
 
                     const cardDiv = document.createElement('div');
                     cardDiv.className = 'property-card';
                     cardDiv.innerHTML = `
-                         <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}"></div>
-    <div class="property-card-info">
-        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-        <h3>${p.Titolo}</h3>
-        <div class="price">${p.Prezzo || 'N.D.'} €/mese</div>
-        <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
-        <div class="open-day-info">
-            <i class="fa-solid fa-calendar-check"></i> 
-            <strong>Open Day:</strong> ${p.DataOpenDay || 'Da Definire'}
-        </div>
-        <!-- === RIGA AGGIUNTA QUI === -->
-        <div class="open-day-info" style="color: var(--colore-secondario);">
-            <i class="fa-solid fa-key"></i> 
-            <strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}
-        </div>
-        <!-- === FINE RIGA AGGIUNTA === -->
-        <div class="booking-action">${buttonHtml}</div>
-    </div>`;
+                        <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}"></div>
+                        <div class="property-card-info">
+                            <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+                            <h3>${p.Titolo}</h3>
+                            <div class="price">${p.Prezzo || 'N.D.'} €/mese</div>
+                            <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+                            <div class="info-item">
+                                <i class="fa-solid fa-calendar-check"></i> 
+                                <strong>Open Day:</strong> ${p.DataOpenDay || 'Da Definire'}
+                            </div>
+                            <div class="info-item">
+                                <i class="fa-solid fa-key"></i> 
+                                <strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}
+                            </div>
+                            <div class="booking-action">${buttonHtml}</div>
+                        </div>`;
                     resultsContainer.appendChild(cardDiv);
                 });
             };
@@ -281,9 +284,7 @@
                     
                     let bookedPropertyIds = [];
                     if (userToken) {
-                        bookedPropertyIds = allCandidates
-                            .filter(c => c.Token === userToken)
-                            .map(b => b.ID_Immobile_Prenotato);
+                        bookedPropertyIds = allCandidates.filter(c => c.Token === userToken).map(b => b.ID_Immobile_Prenotato);
                     }
                     
                     const userFilters = {
