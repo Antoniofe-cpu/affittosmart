@@ -209,21 +209,25 @@
                 const postiRimasti = postiTotali - prenotati;
                 
                 let buttonHtml;
-                const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
+const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
 
-                if (isAlreadyBooked) {
-                    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
-                } else if (postiRimasti > 0) {
-                    // WORKAROUND PER CALENDLY (PIANO GRATUITO)
-                    if (p.CalendlyLink) {
-                        const calendlyUrl = p.CalendlyLink;
-                        buttonHtml = `<a href="${calendlyUrl}" target="_blank" class="cta-button calendly-link" data-email="${userProfile.user_email || ''}">Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
-                    } else {
-                        buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
-                    }
-                } else {
-                    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
-                }
+if (isAlreadyBooked) {
+    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
+} else if (postiRimasti > 0) {
+    if (p.CalendlyLink) {
+        // === MODIFICA CHIAVE QUI ===
+        // Aggiungiamo l'email e l'ID immobile come parametri di precompilazione per Calendly
+        // Calendly li userà e li passerà al nostro URL di reindirizzamento finale.
+        const userEmail = userProfile.user_email || '';
+        const calendlyUrl = `${p.CalendlyLink}?email=${encodeURIComponent(userEmail)}&a1=${p.ID}`;
+        
+        buttonHtml = `<a href="${calendlyUrl}" target="_blank" class="cta-button">Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
+    } else {
+        buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
+    }
+} else {
+    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+}
 
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'property-card';
@@ -313,15 +317,7 @@
             }
         }
         
-        // Listener per salvare l'email nel localStorage prima di andare su Calendly
-        document.body.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('calendly-link')) {
-                const userEmail = e.target.dataset.email;
-                if (userEmail) {
-                    localStorage.setItem('pendingUserEmail', userEmail);
-                }
-            }
-        });
+    
 
         document.addEventListener('DOMContentLoaded', main);
     </script>
