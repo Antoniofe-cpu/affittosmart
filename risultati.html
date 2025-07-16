@@ -127,7 +127,28 @@
         .property-card-info h3 { margin: 5px 0 10px 0; font-size: 1.4em; }
         .property-card-info .price { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); margin-bottom: 15px; }
         .property-card-info p { flex-grow: 1; font-size: 0.95em; margin-top: 0; color: #444; }
-        .open-day-info { font-weight: 700; color: var(--colore-primario); margin-bottom: 20px; }
+        /* NUOVE REGOLE CORRETTE */
+.info-item {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    margin-bottom: 10px; /* Spazio tra le righe di info */
+}
+.info-item i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Stile per la data dell'Open Day */
+.info-item.open-day {
+    color: var(--colore-primario); /* Blu primario */
+}
+
+/* Stile per la data di Disponibilità */
+.info-item.availability {
+    color: var(--colore-secondario); /* Blu secondario, per distinguerla */
+}
         .booking-action { margin-top: auto; display: flex; justify-content: center; }
         .property-card .cta-button { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; max-width: 320px; padding: 14px; font-size: 1em; text-decoration: none; border-radius: 8px; background-image: linear-gradient(45deg, var(--colore-accento), #FF8F00); color: var(--colore-testo); font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; }
         .property-card .cta-button:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(255, 160, 0, 0.4); }
@@ -244,16 +265,16 @@
                             <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
                             <h3>${p.Titolo}</h3>
                             <div class="price">${p.Prezzo || 'N.D.'} €/mese</div>
-                            <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
-                            <div class="info-item">
-                                <i class="fa-solid fa-calendar-check"></i> 
-                                <strong>Open Day:</strong> ${p.DataOpenDay || 'Da Definire'}
-                            </div>
-                            <div class="info-item">
-                                <i class="fa-solid fa-key"></i> 
-                                <strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}
-                            </div>
-                            <div class="booking-action">${buttonHtml}</div>
+                             <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+    <div class="open-day-info">
+        <i class="fa-solid fa-calendar-check"></i> 
+        <strong>Open Day:</strong> ${p.DataOpenDay || 'Da Definire'}
+    </div>
+    <div class="open-day-info" style="color: var(--colore-secondario);">
+        <i class="fa-solid fa-key"></i> 
+        <strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}
+    </div>
+    <div class="booking-action">${buttonHtml}</div>
                         </div>`;
                     resultsContainer.appendChild(cardDiv);
                 });
