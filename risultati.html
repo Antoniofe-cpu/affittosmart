@@ -255,9 +255,11 @@
         } else if (postiRimasti > 0) {
             // Controlla che entrambi i link esistano
             // In risultati.html, dentro displayResults
+// In risultati.html, dentro displayResults
 if (p.StripePaymentLink && p.CalendlyLink) {
-    const prepUrl = `preparazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink)}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
-    buttonHtml = `<a href="${prepUrl}" class="cta-button available">Ottieni Ticket e Prenota...</a>`;
+    const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}&stripeLink=${encodeURIComponent(p.StripePaymentLink)}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
+    buttonHtml = `<a href="${registrationUrl}" class="cta-button available">Ottieni Ticket e Prenota</a>`;
+}
 } else {
                 buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
             }
