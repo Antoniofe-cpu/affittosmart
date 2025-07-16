@@ -315,6 +315,31 @@
                 document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
             }
         }
+        // === AGGIUNGI QUESTO NUOVO BLOCCO ALLA FINE DELLO SCRIPT, DENTRO A DOMContentLoaded ===
+document.body.addEventListener('click', function(e) {
+    // Cerca un elemento con la classe 'calendly-link' o un suo figlio
+    const calendlyButton = e.target.closest('.calendly-link');
+    
+    if (calendlyButton) {
+        // Questa volta NON usiamo e.preventDefault(), lasciamo che il link si apra
+        
+        const userEmail = calendlyButton.dataset.email;
+        const propertyId = calendlyButton.dataset.propertyId;
+
+        if (userEmail && propertyId) {
+            // Salva i dati nel localStorage PRIMA che la nuova scheda si apra
+            localStorage.setItem('pendingBookingData', JSON.stringify({
+                email: userEmail,
+                propertyId: propertyId
+            }));
+            console.log('Dati salvati nel localStorage:', localStorage.getItem('pendingBookingData'));
+        } else {
+            // Se manca l'email, avvisa l'utente
+            e.preventDefault(); // Blocca l'apertura di Calendly
+            alert("Per favore, torna indietro ed effettua una ricerca inserendo la tua email per poter prenotare.");
+        }
+    }
+});
  
     
 
