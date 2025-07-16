@@ -79,57 +79,55 @@
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoqmNFB8ObJiaz5PX3m-xYCR1CvCnZutnFFmvcDYz-f98pmRnTzOCs96CStP33NnTS/exec'; // <-- SOSTITUISCI QUESTO!
          const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
 
-        // === FUNZIONI HELPER ===
-        const generateToken = () => {
-            return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => 
-                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-            );
-        };
-        
-        const csvToObjects = (csv) => {
-            if (!csv) return [];
-            const lines = csv.trim().split(/\r\n|\n/);
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-            return lines.slice(1).map(line => {
-                if (!line) return null;
-                const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                return headers.reduce((obj, header, i) => {
-                    obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
-                    return obj;
-                }, {});
-            }).filter(Boolean);
-        };
+         // === 2. FUNZIONI HELPER ===
+            const generateToken = () => {
+                return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => 
+                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+                );
+            };
+            
+            const csvToObjects = (csv) => {
+                if (!csv) return [];
+                const lines = csv.trim().split(/\r\n|\n/);
+                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                return lines.slice(1).map(line => {
+                    if (!line) return null;
+                    const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    return headers.reduce((obj, header, i) => {
+                        obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : '';
+                        return obj;
+                    }, {});
+                }).filter(Boolean);
+            };
 
-        const showMessage = (message, isError = false) => {
-            const loadingDiv = document.getElementById('loading-container');
-            const messageContainer = document.getElementById('message-container');
-            if (loadingDiv) {
-                loadingDiv.style.display = 'none';
-            }
-            if (messageContainer) {
-                messageContainer.innerHTML = `<p>${message}</p>`;
-                messageContainer.className = isError ? 'message-container error' : 'message-container';
-                messageContainer.style.display = 'block';
-            }
-        }; // <-- L'ERRORE ERA UNA PARENTESI MANCANTE QUI
+            const showMessage = (message, isError = false) => {
+                const loadingDiv = document.getElementById('loading-container');
+                const messageContainer = document.getElementById('message-container');
+                if (loadingDiv) loadingDiv.style.display = 'none';
+                if (messageContainer) {
+                    messageContainer.innerHTML = `<p>${message}</p>`;
+                    messageContainer.className = isError ? 'message-container error' : 'message-container';
+                    messageContainer.style.display = 'block';
+                }
+            };
 
-        // === FUNZIONE PRINCIPALE ===
-        const processBooking = async () => {
+            // === 3. LOGICA PRINCIPALE ESEGUITA AL CARICAMENTO ===
             const params = new URLSearchParams(window.location.search);
             const email = params.get('email');
             const propertyId = params.get('propertyId');
             const calendlyLink = params.get('calendlyLink');
 
             if (!email || !propertyId || !calendlyLink) {
-                showMessage("Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a>.", true);
+                showMessage("Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a> e riprova.", true);
                 return;
             }
 
             try {
+                // Controlla se l'utente esiste per ottenere/creare il token
                 const response = await fetch(CANDIDATES_URL);
-                if (!response.ok) throw new Error('Errore nel caricare i dati dei candidati.');
-                const candidates = csvToObjects(await response.text());
+                if (!response.ok) throw new Error('Impossibile caricare la lista dei candidati.');
                 
+                const candidates = csvToObjects(await response.text());
                 let userToken;
                 const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
                 userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
@@ -141,35 +139,34 @@
                     token: userToken
                 };
 
+                // Esegue la chiamata POST al backend di Google Script
                 const writeResponse = await fetch(WEB_APP_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dataToSave)
                 });
                 
-                if (!writeResponse.ok) throw new Error(`Errore dal server: ${writeResponse.status}`);
+                if (!writeResponse.ok) {
+                    throw new Error(`Errore dal server: ${writeResponse.status} ${writeResponse.statusText}`);
+                }
                 
                 const result = await writeResponse.json();
 
+                // Gestisce la risposta del backend
                 if (result.result === 'success') {
                     const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
                     window.location.href = finalCalendlyUrl;
                 } else if (result.code === 'DUPLICATE_BOOKING') {
-                    showMessage(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a>.`, true);
+                    showMessage(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a> per vederlo.`, true);
                 } else {
-                    showMessage(`Si è verificato un errore: ${result.message || 'Sconosciuto'}.`, true);
+                    showMessage(`Si è verificato un errore durante la registrazione: ${result.message || 'Sconosciuto'}.`, true);
                 }
 
             } catch (error) {
-                showMessage("Si è verificato un errore critico di connessione. Riprova.", true);
+                showMessage("Si è verificato un errore critico di connessione. Assicurati che l'URL dello script sia corretto e riprova.", true);
                 console.error('Errore durante il processo di prenotazione:', error);
             }
-        };
-
-        // Avvia il processo
-        processBooking();
-        
-    });
-</script>
+        });
+    </script>
 </body>
 </html>
