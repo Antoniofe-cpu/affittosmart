@@ -75,7 +75,7 @@ async function registerAndRedirect() {
     // Esegui reCAPTCHA PRIMA di inviare i dati al backend
     grecaptcha.ready(function() {
         // Sostituisci con la tua chiave del sito reCAPTCHA
-        grecaptcha.execute('TUA_CHIAVE_DEL_SITO', {action: 'register'}).then(async function(recaptchaToken) {
+        grecaptcha.execute('6LdxHoUrAAAAAArmVqB1L4sHpph6RjNX5n6TnmFm', {action: 'register'}).then(async function(recaptchaToken) {
             
             // Ora che abbiamo il token di sicurezza, possiamo procedere
             try {
