@@ -48,8 +48,9 @@
         }
     }
     
-    // === FUNZIONE PRINCIPALE ===
-    async function registerAndRedirect() {
+   // In registrazione.html
+
+async function registerAndRedirect() {
     // Leggi i dati salvati dal localStorage
     const pendingDataString = localStorage.getItem('pendingBookingData');
     
@@ -58,7 +59,7 @@
         return;
     }
 
-    // Una volta letti, pulisci subito il localStorage per evitare registrazioni multiple
+    // Pulisci subito il localStorage per evitare registrazioni multiple accidentali
     localStorage.removeItem('pendingBookingData');
 
     const pendingData = JSON.parse(pendingDataString);
@@ -70,50 +71,60 @@
         return;
     }
 
-        try {
-            const response = await fetch(CANDIDATES_URL);
-            const csvText = await response.text();
-            const candidates = csvToObjects(csvText);
+    // === INIZIO BLOCCO RECAPTCHA ===
+    // Esegui reCAPTCHA PRIMA di inviare i dati al backend
+    grecaptcha.ready(function() {
+        // Sostituisci con la tua chiave del sito reCAPTCHA
+        grecaptcha.execute('TUA_CHIAVE_DEL_SITO', {action: 'register'}).then(async function(recaptchaToken) {
             
-            let userToken;
-            const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-            userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-            
-            const dataToSave = { 
-                timestamp: new Date().toISOString(), 
-                email: email, 
-                propertyId: propertyId, 
-                token: userToken
-            };
+            // Ora che abbiamo il token di sicurezza, possiamo procedere
+            try {
+                const response = await fetch(CANDIDATES_URL);
+                const csvText = await response.text();
+                const candidates = csvToObjects(csvText);
+                
+                let userToken;
+                const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+                userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
+                
+                const dataToSave = { 
+                    timestamp: new Date().toISOString(), 
+                    email: email, 
+                    propertyId: propertyId, 
+                    token: userToken,
+                    recaptchaToken: recaptchaToken // <-- Il token di sicurezza viene incluso
+                };
 
-            const writeResponse = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                // Rimosso mode: 'no-cors' che può causare problemi
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSave)
-            });
-            
-            // Gestione della risposta
-            if (!writeResponse.ok) { // Controlla lo stato HTTP
-                 throw new Error(`Errore dal server: ${writeResponse.statusText}`);
+                const writeResponse = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSave)
+                });
+                
+                if (!writeResponse.ok) {
+                     throw new Error(`Errore dal server: ${writeResponse.statusText}`);
+                }
+
+                const result = await writeResponse.json();
+
+                if (result.result === 'success') {
+                    window.location.href = `dashboard.html?token=${userToken}`;
+                } else if (result.code === 'DUPLICATE_BOOKING') {
+                    showError(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a> per vederlo.`);
+                } else if (result.code === 'RECAPTCHA_FAILED') {
+                    showError("Verifica di sicurezza fallita. Ricarica la pagina e riprova.");
+                } else {
+                    showError("Si è verificato un errore durante la registrazione. Contatta l'assistenza.");
+                }
+
+            } catch (error) {
+                showError("Si è verificato un errore di connessione. Riprova più tardi.");
+                console.error('Errore durante il processo:', error);
             }
-
-            const result = await writeResponse.json();
-
-            if (result.result === 'success') {
-                window.location.href = `dashboard.html?token=${userToken}`;
-            } else if (result.code === 'DUPLICATE_BOOKING') {
-                showError(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a> per vederlo.`);
-            } else {
-                showError("Si è verificato un errore durante la registrazione. Contatta l'assistenza.");
-            }
-
-        } catch (error) {
-            showError("Si è verificato un errore di connessione. Riprova più tardi.");
-            console.error('Errore durante il processo:', error);
-        }
-    }
-
+        });
+    });
+    // === FINE BLOCCO RECAPTCHA ===
+}
     window.onload = registerAndRedirect;
 </script>
 </body>
