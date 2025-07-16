@@ -79,17 +79,18 @@
         }
 
         function showMessage(message, isError = false) {
-            const loadingDiv = document.getElementById('loading');
+            const loadingDiv = document.getElementById('loading-container');
             const messageContainer = document.getElementById('message-container');
             if (loadingDiv) loadingDiv.style.display = 'none';
             if (messageContainer) {
-                messageContainer.innerHTML = message;
+                messageContainer.innerHTML = `<p>${message}</p>`;
                 messageContainer.className = isError ? 'message-container error' : 'message-container';
                 messageContainer.style.display = 'block';
             }
         }
 
         // === FUNZIONE PRINCIPALE ===
+        // Ho spostato la dichiarazione della funzione a livello superiore per chiarezza
         async function processBooking() {
             const params = new URLSearchParams(window.location.search);
             const email = params.get('email');
@@ -143,9 +144,10 @@
             }
         }
 
-        // Avvia il processo quando la pagina è caricata
+        // Avvia il processo
         processBooking();
-    });
+        
+    }); // <-- LA PARENTESI GRAFFA DI CHIUSURA DI DOMContentLoaded
 </script>
 
 
