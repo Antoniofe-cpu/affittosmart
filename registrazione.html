@@ -60,13 +60,18 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="loading-container">
-            <div class="spinner"></div>
-            <p>Stiamo finalizzando la tua prenotazione, un istante...</p>
-        </div>
-        <div id="message-container" style="display: none;"></div>
-    </div>
+    <form id="booking-form" action="https://formspree.io/f/mzzvbyzj" method="POST">
+        <!-- Dati che verranno inviati a Zapier -->
+        <input type="hidden" name="email" id="form-email">
+        <input type="hidden" name="propertyId" id="form-propertyId">
+        <input type="hidden" name="token" id="form-token">
+        <input type="hidden" name="timestamp" id="form-timestamp">
+        
+        <!-- Campo speciale di Formspree per il reindirizzamento -->
+        <input type="hidden" name="_next" id="form-next-url">
+        <!-- Campo per evitare il reCAPTCHA di Formspree (opzionale, per i test) -->
+        <input type="hidden" name="_gotcha" style="display:none">
+    </form>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
