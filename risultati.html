@@ -224,19 +224,34 @@
                     } else {
                         buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
                     }
+                    const formatDate = (dateString) => {
+    if (!dateString) return 'Da Definire';
+    // Converte AAAA-MM-GG in GG/MM/AAAA
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+};
 
                     const cardDiv = document.createElement('div');
                     cardDiv.className = 'property-card';
                     cardDiv.innerHTML = `
-                        <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}"></div>
-                        <div class="property-card-info">
-                            <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
-                            <h3>${p.Titolo}</h3>
-                            <div class="price">${p.Prezzo || 'N.D.'} €/mese</div>
-                            <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
-                            <div class="open-day-info"><i class="fa-solid fa-calendar-check"></i> Open Day: ${p.DataOpenDay || 'Da Definire'}</div>
-                            <div class="booking-action">${buttonHtml}</div>
-                        </div>`;
+                         <div class="property-card-img"><img src="${p.FotoURL || 'https://via.placeholder.com/400x220'}" alt="${p.Titolo}"></div>
+    <div class="property-card-info">
+        <div class="type-zone">${p.Tipo || ''} - ${p.Zona || ''}</div>
+        <h3>${p.Titolo}</h3>
+        <div class="price">${p.Prezzo || 'N.D.'} €/mese</div>
+        <p>${p.Descrizione || 'Nessuna descrizione.'}</p>
+        <div class="open-day-info">
+            <i class="fa-solid fa-calendar-check"></i> 
+            <strong>Open Day:</strong> ${p.DataOpenDay || 'Da Definire'}
+        </div>
+        <!-- === RIGA AGGIUNTA QUI === -->
+        <div class="open-day-info" style="color: var(--colore-secondario);">
+            <i class="fa-solid fa-key"></i> 
+            <strong>Disponibile dal:</strong> ${formatDate(p.data_disponibile)}
+        </div>
+        <!-- === FINE RIGA AGGIUNTA === -->
+        <div class="booking-action">${buttonHtml}</div>
+    </div>`;
                     resultsContainer.appendChild(cardDiv);
                 });
             };
