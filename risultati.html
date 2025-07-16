@@ -208,27 +208,22 @@
                 const postiTotali = parseInt(p.MaxPartecipanti) || 10;
                 const postiRimasti = postiTotali - prenotati;
                 
-               let buttonHtml;
+              let buttonHtml;
         const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
 
         if (isAlreadyBooked) {
             buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
         } else if (postiRimasti > 0) {
             if (p.CalendlyLink) {
-                // === LA SOLUZIONE DEFINITIVA È QUI ===
+                // MODIFICA CHIAVE: Il link ora è pulito, ma aggiungiamo i dati tramite "data-attributes"
                 const userEmail = userProfile.user_email || '';
-                
-                // Costruiamo l'URL di Calendly con parametri di pre-compilazione
-                // 'email=' pre-compila il campo email
-                // 'a1=' è una "risposta personalizzata" che usiamo per passare l'ID dell'immobile
-                const calendlyUrl = new URL(p.CalendlyLink);
-                calendlyUrl.searchParams.append('email', userEmail);
-                calendlyUrl.searchParams.append('a1', p.ID); // Passiamo l'ID immobile come "answer 1"
-                
-                // Apriamo Calendly nella stessa scheda per evitare l'avviso "Vuoi uscire?"
-                buttonHtml = `<a href="${calendlyUrl.href}" class="cta-button">Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
+                buttonHtml = `<a href="${p.CalendlyLink}" target="_blank" class="cta-button calendly-link" 
+                                 data-email="${userEmail}" 
+                                 data-property-id="${p.ID}">
+                                 Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span>
+                              </a>`;
             } else {
-                buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non aperte</button>`;
+                buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
             }
         } else {
             buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
