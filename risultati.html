@@ -208,27 +208,27 @@
                 const postiTotali = parseInt(p.MaxPartecipanti) || 10;
                 const postiRimasti = postiTotali - prenotati;
                 
-                let buttonHtml;
-const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
+               let buttonHtml;
+        const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
 
-if (isAlreadyBooked) {
-    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
-} else if (postiRimasti > 0) {
-    if (p.CalendlyLink) {
-        // === MODIFICA CHIAVE QUI ===
-        // Aggiungiamo l'email e l'ID immobile come parametri di precompilazione per Calendly
-        // Calendly li userà e li passerà al nostro URL di reindirizzamento finale.
-        const userEmail = userProfile.user_email || '';
-        const calendlyUrl = `${p.CalendlyLink}?email=${encodeURIComponent(userEmail)}&a1=${p.ID}`;
-        
-        buttonHtml = `<a href="${calendlyUrl}" class="cta-button">Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
-    } else {
-        buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
-    }
-} else {
-    buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
-}
-
+        if (isAlreadyBooked) {
+            buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
+        } else if (postiRimasti > 0) {
+            if (p.CalendlyLink) {
+                // MODIFICA CHIAVE: Il link punta a Calendly SENZA parametri.
+                // Aggiungiamo dei "data-attributes" per memorizzare le informazioni.
+                const userEmail = userProfile.user_email || '';
+                buttonHtml = `<a href="${p.CalendlyLink}" class="cta-button calendly-link" 
+                                 data-email="${userEmail}" 
+                                 data-property-id="${p.ID}">
+                                 Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span>
+                              </a>`;
+            } else {
+                buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
+            }
+        } else {
+            buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
+        }
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'property-card';
                 cardDiv.innerHTML = `
@@ -316,7 +316,35 @@ if (isAlreadyBooked) {
                 document.getElementById('results-container').innerHTML = `<p class="message">Si è verificato un errore imprevisto.<br>Prova a ricaricare la pagina.</p>`;
             }
         }
+        // === AGGIUNGI QUESTO NUOVO BLOCCO DI CODICE ALLA FINE DELLO SCRIPT ===
+document.body.addEventListener('click', function(e) {
+    // Cerca un elemento con la classe 'calendly-link' o un suo figlio
+    const calendlyButton = e.target.closest('.calendly-link');
+    
+    if (calendlyButton) {
+        // Impedisce al link di aprirsi immediatamente
+        e.preventDefault(); 
         
+        const userEmail = calendlyButton.dataset.email;
+        const propertyId = calendlyButton.dataset.propertyId;
+        const calendlyUrl = calendlyButton.href;
+
+        if (userEmail && propertyId) {
+            // Salva i dati nel localStorage
+            localStorage.setItem('pendingBookingData', JSON.stringify({
+                email: userEmail,
+                propertyId: propertyId
+            }));
+            console.log('Dati salvati nel localStorage:', localStorage.getItem('pendingBookingData'));
+            
+            // SOLO ORA, reindirizza a Calendly
+            window.location.href = calendlyUrl;
+        } else {
+            // Se manca l'email, avvisa l'utente
+            alert("Per favore, torna indietro ed effettua una ricerca inserendo la tua email per poter prenotare.");
+        }
+    }
+});
     
 
         document.addEventListener('DOMContentLoaded', main);
