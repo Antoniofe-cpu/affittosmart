@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdxHoUrAAAAAArmVqB1L4sHpph6RjNX5n6TnmFm"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trova la Tua Casa a Bologna - Affitto Smart</title>
@@ -367,10 +368,10 @@
         const mainSearchForm = document.getElementById('unified-search-form');
         const searchButton = document.getElementById('search-button');
         const profileSection = document.getElementById('profile-section');
-        const openLoginModalButton = document.getElementById('open-login-modal');
+        const openLoginModalButton = document.getElementById('open-login-modal'); // Corretto
         
-        const loginModal = document.getElementById('login-modal');
-        const searchModal = document.getElementById('search-modal');
+        const loginModal = document.getElementById('login-modal'); // Corretto
+        const searchModal = document.getElementById('search-modal'); // Corretto
         
         const loginModalForm = document.getElementById('login-modal-form');
         const searchModalForm = document.getElementById('search-modal-form');
@@ -396,6 +397,7 @@
         function closeModal(modal) { if (modal) modal.classList.remove('visible'); }
 
         function validateEmail(inputElement, errorElement) {
+            if (!inputElement || !errorElement) return null;
             const email = inputElement.value.trim();
             errorElement.classList.remove('visible');
             inputElement.classList.remove('input-error');
@@ -408,7 +410,7 @@
             return email;
         }
 
-        // === GESTIONE APERTURA/CHIUSURA DEI MODAL ===
+        // === GESTIONE APERTURA/CHIUSURA DEI MODAL (CON CONTROLLI DI SICUREZZA) ===
         if (openLoginModalButton) {
             openLoginModalButton.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -416,35 +418,39 @@
             });
         }
         [loginModal, searchModal].forEach(modal => {
-            if (modal) {
-                modal.querySelector('.close-modal-button').addEventListener('click', () => closeModal(modal));
-                modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(modal); });
+            if (modal) { 
+                const closeButton = modal.querySelector('.close-modal-button');
+                if (closeButton) {
+                    closeButton.addEventListener('click', () => closeModal(modal));
+                }
+                modal.addEventListener('click', (e) => { 
+                    if (e.target === modal) closeModal(modal); 
+                });
             }
         });
         
         // === LOGICA DEL WIZARD DEL FORM DI RICERCA PRINCIPALE ===
         if (searchButton) {
             searchButton.addEventListener('click', function(e) {
-                e.preventDefault(); // Impedisce l'invio del form
-
+                e.preventDefault();
                 if (formPhase === 1) {
-                    // FASE 1 -> FASE 2: Mostra il profilo
-                    profileSection.classList.add('visible');
-                    formPhase = 2;
-                    searchButton.innerHTML = 'Cerca Le Tue Opportunità <i class="fa-solid fa-arrow-right"></i>';
-                    profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (profileSection) {
+                        profileSection.classList.add('visible');
+                        formPhase = 2;
+                        searchButton.innerHTML = 'Verifica e Cerca <i class="fa-solid fa-arrow-right"></i>';
+                        profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
                 } else if (formPhase === 2) {
-                    // FASE 2 -> FASE 3: Valida il profilo e apre il modal per l'email
                     const lavoroSelect = document.getElementById('situazione_lavorativa');
                     const redditoSelect = document.getElementById('reddito_utente');
                     const errorLavoro = document.getElementById('error-lavoro');
                     const errorReddito = document.getElementById('error-reddito');
                     let isProfileValid = true;
-                    
-                    if(lavoroSelect) lavoroSelect.classList.remove('input-error');
-                    if(errorLavoro) errorLavoro.classList.remove('visible');
-                    if(redditoSelect) redditoSelect.classList.remove('input-error');
-                    if(errorReddito) errorReddito.classList.remove('visible');
+
+                    if (lavoroSelect) lavoroSelect.classList.remove('input-error');
+                    if (errorLavoro) errorLavoro.classList.remove('visible');
+                    if (redditoSelect) redditoSelect.classList.remove('input-error');
+                    if (errorReddito) errorReddito.classList.remove('visible');
 
                     if (!lavoroSelect || !lavoroSelect.value) {
                         isProfileValid = false;
@@ -472,32 +478,35 @@
                 e.preventDefault();
                 const emailInput = document.getElementById('login-email');
                 const errorDiv = document.getElementById('login-error-email');
+                const formMessage = document.getElementById('login-form-message');
                 const email = validateEmail(emailInput, errorDiv);
                 if (!email) return;
 
                 const button = e.target.querySelector('button');
                 button.disabled = true;
-                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
-                
-                const urlWithParams = `${WEB_APP_URL}?action=sendMagicLink&email=${encodeURIComponent(email)}`;
-                try {
+                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+                grecaptcha.ready(function() {
+        grecaptcha.execute('6LdxHoUrAAAAAArmVqB1L4sHpph6RjNX5n6TnmFm', {action: 'login'}).then(async function(token) {
+            // Il token reCAPTCHA non è strettamente necessario per l'invio email,
+            // ma è una buona pratica averlo. Lo script di Google non lo valida su doGet.
+            const urlWithParams = `${WEB_APP_URL}?action=sendMagicLink&email=${encodeURIComponent(email)}`;
+            try {
                     const response = await fetch(urlWithParams);
                     const result = await response.json();
                     
-                    // Controlliamo il messaggio specifico dello script di Google
                     if (result.result === 'success' && result.message === "Email inviata.") {
-                        const successMessageDiv = document.createElement('div');
-                        successMessageDiv.className = 'form-message success';
-                        successMessageDiv.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
-                        loginModalForm.replaceWith(successMessageDiv); // Sostituisce il form con il messaggio
+                        loginModalForm.style.display = 'none'; // Nasconde il form
+                        if(formMessage) {
+                            formMessage.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
+                            formMessage.className = 'form-message success';
+                        }
                     } else {
-                        // Se l'email non viene trovata o c'è un altro errore
-                        errorDiv.textContent = "Nessun account trovato con questa email. Prova a fare una ricerca per registrarti.";
+                        errorDiv.textContent = "Nessun account trovato. Effettua una ricerca e acquista un ticket per registrarti.";
                         errorDiv.classList.add('visible');
                     }
                 } catch (error) {
                     alert("Errore di connessione. Riprova più tardi.");
-                    console.error("Errore invio link magico:", error);
                 } finally {
                     button.disabled = false;
                     button.innerHTML = 'Inviami il Link di Accesso';
@@ -516,7 +525,7 @@
 
                 const button = e.target.querySelector('button');
                 button.disabled = true;
-                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Controllo...';
+                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
                 try {
                     const response = await fetch(CANDIDATES_URL);
