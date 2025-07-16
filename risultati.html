@@ -209,20 +209,19 @@
                 const postiRimasti = postiTotali - prenotati;
                 
               let buttonHtml;
-        const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
+const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
 
-        if (isAlreadyBooked) {
-            buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
-        } else if (postiRimasti > 0) {
-            if (p.CalendlyLink) {
-                // MODIFICA CHIAVE: Il link ora è pulito, ma aggiungiamo i dati tramite "data-attributes"
-                const userEmail = userProfile.user_email || '';
-                buttonHtml = `<a href="${p.CalendlyLink}" target="_blank" class="cta-button calendly-link" 
-                                 data-email="${userEmail}" 
-                                 data-property-id="${p.ID}">
-                                 Prenota il Tuo Posto <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span>
-                              </a>`;
-            } else {
+if (isAlreadyBooked) {
+    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
+} else if (postiRimasti > 0) {
+    if (p.CalendlyLink) {
+        // === MODIFICA CHIAVE ===
+        // Il link ora punta a registrazione.html passando tutti i dati necessari
+        const userEmail = userProfile.user_email || '';
+        const registrationUrl = `registrazione.html?email=${encodeURIComponent(userEmail)}&propertyId=${p.ID}&calendlyLink=${encodeURIComponent(p.CalendlyLink)}`;
+        
+        buttonHtml = `<a href="${registrationUrl}" class="cta-button">Ottieni il Tuo Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
+    } else {
                 buttonHtml = `<button class="cta-button disabled" disabled>Prenotazioni non ancora aperte</button>`;
             }
         } else {
