@@ -50,82 +50,56 @@
     
    // In registrazione.html
 
-async function registerAndRedirect() {
-    // Leggi i dati salvati dal localStorage
-    const pendingDataString = localStorage.getItem('pendingBookingData');
-    
-    if (!pendingDataString) {
-        showError("Dati di registrazione non trovati o sessione scaduta. <a href='index.html'>Torna alla ricerca</a> e riprova.");
-        return;
-    }
+ async function processBookingAndRedirect() {
+        const params = new URLSearchParams(window.location.search);
+        const email = params.get('email');
+        const propertyId = params.get('propertyId');
+        const calendlyLink = params.get('calendlyLink');
 
-    // Una volta letti, pulisci subito il localStorage per evitare registrazioni multiple
-    localStorage.removeItem('pendingBookingData');
+        if (!email || !propertyId || !calendlyLink) {
+            showError("Dati insufficienti per procedere. <a href='index.html'>Torna alla ricerca</a>.");
+            return;
+        }
 
-    const pendingData = JSON.parse(pendingDataString);
-    const email = pendingData.email;
-    const propertyId = pendingData.propertyId;
-
-    if (!email || !propertyId) {
-        showError("Dati mancanti per completare la registrazione. <a href='index.html'>Torna alla ricerca</a>.");
-        return;
-    }
-
-    // === INIZIO BLOCCO RECAPTCHA ===
-    // Esegui reCAPTCHA PRIMA di inviare i dati al backend
-    grecaptcha.ready(function() {
-        // Sostituisci con la tua chiave del sito reCAPTCHA
-        grecaptcha.execute('6LdxHoUrAAAAAArmVqB1L4sHpph6RjNX5n6TnmFm', {action: 'register'}).then(async function(recaptchaToken) {
+        try {
+            // 1. Controlla se l'utente esiste già per ottenere/creare il token
+            const response = await fetch(CANDIDATES_URL);
+            const candidates = csvToObjects(await response.text());
+            let userToken;
+            const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+            userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
             
-            // Ora che abbiamo il token di sicurezza, possiamo procedere
-            try {
-                const response = await fetch(CANDIDATES_URL);
-                const csvText = await response.text();
-                const candidates = csvToObjects(csvText);
-                
-                let userToken;
-                const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
-                userToken = (existingUser && existingUser.Token) ? existingUser.Token : generateToken();
-                
-                const dataToSave = { 
-                    timestamp: new Date().toISOString(), 
-                    email: email, 
-                    propertyId: propertyId, 
-                    token: userToken,
-                    recaptchaToken: recaptchaToken // <-- Il token di sicurezza viene incluso
-                };
+            const dataToSave = { 
+                timestamp: new Date().toISOString(), 
+                email: email, 
+                propertyId: propertyId, 
+                token: userToken
+                // Non serve più reCAPTCHA qui perché non c'è un form compilato dall'utente
+            };
 
-                const writeResponse = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSave)
-                });
-                
-                if (!writeResponse.ok) {
-                     throw new Error(`Errore dal server: ${writeResponse.statusText}`);
-                }
+            // 2. Invia i dati a Google Script per la registrazione
+            // USIAMO 'no-cors' PER AGGIRARE IL PROBLEMA CORS CON GOOGLE SCRIPT DA UN FORM INVISIBILE
+            const writeResponse = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', // <-- La soluzione per l'errore CORS
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSave)
+            });
 
-                const result = await writeResponse.json();
+            // Con 'no-cors', non possiamo leggere la risposta, quindi assumiamo che sia andata a buon fine
+            // Il controllo duplicati lato server impedirà comunque doppie registrazioni.
+            
+            // 3. Se la scrittura è (presumibilmente) andata a buon fine, reindirizza a Calendly
+            const finalCalendlyUrl = `${calendlyLink}?email=${encodeURIComponent(email)}`;
+            window.location.href = finalCalendlyUrl;
 
-                if (result.result === 'success') {
-                    window.location.href = `dashboard.html?token=${userToken}`;
-                } else if (result.code === 'DUPLICATE_BOOKING') {
-                    showError(`Risulta che hai già un ticket per questo immobile. <br><a href="dashboard.html?token=${userToken}">Vai alla tua area personale</a> per vederlo.`);
-                } else if (result.code === 'RECAPTCHA_FAILED') {
-                    showError("Verifica di sicurezza fallita. Ricarica la pagina e riprova.");
-                } else {
-                    showError("Si è verificato un errore durante la registrazione. Contatta l'assistenza.");
-                }
+        } catch (error) {
+            showError("Si è verificato un errore di connessione. Riprova.");
+            console.error('Errore:', error);
+        }
+    }
 
-            } catch (error) {
-                showError("Si è verificato un errore di connessione. Riprova più tardi.");
-                console.error('Errore durante il processo:', error);
-            }
-        });
-    });
-    // === FINE BLOCCO RECAPTCHA ===
-}
-    window.onload = registerAndRedirect;
+    window.onload = processBookingAndRedirect;
 </script>
 </body>
 </html>
