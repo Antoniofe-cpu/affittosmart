@@ -80,8 +80,27 @@
             position: sticky; top: 0; z-index: 1000;
             backdrop-filter: blur(10px);
         }
-        .header-content { display: flex; justify-content: space-between; align-items: center; }
-        .logo-container { line-height: 1.2; }
+        /* === INIZIO MODIFICHE CSS PER HEADER CENTRATO === */
+.header-content {
+    display: flex;
+    justify-content: space-between; /* Mantiene la separazione tra le colonne */
+    align-items: center;
+}
+
+/* Definiamo le 3 colonne virtuali */
+.header-content > div {
+    flex: 1; /* Assegna a tutti i figli diretti (spacer, logo, contatti) una base flessibile uguale */
+}
+
+/* Allineiamo il testo dentro le colonne */
+.logo-container {
+    text-align: center;
+}
+
+.contatti-rapidi {
+    text-align: right; /* Allinea i link a destra dentro la loro colonna */
+}
+/* === FINE MODIFICHE CSS PER HEADER CENTRATO === */
         .logo-main { font-size: 1.8em; font-weight: 800; color: var(--colore-primario); }
         .logo-main span { font-weight: 400; color: var(--colore-secondario); }
         .logo-tagline { font-size: 0.7em; font-weight: 600; color: var(--colore-testo-chiaro); letter-spacing: 0.5px; margin-top: -5px; }
@@ -194,18 +213,26 @@
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="container header-content">
-            <div class="logo-container">
-                <div class="logo-main">Affitto <span>Smart</span></div>
-                <div class="logo-tagline">Scartiamo il 98% dei candidati. Per te.</div>
-            </div>
-            <div class="contatti-rapidi">
-                <a href="tel:+393330000000"><i class="fa-solid fa-phone"></i> Chiama</a>
-                <a href="mailto:bologna@affitto-smart.it"><i class="fa-solid fa-envelope"></i> Scrivi</a>
-            </div>
+    <!-- === MODIFICA HEADER PER LOGO CENTRALE === -->
+<header class="main-header">
+    <div class="container header-content">
+        <!-- 1. COLONNA SINISTRA (SPAZIATORE) -->
+        <div class="header-spacer"></div>
+
+        <!-- 2. COLONNA CENTRALE (LOGO) -->
+        <div class="logo-container">
+            <div class="logo-main">Affitto <span>Smart</span></div>
+            <div class="logo-tagline">Scartiamo il 98% dei candidati. Per te.</div>
         </div>
-    </header>
+
+        <!-- 3. COLONNA DESTRA (CONTATTI) -->
+        <div class="contatti-rapidi">
+            <a href="tel:+393330000000"><i class="fa-solid fa-phone"></i> Chiama</a>
+            <a href="mailto:bologna@affitto-smart.it"><i class="fa-solid fa-envelope"></i> Scrivi</a>
+        </div>
+    </div>
+</header>
+<!-- === FINE MODIFICA HEADER === -->
 
 <main>
     <section class="hero">
