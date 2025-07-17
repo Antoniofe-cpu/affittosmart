@@ -212,7 +212,7 @@
                 const isAlreadyBooked = bookedPropertyIds.includes(p.ID);
 
                 if (isAlreadyBooked) {
-                    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato (Vedi Dettagli)</a>`;
+                    buttonHtml = `<a href="dashboard.html?token=${userToken}" class="cta-button booked">Già Prenotato</a>`;
                 } else if (postiRimasti > 0) {
                     const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}`;
                     buttonHtml = `<a href="${registrationUrl}" class="cta-button">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
