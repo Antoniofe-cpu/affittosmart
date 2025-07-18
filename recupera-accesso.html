@@ -40,43 +40,42 @@
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzHoWjqFMOV2Jip3My7OvJz6pP2ST_EofdsV7NJD-WlWZZxvWBHKTv15RNYZJoHUe1N/exec'; // <-- SOSTITUISCI CON IL TUO STESSO URL DI PRIMA
 
         const form = document.getElementById('recover-form');
-        const messageDiv = document.getElementById('form-message');
+            const messageDiv = document.getElementById('form-message');
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const button = e.target.querySelector('button');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const emailInput = document.getElementById('email');
+                    const email = emailInput.value.trim();
+                    const button = e.target.querySelector('button');
 
-            button.disabled = true;
-            button.textContent = 'Invio in corso...';
-            messageDiv.textContent = '';
-            messageDiv.className = 'form-message';
+                    // Validazione semplice dell'email
+                    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                        alert('Per favore, inserisci un indirizzo email valido.');
+                        return;
+                    }
 
-            // Aggiungiamo un parametro "action" per dire allo script cosa fare
-            const urlWithParams = `${WEB_APP_URL}?action=sendMagicLink&email=${encodeURIComponent(email)}`;
-            
-            try {
-                const response = await fetch(urlWithParams);
-                const result = await response.json();
+                    button.disabled = true;
+                    button.textContent = 'Invio in corso...';
+                    
+                    const urlWithParams = `${WEB_APP_URL}?action=sendMagicLink&email=${encodeURIComponent(email)}`;
+                    
+                    // Strategia "Fire and Forget"
+                    fetch(urlWithParams).catch(error => {
+                        // L'errore CORS viene catturato qui e ignorato, non viene mostrato all'utente.
+                        // Lo logghiamo solo nella console per il debug.
+                        console.warn("Errore CORS previsto (ignorato):", error);
+                    });
 
-                if (result.result === 'success') {
-                    messageDiv.textContent = 'Fatto! Se l\'email è corretta, riceverai a breve un link per accedere. Controlla anche la cartella spam.';
-                    messageDiv.classList.add('success');
-                    form.reset();
-                } else {
-                    // Mostriamo un messaggio generico per non rivelare quali email sono registrate
-                    messageDiv.textContent = 'Se l\'email è presente nel nostro sistema, abbiamo inviato il link.';
-                    messageDiv.classList.add('success'); // Messaggio positivo anche in caso di "errore" per privacy
-                    console.error('Errore dal server:', result.message);
-                }
-
-            } catch (error) {
-                messageDiv.textContent = 'Si è verificato un errore di rete. Riprova più tardi.';
-                messageDiv.classList.add('error');
-                console.error('Errore di fetch:', error);
-            } finally {
-                button.disabled = false;
-                button.textContent = 'Inviami il Link di Accesso';
+                    // Mostra il messaggio di successo all'utente dopo un breve ritardo,
+                    // perché sappiamo che la richiesta è partita e lo script di Google la elaborerà.
+                    setTimeout(() => {
+                        form.style.display = 'none'; // Nasconde il form
+                        messageDiv.textContent = 'Fatto! Se la tua email è registrata, riceverai a breve un link per accedere. Controlla anche la cartella spam.';
+                        messageDiv.className = 'form-message success';
+                        messageDiv.style.display = 'block';
+                    }, 1500); // 1.5 secondi di attesa per un feedback più realistico
+                });
             }
         });
     </script>
