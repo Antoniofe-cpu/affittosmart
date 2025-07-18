@@ -43,13 +43,13 @@
             const messageDiv = document.getElementById('form-message');
 
             if (form) {
-                form.addEventListener('submit', (e) => {
+                form.addEventListener('submit', function(e) {
                     e.preventDefault();
+                    
                     const emailInput = document.getElementById('email');
                     const email = emailInput.value.trim();
                     const button = e.target.querySelector('button');
 
-                    // Validazione semplice dell'email
                     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                         alert('Per favore, inserisci un indirizzo email valido.');
                         return;
@@ -62,19 +62,16 @@
                     
                     // Strategia "Fire and Forget"
                     fetch(urlWithParams).catch(error => {
-                        // L'errore CORS viene catturato qui e ignorato, non viene mostrato all'utente.
-                        // Lo logghiamo solo nella console per il debug.
                         console.warn("Errore CORS previsto (ignorato):", error);
                     });
 
-                    // Mostra il messaggio di successo all'utente dopo un breve ritardo,
-                    // perché sappiamo che la richiesta è partita e lo script di Google la elaborerà.
+                    // Mostra immediatamente il messaggio di successo
                     setTimeout(() => {
-                        form.style.display = 'none'; // Nasconde il form
-                        messageDiv.textContent = 'Fatto! Se la tua email è registrata, riceverai a breve un link per accedere. Controlla anche la cartella spam.';
+                        form.style.display = 'none';
+                        messageDiv.textContent = 'Fatto! Se la tua email è registrata, riceverai un link a breve. Controlla anche la cartella spam.';
                         messageDiv.className = 'form-message success';
                         messageDiv.style.display = 'block';
-                    }, 1500); // 1.5 secondi di attesa per un feedback più realistico
+                    }, 1500);
                 });
             }
         });
