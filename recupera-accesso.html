@@ -6,26 +6,48 @@
     <title>Recupera Accesso - Affitto Smart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --colore-primario: #0D47A1; --colore-accento: #FFA000; --colore-testo: #212121; --colore-sfondo-pagina: #f4f6f9; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--colore-sfondo-pagina); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .login-container { background: white; padding: 50px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
+        :root { 
+            --colore-primario: #0D47A1; 
+            --colore-successo: #2E7D32;
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            background-color: #f4f6f9; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .login-container { 
+            background: white; 
+            padding: 50px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 450px; 
+            text-align: center; 
+        }
         h1 { font-size: 2em; color: var(--colore-primario); margin-bottom: 10px; }
         p { color: #5f6368; margin-bottom: 30px; line-height: 1.6; }
         .form-group { text-align: left; margin-bottom: 20px; }
         .form-group label { font-weight: 600; display: block; margin-bottom: 8px; }
         .form-group input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; }
-        .login-button { width: 100%; padding: 15px; border: none; border-radius: 8px; background-color: var(--colore-primario); color: white; font-size: 1.1em; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        .form-message { margin-top: 20px; font-weight: 600; }
-        .form-message.success { color: #2E7D32; }
-        .form-message.error { color: #c0392b; }
+        .login-button { width: 100%; padding: 15px; border: none; border-radius: 8px; background-color: var(--colore-primario); color: white; font-size: 1.1em; font-weight: 700; cursor: pointer; margin-top: 10px; transition: background-color 0.2s; }
+        .login-button:disabled { background-color: #999; cursor-not-allowed; }
+        .form-message { margin-top: 20px; font-weight: 600; padding: 15px; border-radius: 8px; }
+        .form-message.success { background-color: #e0f2f1; color: var(--colore-successo); }
     </style>
 </head>
 <body>
     <div class="login-container">
         <h1>Accedi alla Tua Area Personale</h1>
-        <p>Inserisci l'email che hai usato per la prenotazione. Ti invieremo un link personale per accedere alla tua dashboard.</p>
+        <p>Inserisci l'email che hai usato per la prenotazione. Ti invieremo le istruzioni per accedere alla tua dashboard.</p>
         <form id="recover-form">
             <div class="form-group">
                 <label for="email">La tua Email</label>
@@ -33,10 +55,11 @@
             </div>
             <button type="submit" class="login-button">Inviami il Link di Accesso</button>
         </form>
-        <div id="form-message" class="form-message"></div>
+        <div id="form-message" style="display: none;"></div>
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzHoWjqFMOV2Jip3My7OvJz6pP2ST_EofdsV7NJD-WlWZZxvWBHKTv15RNYZJoHUe1N/exec'; // <-- SOSTITUISCI CON IL TUO STESSO URL DI PRIMA
 
         const form = document.getElementById('recover-form');
