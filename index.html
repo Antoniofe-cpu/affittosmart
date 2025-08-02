@@ -324,18 +324,21 @@
 
     <!-- === BLOCCO HTML DEI MODAL DA AGGIUNGERE === -->
 
-<!-- MODAL 1: Per il Login / Accesso Diretto (Versione per Fetch) -->
+<!-- HTML DEFINITIVO PER IL MODAL (APPROCCIO REINDIRIZZAMENTO) -->
 <div class="modal-overlay" id="login-modal">
     <div class="modal-content">
         <button class="close-modal-button" aria-label="Chiudi modal">×</button>
         <h1>Accedi alla Tua Area</h1>
         <p>Inserisci la tua email per ricevere il link di accesso.</p>
         
-        <form id="login-modal-form" novalidate>
+        <form id="login-modal-form" 
+              action="https://script.google.com/macros/s/AKfycbzQvkfR_I6r2b58FWi34vsmOUebIKogRKwQ-E8J4mpOLIYGRi0LnZYtOZUKNKprIR8E/exec" 
+              method="GET">
+
+            <input type="hidden" name="action" value="sendMagicLink">
             <div class="form-group">
                 <label for="login-email">Indirizzo Email</label>
-                <input type="email" id="login-email" required placeholder="La tua email di registrazione">
-                <p class="error-message" id="login-error-email"></p>
+                <input type="email" id="login-email" name="email" required placeholder="La tua email di registrazione">
             </div>
             <button type="submit" id="login-modal-button" class="login-button">Inviami il Link di Accesso</button>
         </form>
