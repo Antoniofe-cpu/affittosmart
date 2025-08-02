@@ -83,16 +83,15 @@
         }
         
         /* HEADER DI CONTESTO (BLU) */
-        /* Regola corretta e unificata */
-.page-header { 
-    text-align: center; 
-    padding: 60px 20px;
-    background-color: var(--colore-primario); 
-    color: var(--colore-bianco);
-    box-shadow: 0 4px 12px rgba(13, 71, 161, 0.2);
-    border-radius: 0 0 24px 24px; /* Angoli arrotondati */
-    margin-bottom: 40px;         /* Spazio sotto */
-}
+        .page-header { 
+            text-align: center; 
+            padding: 60px 20px;
+            background-color: var(--colore-primario); 
+            color: var(--colore-bianco);
+            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.2);
+            border-radius: 0 0 24px 24px; /* Angoli arrotondati */
+            margin-bottom: 40px;         /* Spazio sotto */
+        }
         .page-header h1 { 
             font-size: 3em; 
             color: var(--colore-bianco); 
@@ -107,8 +106,6 @@
             margin-left: auto;
             margin-right: auto;
         }
-        /* NUOVA REGOLA (CORRETTA) */
-
 
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
@@ -145,7 +142,7 @@
         <div class="header-actions">
             <a href="#" id="dashboard-link" class="login-link" style="display: none;">
                 <i class="fa-solid fa-user-circle"></i> 
-                
+                <!-- Il nome utente verrà inserito qui se necessario -->
             </a>
         </div>
     </header>
@@ -217,6 +214,11 @@
                     const registrationUrl = `registrazione.html?email=${encodeURIComponent(userProfile.user_email || '')}&propertyId=${p.ID}`;
                     buttonHtml = `<a href="${registrationUrl}" class="cta-button">Acquista Ticket <span class="spots-counter">(${postiRimasti}/${postiTotali} rimanenti)</span></a>`;
                 } else {
+                    // === GESTIONE POSTI ESAURITI (GIÀ CORRETTA) ===
+                    // Se i posti sono esauriti (postiRimasti <= 0), viene generato un <button>
+                    // con l'attributo "disabled", che lo rende non cliccabile per standard HTML.
+                    // La classe CSS ".disabled" definita sopra ne modifica l'aspetto visivo 
+                    // (es. cursore "not-allowed").
                     buttonHtml = `<button class="cta-button disabled" disabled>Posti Esauriti</button>`;
                 }
 
@@ -313,7 +315,6 @@
                 return true;
             });
             
-            // === MODIFICA 2: La chiamata ora PASSA allCandidates ===
             displayResults(finalProperties, userFilters, bookedPropertyIds, userToken);
 
             } catch (error) {
