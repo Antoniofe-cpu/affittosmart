@@ -325,23 +325,43 @@
     <!-- === BLOCCO HTML DEI MODAL DA AGGIUNGERE === -->
 
 <!-- MODAL 1: Per il Login / Accesso Diretto -->
+<!-- MODAL 1: Per il Login / Accesso Diretto (VERSIONE CORRETTA) -->
 <div class="modal-overlay" id="login-modal">
     <div class="modal-content">
         <button class="close-modal-button" aria-label="Chiudi modal">×</button>
         <h1>Accedi alla Tua Area</h1>
-        <p>Inserisci la tua email per vedere le tue prenotazioni.</p>
-        <form id="login-modal-form" novalidate>
+        <p>Inserisci la tua email per ricevere il link di accesso.</p>
+        
+        <!-- ============================================= -->
+        <!--  FORM MODIFICATO PER IL REINDIRIZZAMENTO        -->
+        <!-- ============================================= -->
+        <form id="login-modal-form" 
+              action="https://script.google.com/macros/s/AKfycbzQvkfR_I6r2b58FWi34vsmOUebIKogRKwQ-E8J4mpOLIYGRi0LnZYtOZUKNKprIR8E/exec" 
+              method="GET" 
+              target="hidden_iframe">
+
+            <!-- 1. Campo nascosto per dire allo script cosa fare -->
+            <input type="hidden" name="action" value="sendMagicLink">
+            
             <div class="form-group">
                 <label for="login-email">Indirizzo Email</label>
-                <input type="email" id="login-email" required>
+                <!-- 2. Aggiunto l'attributo 'name' all'input -->
+                <input type="email" id="login-email" name="email" required placeholder="La tua email di registrazione">
                 <p class="error-message" id="login-error-email"></p>
             </div>
+            
             <button type="submit" id="login-modal-button" class="login-button">Inviami il Link di Accesso</button>
         </form>
+        
         <div class="form-message" id="login-form-message"></div>
     </div>
 </div>
 
+<!-- ======================================================= -->
+<!--  AGGIUNGI QUESTO IFRAME SUBITO DOPO IL MODAL O ALLA FINE -->
+<!--  DEL BODY. È ESSENZIALE E DEVE ESSERCI UNA SOLA VOLTA.  -->
+<!-- ======================================================= -->
+<iframe name="hidden_iframe" style="display:none;"></iframe>
 <!-- MODAL 2: Per completare la Ricerca -->
 <div class="modal-overlay" id="search-modal">
     <div class="modal-content">
