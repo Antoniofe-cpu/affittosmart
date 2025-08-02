@@ -324,44 +324,25 @@
 
     <!-- === BLOCCO HTML DEI MODAL DA AGGIUNGERE === -->
 
-<!-- MODAL 1: Per il Login / Accesso Diretto -->
-<!-- MODAL 1: Per il Login / Accesso Diretto (VERSIONE CORRETTA) -->
+<!-- MODAL 1: Per il Login / Accesso Diretto (Versione per Fetch) -->
 <div class="modal-overlay" id="login-modal">
     <div class="modal-content">
         <button class="close-modal-button" aria-label="Chiudi modal">×</button>
         <h1>Accedi alla Tua Area</h1>
         <p>Inserisci la tua email per ricevere il link di accesso.</p>
         
-        <!-- ============================================= -->
-        <!--  FORM MODIFICATO PER IL REINDIRIZZAMENTO        -->
-        <!-- ============================================= -->
-        <form id="login-modal-form" 
-              action="https://script.google.com/macros/s/AKfycbzQvkfR_I6r2b58FWi34vsmOUebIKogRKwQ-E8J4mpOLIYGRi0LnZYtOZUKNKprIR8E/exec" 
-              method="GET" 
-              target="hidden_iframe">
-
-            <!-- 1. Campo nascosto per dire allo script cosa fare -->
-            <input type="hidden" name="action" value="sendMagicLink">
-            
+        <form id="login-modal-form" novalidate>
             <div class="form-group">
                 <label for="login-email">Indirizzo Email</label>
-                <!-- 2. Aggiunto l'attributo 'name' all'input -->
-                <input type="email" id="login-email" name="email" required placeholder="La tua email di registrazione">
+                <input type="email" id="login-email" required placeholder="La tua email di registrazione">
                 <p class="error-message" id="login-error-email"></p>
             </div>
-            
             <button type="submit" id="login-modal-button" class="login-button">Inviami il Link di Accesso</button>
         </form>
         
         <div class="form-message" id="login-form-message"></div>
     </div>
 </div>
-
-<!-- ======================================================= -->
-<!--  AGGIUNGI QUESTO IFRAME SUBITO DOPO IL MODAL O ALLA FINE -->
-<!--  DEL BODY. È ESSENZIALE E DEVE ESSERCI UNA SOLA VOLTA.  -->
-<!-- ======================================================= -->
-<iframe name="hidden_iframe" style="display:none;"></iframe>
 <!-- MODAL 2: Per completare la Ricerca -->
 <div class="modal-overlay" id="search-modal">
     <div class="modal-content">
@@ -382,22 +363,18 @@
      <script>
     document.addEventListener('DOMContentLoaded', function() {
         // === CONFIGURAZIONE ===
-        // Non abbiamo più bisogno di WEB_APP_URL qui, ma lo lasciamo per coerenza.
         const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzQvkfR_I6r2b58FWi34vsmOUebIKogRKwQ-E8J4mpOLIYGRi0LnZYtOZUKNKprIR8E/exec';
         
-         // === RIFERIMENTI AGLI ELEMENTI DEL DOM ===
+        // === RIFERIMENTI AGLI ELEMENTI DEL DOM ===
         const mainSearchForm = document.getElementById('unified-search-form');
         const searchButton = document.getElementById('search-button');
         const profileSection = document.getElementById('profile-section');
         const openLoginModalButton = document.getElementById('open-login-modal');
-        
         const loginModal = document.getElementById('login-modal');
         const searchModal = document.getElementById('search-modal');
-        
         const loginModalForm = document.getElementById('login-modal-form');
         const searchModalForm = document.getElementById('search-modal-form');
-
         let formPhase = 1;
 
         // === FUNZIONI HELPER ===
@@ -418,17 +395,18 @@
         function openModal(modal) { if (modal) modal.classList.add('visible'); }
         function closeModal(modal) { if (modal) modal.classList.remove('visible'); }
 
-        // Questa funzione di validazione ora è meno critica per il login, 
-        // ma la teniamo per dare un feedback visivo all'utente.
         function validateEmail(inputElement, errorElement) {
             if (!inputElement || !errorElement) return null;
             const email = inputElement.value.trim();
+            errorElement.textContent = '';
             errorElement.classList.remove('visible');
             inputElement.classList.remove('input-error');
             if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                errorElement.textContent = "Per favore, inserisci un'email valida.";
-                errorElement.classList.add('visible');
-                inputElement.classList.add('input-error');
+                if (errorElement) {
+                    errorElement.textContent = "Per favore, inserisci un'email valida.";
+                    errorElement.classList.add('visible');
+                }
+                if (inputElement) inputElement.classList.add('input-error');
                 return null;
             }
             return email;
@@ -449,7 +427,6 @@
         });
         
         // === LOGICA DEL WIZARD DEL FORM DI RICERCA PRINCIPALE ===
-        // (Questa sezione rimane invariata)
         if (searchButton) {
             searchButton.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -464,15 +441,12 @@
                     const errorLavoro = document.getElementById('error-lavoro');
                     const errorReddito = document.getElementById('error-reddito');
                     let isProfileValid = true;
-                    
                     if(lavoroSelect) lavoroSelect.classList.remove('input-error');
                     if(errorLavoro) errorLavoro.classList.remove('visible');
                     if(redditoSelect) redditoSelect.classList.remove('input-error');
                     if(errorReddito) errorReddito.classList.remove('visible');
-
                     if (!lavoroSelect || !lavoroSelect.value) { isProfileValid = false; if(lavoroSelect) lavoroSelect.classList.add('input-error'); if(errorLavoro) errorLavoro.classList.add('visible'); }
                     if (!redditoSelect || !redditoSelect.value) { isProfileValid = false; if(redditoSelect) redditoSelect.classList.add('input-error'); if(errorReddito) errorReddito.classList.add('visible'); }
-                    
                     if (isProfileValid) {
                         openModal(searchModal);
                     } else if (lavoroSelect) {
@@ -483,40 +457,73 @@
         }
 
         // =========================================================================
-        // === LOGICA DEL MODAL DI ACCESSO DIRETTO ("LA MIA AREA") - VERSIONE CORRETTA ===
+        // === LOGICA DEL MODAL DI ACCESSO DIRETTO - VERSIONE FINALE CON FETCH POST ===
         // =========================================================================
         if (loginModalForm) {
-            loginModalForm.addEventListener('submit', (e) => {
+            loginModalForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); 
+                
                 const emailInput = document.getElementById('login-email');
-                const errorDiv = document.getElementById('login-error-email');
+                const errorDiv = document.getElementById('login-error-email'); // Usiamo l'error div dedicato
                 const formMessageDiv = document.getElementById('login-form-message');
+                const button = e.target.querySelector('button');
 
-                // Validiamo l'email solo per dare un feedback all'utente.
-                const email = validateEmail(emailInput, errorDiv);
-                if (!email) {
-                    e.preventDefault(); // Impediamo l'invio SOLO se l'email non è valida.
+                // Reset dei messaggi precedenti
+                formMessageDiv.textContent = '';
+                formMessageDiv.className = 'form-message';
+                errorDiv.textContent = '';
+                errorDiv.classList.remove('visible');
+                emailInput.classList.remove('input-error');
+
+                const email = emailInput.value.trim();
+                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    errorDiv.textContent = 'Per favore, inserisci un\'email valida.';
+                    errorDiv.classList.add('visible');
+                    emailInput.classList.add('input-error');
                     return;
                 }
 
-                // NON usiamo e.preventDefault() se l'email è valida, 
-                // così il form viene inviato all'URL specificato nell'attributo 'action'.
+                button.disabled = true;
+                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
+                
+                const formData = new FormData();
+                formData.append('action', 'sendMagicLink');
+                formData.append('email', email);
 
-                // Mostriamo un feedback visivo all'utente.
-                const button = e.target.querySelector('button');
-                if (button) {
-                    button.disabled = true;
-                    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
-                }
+                try {
+                    const response = await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) { throw new Error(`Errore HTTP: ${response.status}`); }
+                    
+                    const result = await response.json();
+                    
+                    if (result.result === 'success') {
+                        loginModalForm.style.display = 'none';
+                        formMessageDiv.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
+                        formMessageDiv.className = 'form-message success visible'; // Assicurati di avere stile per .success e .visible
+                    } else {
+                        // Mostra l'errore (es. "utente non trovato") nel div degli errori
+                        errorDiv.textContent = result.message || 'Si è verificato un errore.';
+                        errorDiv.classList.add('visible');
+                        emailInput.classList.add('input-error');
+                    }
 
-                if (formMessageDiv) {
-                    formMessageDiv.textContent = 'Richiesta inviata! Se la tua email è registrata, riceverai a breve il link. Controlla anche la cartella spam.';
-                    formMessageDiv.className = 'form-message success visible'; // Assicurati di avere uno stile CSS per .visible
+                } catch (error) {
+                    console.error("Errore Fetch POST:", error);
+                    // Mostra l'errore di connessione nel div principale dei messaggi
+                    formMessageDiv.textContent = 'Errore di connessione. Riprova più tardi.';
+                    formMessageDiv.className = 'form-message error visible'; // Assicurati di avere stile per .error e .visible
+                } finally {
+                    button.disabled = false;
+                    button.innerHTML = 'Inviami il Link di Accesso';
                 }
             });
         }
         
         // === LOGICA DEL MODAL DI RICERCA (DOPO IL WIZARD) ===
-        // (Questa sezione rimane invariata)
         if (searchModalForm) {
             searchModalForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -553,7 +560,6 @@
         }
 
         // === LOGICA FAQ ===
-        // (Questa sezione rimane invariata)
         document.querySelectorAll('.faq-question').forEach(button => {
             const faqItem = button.parentElement;
             button.addEventListener('click', () => {
