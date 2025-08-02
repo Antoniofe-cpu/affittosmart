@@ -382,6 +382,7 @@
      <script>
     document.addEventListener('DOMContentLoaded', function() {
         // === CONFIGURAZIONE ===
+        // Non abbiamo più bisogno di WEB_APP_URL qui, ma lo lasciamo per coerenza.
         const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzQvkfR_I6r2b58FWi34vsmOUebIKogRKwQ-E8J4mpOLIYGRi0LnZYtOZUKNKprIR8E/exec';
         
@@ -417,6 +418,8 @@
         function openModal(modal) { if (modal) modal.classList.add('visible'); }
         function closeModal(modal) { if (modal) modal.classList.remove('visible'); }
 
+        // Questa funzione di validazione ora è meno critica per il login, 
+        // ma la teniamo per dare un feedback visivo all'utente.
         function validateEmail(inputElement, errorElement) {
             if (!inputElement || !errorElement) return null;
             const email = inputElement.value.trim();
@@ -446,6 +449,7 @@
         });
         
         // === LOGICA DEL WIZARD DEL FORM DI RICERCA PRINCIPALE ===
+        // (Questa sezione rimane invariata)
         if (searchButton) {
             searchButton.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -478,49 +482,41 @@
             });
         }
 
-        // === LOGICA DEL MODAL DI ACCESSO DIRETTO ("LA MIA AREA") ===
+        // =========================================================================
+        // === LOGICA DEL MODAL DI ACCESSO DIRETTO ("LA MIA AREA") - VERSIONE CORRETTA ===
+        // =========================================================================
         if (loginModalForm) {
-            loginModalForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
+            loginModalForm.addEventListener('submit', (e) => {
                 const emailInput = document.getElementById('login-email');
                 const errorDiv = document.getElementById('login-error-email');
-                const formMessageDiv = document.getElementById('login-form-message'); // Assicurati che questo esista nell'HTML
+                const formMessageDiv = document.getElementById('login-form-message');
 
-                // === CHIAMATA CORRETTA ALLA FUNZIONE validateEmail ===
+                // Validiamo l'email solo per dare un feedback all'utente.
                 const email = validateEmail(emailInput, errorDiv);
-                if (!email) return;
+                if (!email) {
+                    e.preventDefault(); // Impediamo l'invio SOLO se l'email non è valida.
+                    return;
+                }
 
+                // NON usiamo e.preventDefault() se l'email è valida, 
+                // così il form viene inviato all'URL specificato nell'attributo 'action'.
+
+                // Mostriamo un feedback visivo all'utente.
                 const button = e.target.querySelector('button');
-                button.disabled = true;
-                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
-                
-                const urlWithParams = `${WEB_APP_URL}?action=sendMagicLink&email=${encodeURIComponent(email)}`;
-                try {
-                    const response = await fetch(urlWithParams);
-                    const result = await response.json();
-                    
-                    if (result.result === 'success' && result.message === "Email inviata.") {
-                        loginModalForm.style.display = 'none';
-                        if (formMessageDiv) {
-                            formMessageDiv.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
-                            formMessageDiv.className = 'form-message success';
-                        } else { // Fallback se il div del messaggio non c'è
-                             alert('Fatto! Se l\'email è registrata, riceverai a breve un link.');
-                        }
-                    } else {
-                        errorDiv.textContent = "Nessun account trovato. Effettua una ricerca e acquista un ticket per registrarti.";
-                        errorDiv.classList.add('visible');
-                    }
-                } catch (error) {
-                    alert("Errore di connessione. Riprova più tardi.");
-                } finally {
-                    button.disabled = false;
-                    button.innerHTML = 'Inviami il Link di Accesso';
+                if (button) {
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
+                }
+
+                if (formMessageDiv) {
+                    formMessageDiv.textContent = 'Richiesta inviata! Se la tua email è registrata, riceverai a breve il link. Controlla anche la cartella spam.';
+                    formMessageDiv.className = 'form-message success visible'; // Assicurati di avere uno stile CSS per .visible
                 }
             });
         }
         
         // === LOGICA DEL MODAL DI RICERCA (DOPO IL WIZARD) ===
+        // (Questa sezione rimane invariata)
         if (searchModalForm) {
             searchModalForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -557,6 +553,7 @@
         }
 
         // === LOGICA FAQ ===
+        // (Questa sezione rimane invariata)
         document.querySelectorAll('.faq-question').forEach(button => {
             const faqItem = button.parentElement;
             button.addEventListener('click', () => {
