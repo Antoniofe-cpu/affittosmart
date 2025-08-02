@@ -324,7 +324,7 @@
 
     <!-- === BLOCCO HTML DEI MODAL DA AGGIUNGERE === -->
 
-<!-- HTML DEFINITIVO PER IL MODAL (APPROCCIO REINDIRIZZAMENTO) -->
+<!-- HTML DEFINITIVO PER MODAL (APPROCCIO IFRAME) -->
 <div class="modal-overlay" id="login-modal">
     <div class="modal-content">
         <button class="close-modal-button" aria-label="Chiudi modal">×</button>
@@ -333,7 +333,8 @@
         
         <form id="login-modal-form" 
               action="https://script.google.com/macros/s/AKfycbzQvkfR_I6r2b58FWi34vsmOUebIKogRKwQ-E8J4mpOLIYGRi0LnZYtOZUKNKprIR8E/exec" 
-              method="GET">
+              method="GET" 
+              target="hidden_iframe">
 
             <input type="hidden" name="action" value="sendMagicLink">
             <div class="form-group">
@@ -346,6 +347,9 @@
         <div class="form-message" id="login-form-message"></div>
     </div>
 </div>
+
+<!-- IFRAME INVISIBILE NECESSARIO ALLA FINE DEL BODY -->
+<iframe name="hidden_iframe" style="display:none;" onload="handleIframeLoad()"></iframe>
 <!-- MODAL 2: Per completare la Ricerca -->
 <div class="modal-overlay" id="search-modal">
     <div class="modal-content">
@@ -367,7 +371,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         // =======================================================
         //              1. CONFIGURAZIONE E RIFERIMENTI
-        // (Tutte le costanti sono dichiarate UNA SOLA VOLTA qui)
         // =======================================================
         const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
         
@@ -400,48 +403,54 @@
         // --- Wizard del Form di Ricerca Principale ---
         if (searchButton) { searchButton.addEventListener('click', function(e) { e.preventDefault(); if (formPhase === 1) { profileSection.classList.add('visible'); formPhase = 2; searchButton.innerHTML = 'Scopri Le Tue Opportunità <i class="fa-solid fa-arrow-right"></i>'; profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' }); } else if (formPhase === 2) { const lavoroSelect = document.getElementById('situazione_lavorativa'); const redditoSelect = document.getElementById('reddito_utente'); if ((!lavoroSelect || !lavoroSelect.value) || (!redditoSelect || !redditoSelect.value)) { alert("Per favore, compila tutti i campi del tuo profilo."); } else { openModal(searchModal); } } }); }
 
-        // --- Logica del Modal di Accesso (Reindirizzamento) ---
+        // =========================================================================
+        // === LOGICA DEL MODAL DI ACCESSO - VERSIONE FINALE CON IFRAME ===
+        // =========================================================================
+
+        // Questa funzione viene chiamata dall'attributo 'onload' dell'iframe
+        // quando lo script di Google ha finito il suo lavoro.
+        window.handleIframeLoad = function() {
+            const form = document.getElementById('login-modal-form');
+            const messageDiv = document.getElementById('login-form-message');
+            const button = form.querySelector('button');
+
+            // Nasconde il form e mostra il messaggio di successo
+            form.style.display = 'none';
+            messageDiv.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
+            messageDiv.className = 'form-message success visible'; // Assicurati di avere stili CSS per .success e .visible
+            
+            // Riabilita il pulsante
+            button.disabled = false;
+            button.innerHTML = 'Inviami il Link di Accesso';
+        }
+
+        // Questo codice gestisce l'invio del form
         if (loginModalForm) {
             loginModalForm.addEventListener('submit', (e) => {
                 const emailInput = document.getElementById('login-email');
+                // Valida l'email prima di consentire l'invio
                 if (!emailInput.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
-                    e.preventDefault();
+                    e.preventDefault(); // Blocca l'invio
                     alert("Per favore, inserisci un'email valida.");
                     return;
                 }
+
+                // Se l'email è valida, il form verrà inviato all'iframe.
+                // Questo codice dà solo un feedback visivo istantaneo.
                 const button = e.target.querySelector('button');
+                const messageDiv = document.getElementById('login-form-message');
+                
                 if (button) {
                     button.disabled = true;
                     button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
                 }
+                if (messageDiv) {
+                    messageDiv.textContent = ''; // Pulisce eventuali messaggi vecchi
+                    messageDiv.className = 'form-message';
+                }
             });
         }
 
-        // --- Logica che controlla l'URL al caricamento della pagina ---
-        const params = new URLSearchParams(window.location.search);
-        const loginStatus = params.get('login_status');
-        if (loginStatus) {
-            const formInModal = document.getElementById('login-modal-form');
-            const messageDiv = document.getElementById('login-form-message');
-
-            if (loginModal && formInModal && messageDiv) {
-                if (loginStatus === 'success') {
-                    formInModal.style.display = 'none';
-                    messageDiv.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
-                    messageDiv.className = 'form-message success visible';
-                } else if (loginStatus === 'error_not_found') {
-                    messageDiv.textContent = 'Nessun account trovato con questa email. Riprova.';
-                    messageDiv.className = 'form-message error visible';
-                } else {
-                    messageDiv.textContent = 'Si è verificato un errore. Per favore, riprova.';
-                    messageDiv.className = 'form-message error visible';
-                }
-                openModal(loginModal); // Apre il modal per mostrare il messaggio
-            }
-            // Pulisce l'URL
-            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            history.replaceState({}, document.title, newUrl);
-        }
 
         // --- Logica del Modal di Ricerca (dopo il wizard) ---
         if (searchModalForm) { searchModalForm.addEventListener('submit', async (e) => { e.preventDefault(); const emailInput = document.getElementById('search-user-email'); if (!emailInput.value.trim()) { alert("Inserisci la tua email"); return; } const email = emailInput.value.trim(); const button = e.target.querySelector('button'); button.disabled = true; button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; try { const response = await fetch(CANDIDATES_URL); const candidates = csvToObjects(await response.text()); const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase()); const mainFormData = new FormData(mainSearchForm); mainFormData.append('user_email', email); const queryString = new URLSearchParams(mainFormData).toString(); let finalUrl = `risultati.html?${queryString}`; if (existingUser && existingUser.Token) { finalUrl += `&token=${existingUser.Token}`; } window.location.href = finalUrl; } catch (error) { alert("Errore di connessione. Riprova."); button.disabled = false; button.innerHTML = 'Vedi i Risultati'; } }); }
