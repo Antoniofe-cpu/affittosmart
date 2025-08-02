@@ -368,13 +368,38 @@
 </div>
 
      <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // =======================================================
-        //              1. CONFIGURAZIONE E RIFERIMENTI
-        // =======================================================
-        const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
+    // =========================================================================
+    // FUNZIONE DI CALLBACK GLOBALE PER L'IFRAME
+    // Dichiarata qui, fuori da DOMContentLoaded, per essere visibile a 'onload'.
+    // =========================================================================
+    function handleIframeLoad() {
+        const loginModalForm = document.getElementById('login-modal-form');
+        const formMessageDiv = document.getElementById('login-form-message');
+        const button = loginModalForm.querySelector('button');
+
+        // Nasconde il form e mostra il messaggio di successo
+        if (loginModalForm) {
+            loginModalForm.style.display = 'none';
+        }
+        if (formMessageDiv) {
+            formMessageDiv.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
+            formMessageDiv.className = 'form-message success visible';
+        }
         
-        // Riferimenti agli elementi del DOM
+        // Riabilita il pulsante
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = 'Inviami il Link di Accesso';
+        }
+    }
+
+
+    // =========================================================================
+    // TUTTA LA LOGICA DELLA PAGINA VIENE ESEGUITA DOPO IL CARICAMENTO DEL DOM
+    // =========================================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // === CONFIGURAZIONE E RIFERIMENTI ===
+        const CANDIDATES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkbpjTqQmyIW-qPDT-iLpE6duimrufjvzM3AXd_ng8D2rXW0tTWz3KMmZ1oE8nUCDx0CkUtePZZr_N/pub?gid=871257678&single=true&output=csv';
         const mainSearchForm = document.getElementById('unified-search-form');
         const searchButton = document.getElementById('search-button');
         const profileSection = document.getElementById('profile-section');
@@ -385,16 +410,12 @@
         const searchModalForm = document.getElementById('search-modal-form');
         let formPhase = 1;
 
-        // =======================================================
-        //                      2. FUNZIONI HELPER
-        // =======================================================
-        function csvToObjects(csv) { if (!csv) return []; const lines = csv.trim().split(/\r\n|\n/); const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '')); return lines.slice(1).map(line => { if (!line) return null; const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); return headers.reduce((obj, header, i) => { obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : ''; return obj; }, {}); }).filter(Boolean); }
+        // === FUNZIONI HELPER (definite localmente) ===
+        function csvToObjects(csv) { /* ... codice invariato ... */ if (!csv) return []; const lines = csv.trim().split(/\r\n|\n/); const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '')); return lines.slice(1).map(line => { if (!line) return null; const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); return headers.reduce((obj, header, i) => { obj[header] = values[i] ? values[i].replace(/"/g, '').trim() : ''; return obj; }, {}); }).filter(Boolean); }
         function openModal(modal) { if (modal) modal.classList.add('visible'); }
         function closeModal(modal) { if (modal) modal.classList.remove('visible'); }
 
-        // =======================================================
-        //                3. LOGICA DI ESECUZIONE
-        // =======================================================
+        // === LOGICA DI ESECUZIONE ===
 
         // --- Apertura/Chiusura dei Modal ---
         if (openLoginModalButton) { openLoginModalButton.addEventListener('click', (e) => { e.preventDefault(); openModal(loginModal); }); }
@@ -403,54 +424,27 @@
         // --- Wizard del Form di Ricerca Principale ---
         if (searchButton) { searchButton.addEventListener('click', function(e) { e.preventDefault(); if (formPhase === 1) { profileSection.classList.add('visible'); formPhase = 2; searchButton.innerHTML = 'Scopri Le Tue Opportunità <i class="fa-solid fa-arrow-right"></i>'; profileSection.scrollIntoView({ behavior: 'smooth', block: 'center' }); } else if (formPhase === 2) { const lavoroSelect = document.getElementById('situazione_lavorativa'); const redditoSelect = document.getElementById('reddito_utente'); if ((!lavoroSelect || !lavoroSelect.value) || (!redditoSelect || !redditoSelect.value)) { alert("Per favore, compila tutti i campi del tuo profilo."); } else { openModal(searchModal); } } }); }
 
-        // =========================================================================
-        // === LOGICA DEL MODAL DI ACCESSO - VERSIONE FINALE CON IFRAME ===
-        // =========================================================================
-
-        // Questa funzione viene chiamata dall'attributo 'onload' dell'iframe
-        // quando lo script di Google ha finito il suo lavoro.
-        window.handleIframeLoad = function() {
-            const form = document.getElementById('login-modal-form');
-            const messageDiv = document.getElementById('login-form-message');
-            const button = form.querySelector('button');
-
-            // Nasconde il form e mostra il messaggio di successo
-            form.style.display = 'none';
-            messageDiv.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
-            messageDiv.className = 'form-message success visible'; // Assicurati di avere stili CSS per .success e .visible
-            
-            // Riabilita il pulsante
-            button.disabled = false;
-            button.innerHTML = 'Inviami il Link di Accesso';
-        }
-
-        // Questo codice gestisce l'invio del form
+        // --- Logica del Modal di Accesso (Invio del Form) ---
         if (loginModalForm) {
             loginModalForm.addEventListener('submit', (e) => {
                 const emailInput = document.getElementById('login-email');
-                // Valida l'email prima di consentire l'invio
                 if (!emailInput.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
-                    e.preventDefault(); // Blocca l'invio
+                    e.preventDefault();
                     alert("Per favore, inserisci un'email valida.");
                     return;
                 }
-
-                // Se l'email è valida, il form verrà inviato all'iframe.
-                // Questo codice dà solo un feedback visivo istantaneo.
                 const button = e.target.querySelector('button');
                 const messageDiv = document.getElementById('login-form-message');
-                
                 if (button) {
                     button.disabled = true;
                     button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
                 }
                 if (messageDiv) {
-                    messageDiv.textContent = ''; // Pulisce eventuali messaggi vecchi
+                    messageDiv.textContent = '';
                     messageDiv.className = 'form-message';
                 }
             });
         }
-
 
         // --- Logica del Modal di Ricerca (dopo il wizard) ---
         if (searchModalForm) { searchModalForm.addEventListener('submit', async (e) => { e.preventDefault(); const emailInput = document.getElementById('search-user-email'); if (!emailInput.value.trim()) { alert("Inserisci la tua email"); return; } const email = emailInput.value.trim(); const button = e.target.querySelector('button'); button.disabled = true; button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; try { const response = await fetch(CANDIDATES_URL); const candidates = csvToObjects(await response.text()); const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase()); const mainFormData = new FormData(mainSearchForm); mainFormData.append('user_email', email); const queryString = new URLSearchParams(mainFormData).toString(); let finalUrl = `risultati.html?${queryString}`; if (existingUser && existingUser.Token) { finalUrl += `&token=${existingUser.Token}`; } window.location.href = finalUrl; } catch (error) { alert("Errore di connessione. Riprova."); button.disabled = false; button.innerHTML = 'Vedi i Risultati'; } }); }
