@@ -456,107 +456,53 @@
             });
         }
 
-        // =========================================================================
-        // === LOGICA DEL MODAL DI ACCESSO DIRETTO - VERSIONE FINALE CON FETCH POST ===
-        // =========================================================================
+        // --- PARTE 1: Gestisce l'invio del form (dà solo feedback visivo) ---
+        const loginModalForm = document.getElementById('login-modal-form');
         if (loginModalForm) {
-            loginModalForm.addEventListener('submit', async (e) => {
-                e.preventDefault(); 
-                
+            loginModalForm.addEventListener('submit', (e) => {
                 const emailInput = document.getElementById('login-email');
-                const errorDiv = document.getElementById('login-error-email'); // Usiamo l'error div dedicato
-                const formMessageDiv = document.getElementById('login-form-message');
-                const button = e.target.querySelector('button');
-
-                // Reset dei messaggi precedenti
-                formMessageDiv.textContent = '';
-                formMessageDiv.className = 'form-message';
-                errorDiv.textContent = '';
-                errorDiv.classList.remove('visible');
-                emailInput.classList.remove('input-error');
-
-                const email = emailInput.value.trim();
-                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    errorDiv.textContent = 'Per favore, inserisci un\'email valida.';
-                    errorDiv.classList.add('visible');
-                    emailInput.classList.add('input-error');
+                if (!emailInput.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
+                    e.preventDefault();
+                    alert("Per favore, inserisci un'email valida.");
                     return;
                 }
-
-                button.disabled = true;
-                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
-                
-                const formData = new FormData();
-                formData.append('action', 'sendMagicLink');
-                formData.append('email', email);
-
-                try {
-                    const response = await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    if (!response.ok) { throw new Error(`Errore HTTP: ${response.status}`); }
-                    
-                    const result = await response.json();
-                    
-                    if (result.result === 'success') {
-                        loginModalForm.style.display = 'none';
-                        formMessageDiv.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
-                        formMessageDiv.className = 'form-message success visible'; // Assicurati di avere stile per .success e .visible
-                    } else {
-                        // Mostra l'errore (es. "utente non trovato") nel div degli errori
-                        errorDiv.textContent = result.message || 'Si è verificato un errore.';
-                        errorDiv.classList.add('visible');
-                        emailInput.classList.add('input-error');
-                    }
-
-                } catch (error) {
-                    console.error("Errore Fetch POST:", error);
-                    // Mostra l'errore di connessione nel div principale dei messaggi
-                    formMessageDiv.textContent = 'Errore di connessione. Riprova più tardi.';
-                    formMessageDiv.className = 'form-message error visible'; // Assicurati di avere stile per .error e .visible
-                } finally {
-                    button.disabled = false;
-                    button.innerHTML = 'Inviami il Link di Accesso';
+                const button = e.target.querySelector('button');
+                if (button) {
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
                 }
             });
         }
-        
-        // === LOGICA DEL MODAL DI RICERCA (DOPO IL WIZARD) ===
-        if (searchModalForm) {
-            searchModalForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const emailInput = document.getElementById('search-user-email');
-                const errorDiv = document.getElementById('search-error-email');
-                const email = validateEmail(emailInput, errorDiv);
-                if (!email) return;
 
-                const button = e.target.querySelector('button');
-                button.disabled = true;
-                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        // --- PARTE 2: Controlla l'URL al caricamento della pagina e mostra i messaggi ---
+        const params = new URLSearchParams(window.location.search);
+        const loginStatus = params.get('login_status');
 
-                try {
-                    const response = await fetch(CANDIDATES_URL);
-                    const candidates = csvToObjects(await response.text());
-                    const existingUser = candidates.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+        if (loginStatus) {
+            const loginModal = document.getElementById('login-modal');
+            const formInModal = document.getElementById('login-modal-form');
+            const messageDiv = document.getElementById('login-form-message');
 
-                    const mainFormData = new FormData(mainSearchForm);
-                    mainFormData.append('user_email', email);
-                    const queryString = new URLSearchParams(mainFormData).toString();
-                    let finalUrl = `risultati.html?${queryString}`;
-
-                    if (existingUser && existingUser.Token) {
-                        finalUrl += `&token=${existingUser.Token}`;
-                    }
-                    
-                    window.location.href = finalUrl;
-                } catch (error) {
-                    alert("Errore di connessione. Riprova.");
-                    button.disabled = false;
-                    button.innerHTML = 'Vedi i Risultati';
+            if (loginModal && formInModal && messageDiv) {
+                if (loginStatus === 'success') {
+                    formInModal.style.display = 'none'; // Nasconde il form
+                    messageDiv.textContent = 'Fatto! Se l\'email è registrata, riceverai a breve un link. Controlla anche la cartella spam.';
+                    messageDiv.className = 'form-message success visible';
+                } else if (loginStatus === 'error_not_found') {
+                    messageDiv.textContent = 'Nessun account trovato con questa email. Riprova.';
+                    messageDiv.className = 'form-message error visible';
+                } else { // error_server o altro
+                    messageDiv.textContent = 'Si è verificato un errore. Per favore, riprova.';
+                    messageDiv.className = 'form-message error visible';
                 }
-            });
+
+                // Apre automaticamente il modal per mostrare il messaggio
+                loginModal.classList.add('visible');
+            }
+
+            // Pulisce l'URL per non mostrare più il parametro al prossimo ricaricamento
+            const newUrl = window.location.pathname;
+            history.replaceState({}, document.title, newUrl);
         }
 
         // === LOGICA FAQ ===
